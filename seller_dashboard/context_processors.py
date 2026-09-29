@@ -1,11 +1,15 @@
 from datetime import timedelta
 
-from django.db.models import F, Sum
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import F, Q, Sum
 from django.utils import timezone
 
 from accounts.models import Seller
 from orders.models import Order
 from products.models import Product
+from admin_panel.catalog import get_catalog_settings
+from admin_panel.settings_data import get_admin_setting
+from notifications.models import ActivityLog
 
 from orders.services import get_seller_orders
 
@@ -24,6 +28,14 @@ def seller_dashboard(request):
 
     seller_products = Product.objects.filter(seller=seller)
     seller_orders = Order.objects.filter(seller=seller)
+    order_content_type = ContentType.objects.get_for_model(Order)
+    activity_logs = ActivityLog.objects.select_related("actor").filter(
+        Q(actor=request.user)
+        | Q(
+            target_content_type=order_content_type,
+            target_object_id__in=seller_orders.values("pk"),
+        )
+    )[:8]
 
     total_products = seller_products.count()
 
@@ -73,7 +85,7 @@ def seller_dashboard(request):
     )
 
     low_stock_products = seller_products.filter(
-        stock_quantity__lte=F("min_stock_level")
+        stock_quantity__lte=get_catalog_settings().low_stock_threshold
     )
 
     out_of_stock_products = seller_products.filter(
@@ -95,5 +107,7 @@ def seller_dashboard(request):
         "dashboard_new_orders_this_week": new_orders_this_week,
         "dashboard_recent_orders": recent_orders,
         "dashboard_drafted_products": drafted_products,
-        "dashboard_seller_orders": get_seller_orders(seller)
+        "dashboard_seller_orders": get_seller_orders(seller),
+        "allow_seller_drafts": str(get_admin_setting("catalog", "allow_seller_drafts", True)).lower() in {"1", "true", "yes", "on"},
+        "dashboard_activity_logs": activity_logs,
     }

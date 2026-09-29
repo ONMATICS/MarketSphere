@@ -1,11 +1,5 @@
 /* =========================================================
    MARKETSPHERE — MY ORDERS PAGE STYLES
-   Builds on global variables (static/css/styles.css) and reuses
-   .btn-hero-primary / .section-label / .product-image-placeholder
-   patterns from home.css. Card, badge and empty-state visual
-   language mirrors orders/checkout.css and orders/confirmation.css
-   (duplicated here, not imported, per project convention — each
-   page only loads its own stylesheet).
    ========================================================= */
 
 :root {
@@ -18,62 +12,34 @@
     --mo-muted: #B0BA99;
 }
 
-/* ================= BREADCRUMB ================= */
+/* ================= BREADCRUMB & HEADER ================= */
 .mo-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
 }
-
 .mo-breadcrumb-wrap .breadcrumb {
     background-color: transparent;
     font-size: 13.5px;
 }
-
-.mo-breadcrumb-wrap .breadcrumb-item a {
-    color: var(--mo-accent);
-}
-
+.mo-breadcrumb-wrap .breadcrumb-item a { color: var(--mo-accent); }
 .mo-breadcrumb-wrap .breadcrumb-item.active {
     color: var(--mo-muted);
     font-weight: 500;
 }
-
-.mo-breadcrumb-wrap .breadcrumb-item + .breadcrumb-item::before {
-    color: var(--mo-muted);
-}
-
-/* ================= HEADER ================= */
 .mo-header-section {
     padding: 10px 0 24px;
     background-color: var(--background-color);
 }
-
-.mo-heading-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
 .mo-page-title {
     font-size: 32px;
     font-weight: 700;
     color: var(--headings);
     margin: 6px 0 6px;
 }
-
 .mo-page-subtitle {
     font-size: 15px;
-    color: #4f7d54;
+    color: var(--mo-success);
     margin: 0;
-}
-
-/* Reserved for the future search / filter toolbar (see template comment). */
-.mo-toolbar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
 /* ================= SECTION LAYOUT ================= */
@@ -81,71 +47,56 @@
     padding: 6px 0 60px;
     background-color: var(--background-color);
 }
-
 .mo-orders-list {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 24px;
 }
 
-/* ================= ORDER CARD ================= */
+/* ================= NEW STRUCTURED ORDER CARD ================= */
 .mo-order-card {
-    background-color: #F7F1DE;
+    background-color: #F7F1DE; /* Existing card base */
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 22px 24px;
+    border-radius: 12px;
+    overflow: hidden; /* Keeps header/footer rounded nicely */
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
 }
-
 .mo-order-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(157, 102, 56, 0.08);
     border-color: var(--mo-accent);
 }
 
-.mo-order-card-muted {
-    opacity: 0.85;
-}
-
-/* ---- Card head: order number / date / status ---- */
-.mo-order-card-head {
+/* ---- Card Header ---- */
+.mo-order-card-header {
+    background-color: rgba(255, 255, 255, 0.4); /* Subtle distinction from body */
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(157, 102, 56, 0.15);
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
 }
-
-.mo-order-id-block {
+.mo-order-header-info {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
 }
-
 .mo-order-number {
     font-size: 16px;
     font-weight: 700;
     color: var(--mo-accent-dark);
-    letter-spacing: 0.2px;
 }
-
 .mo-order-date {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--mo-muted);
     font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
 }
-
-.mo-order-date i {
-    background-color: transparent;
-    color: var(--mo-accent);
-    font-size: 13px;
-}
+.mo-order-date i { color: var(--mo-accent); }
 
 /* ---- Status badges ---- */
 .mo-status-badge {
@@ -156,297 +107,168 @@
     font-weight: 700;
     padding: 6px 14px;
     border-radius: 20px;
-    white-space: nowrap;
     text-transform: capitalize;
 }
+.mo-status-pending { background-color: rgba(183, 128, 43, 0.16); color: var(--mo-warning); }
+.mo-status-confirmed { background-color: rgba(157, 102, 56, 0.14); color: var(--mo-accent); }
+.mo-status-processing { background-color: rgba(176, 186, 153, 0.28); color: #6b7458; }
+.mo-status-shipped { background-color: rgba(78, 34, 15, 0.12); color: var(--mo-accent-dark); }
+.mo-status-delivered { background-color: rgba(79, 125, 84, 0.14); color: var(--mo-success); }
+.mo-status-cancelled { background-color: rgba(181, 75, 59, 0.13); color: var(--mo-danger); }
 
-.mo-status-badge i {
-    background-color: transparent;
-    font-size: 13px;
-}
-
-.mo-status-pending {
-    background-color: rgba(183, 128, 43, 0.16);
-    color: var(--mo-warning);
-}
-
-.mo-status-confirmed {
-    background-color: rgba(157, 102, 56, 0.14);
-    color: var(--mo-accent);
-}
-
-.mo-status-processing {
-    background-color: rgba(176, 186, 153, 0.28);
-    color: #6b7458;
-}
-
-.mo-status-shipped {
-    background-color: rgba(78, 34, 15, 0.12);
-    color: var(--mo-accent-dark);
-}
-
-.mo-status-delivered {
-    background-color: rgba(79, 125, 84, 0.14);
-    color: var(--mo-success);
-}
-
-.mo-status-cancelled {
-    background-color: rgba(181, 75, 59, 0.13);
-    color: var(--mo-danger);
-}
-
-/* ---- Card body ---- */
+/* ---- Card Body ---- */
 .mo-order-card-body {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 18px;
+    padding: 24px;
 }
 
-/* ---- Product preview thumbnails ---- */
-.mo-order-preview {
-    flex: 1 1 220px;
-    min-width: 0;
-}
-
+/* ---- Product Thumbnails ---- */
 .mo-thumb-strip {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
-
 .mo-order-thumb {
-    flex: 0 0 auto;
-    width: 52px;
-    height: 52px;
-    border-radius: 10px;
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
     overflow: hidden;
-    background: linear-gradient(145deg, rgba(157, 102, 56, 0.10), rgba(176, 186, 153, 0.18));
-    border: 1px solid var(--border-color);
+    background: #fff;
+    border: 1px solid rgba(157, 102, 56, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .mo-order-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover; /* Ensures perfect cropping without stretching */
 }
-
 .mo-thumb-more {
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--mo-accent);
     background-color: rgba(157, 102, 56, 0.1);
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 20px;
-    white-space: nowrap;
 }
 
-/* ---- Summary (items / total) ---- */
-.mo-order-summary {
+/* ---- Summary Grid ---- */
+.mo-summary-grid {
     display: flex;
-    gap: 26px;
-    flex: 0 0 auto;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
 }
-
-.mo-order-summary-item {
+.mo-summary-block {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
 }
-
 .mo-summary-label {
     font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.5px;
     color: var(--mo-muted);
 }
-
 .mo-summary-value {
-    font-size: 14.5px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--headings);
 }
-
 .mo-summary-total {
     color: var(--mo-accent-dark);
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
 }
 
-/* ---- Actions ---- */
-.mo-order-actions {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-}
-
+/* ---- Buttons ---- */
 .mo-view-details-btn {
-    width: auto !important;
-    padding: 10px 20px !important;
+    padding: 12px 20px !important;
     font-weight: 600 !important;
     font-size: 14px !important;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border-radius: 1px;
+    border-radius: 4px;
     white-space: nowrap;
 }
 
-/* Reserved for future secondary actions (cancel / invoice / reorder / track) */
+/* ---- Card Footer ---- */
+.mo-order-card-footer {
+    padding: 14px 24px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-top: 1px dashed rgba(157, 102, 56, 0.2);
+}
 .mo-order-actions-secondary {
     display: flex;
     flex-wrap: wrap;
-    gap: 7px;
+    gap: 20px;
     justify-content: flex-end;
 }
-
 .mo-action-link {
     background: none !important;
     border: none !important;
-    width: auto !important;
     padding: 0 !important;
-    color: #9D6638 !important;
-    font-size: 12px !important;
-    font-weight: 650 !important;
+    color: var(--mo-accent) !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    text-decoration: none;
     transition: 0.2s ease;
 }
-
-.mo-action-link:hover {
-    color: var(--mo-accent-dark) !important;
-}
-
-.mo-action-link i {
-    background-color: transparent;
-    font-size: 13px;
-}
-
-/* ================= PAGINATION (reserved) ================= */
-.mo-pagination-wrap {
-    margin-top: 40px;
-}
+.mo-action-link:hover { color: var(--mo-accent-dark) !important; }
+.mo-action-link.text-danger { color: var(--mo-danger) !important; }
+.mo-action-link.text-danger:hover { color: darkred !important; }
 
 /* ================= EMPTY STATE ================= */
 .mo-empty-state {
     text-align: center;
-    padding: 90px 20px;
+    padding: 80px 20px;
     background-color: #F7F1DE;
-    border: 1px dashed var(--border-color);
-    border-radius: 20px;
+    border: 1px dashed var(--mo-accent);
+    border-radius: 16px;
 }
-
 .mo-empty-icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 26px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
     border-radius: 50%;
     background-color: rgba(157, 102, 56, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .mo-empty-icon i {
-    font-size: 54px;
+    font-size: 44px;
     color: var(--mo-accent);
-    background-color: transparent;
 }
-
 .mo-empty-state h3 {
-    color: var(--headings);
+    color: var(--mo-accent-dark);
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
-
 .mo-empty-state p {
-    color: #4f7d54;
-    max-width: 420px;
-    margin: 0 auto 26px;
-}
-
-.mo-empty-state .btn {
-    width: auto !important;
-    padding: 12px 28px !important;
-    font-weight: 600 !important;
-    display: inline-flex;
-    align-items: center;
-    border-radius: 1px;
-    gap: 8px;
+    color: var(--mo-success);
+    max-width: 400px;
+    margin: 0 auto 24px;
 }
 
 /* ================= RESPONSIVE ================= */
-@media (max-width: 991.98px) {
-    .mo-page-title {
-        font-size: 28px;
-    }
-
-    .mo-order-card-body {
+@media (max-width: 767.98px) {
+    .mo-order-header-info {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 4px;
     }
-
-    .mo-order-summary {
-        justify-content: space-between;
+    .mo-summary-grid {
+        justify-content: flex-start;
+        gap: 24px;
     }
-
-    .mo-order-actions {
-        align-items: stretch;
-    }
-
-    .mo-view-details-btn {
-        justify-content: center;
-        width: 100% !important;
-    }
-
     .mo-order-actions-secondary {
         justify-content: center;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .mo-page-title {
-        font-size: 24px;
-    }
-
-    .mo-heading-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 14px;
-    }
-
-    .mo-order-card {
-        padding: 18px;
-    }
-
-    .mo-order-card-head {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .mo-order-summary {
-        gap: 18px;
-    }
-
-    .mo-empty-state {
-        padding: 60px 16px;
-    }
-
-    .mo-empty-icon {
-        width: 90px;
-        height: 90px;
-    }
-
-    .mo-empty-icon i {
-        font-size: 40px;
     }
 }

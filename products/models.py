@@ -27,7 +27,8 @@ class Category(models.Model):
         max_length=50, blank=True, help_text="Bootstrap icon or Font Awesome class"
     )
 
-    image = models.ImageField(upload_to="categories/images/", blank=True, null=True)
+    # Changed from ImageField to URLField for Cloudinary URLs
+    image = models.CharField(max_length=1000, blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
 
@@ -55,17 +56,11 @@ class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
 
-    logo = models.ImageField(
-        upload_to="brands/logos/",
-        blank=True,
-        null=True,
-    )
+    # Changed from ImageField to URLField for Cloudinary URLs
+    logo = models.CharField(max_length=1000, blank=True, null=True)
 
-    cover_image = models.ImageField(
-        upload_to="brands/covers/",
-        blank=True,
-        null=True,
-    )
+    # Changed from ImageField to URLField for Cloudinary URLs
+    cover_image = models.CharField(max_length=1000, blank=True, null=True)
 
     description = models.TextField(blank=True)
 
@@ -208,7 +203,19 @@ class ProductImage(TimeStampedModel):
         Product, on_delete=models.CASCADE, related_name="images"
     )
 
-    image = models.ImageField(upload_to="products/images/")
+    # Cloudinary delivery URL. The field name is retained for compatibility
+    # with the existing product/media code and templates.
+    image = models.URLField(max_length=1000)
+
+    class MediaType(models.TextChoices):
+        IMAGE = "image", "Image"
+        VIDEO = "video", "Video"
+
+    media_type = models.CharField(
+        max_length=10,
+        choices=MediaType.choices,
+        default=MediaType.IMAGE,
+    )
 
     alt_text = models.CharField(
         max_length=255,

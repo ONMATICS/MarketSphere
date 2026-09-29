@@ -71,7 +71,7 @@ def _get_safe_image(image_field, max_width=40*mm, max_height=40*mm):
             if hasattr(image_field, 'path') and os.path.exists(image_field.path):
                 img = RLImage(image_field.path)
             else:
-                img = RLImage(image_field.url)
+                img = RLImage(image_field if isinstance(image_field, str) else image_field.url)
             
             # Maintain aspect ratio
             aspect = img.imageWidth / float(img.imageHeight)

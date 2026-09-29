@@ -1,0 +1,320 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+  Create Promotion
+{% endblock %}
+
+{% block active_page %}
+  promotions
+{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span>
+    <span class="adh-breadcrumb-sep">/</span>
+    <a href="{% url 'admin-promotions' %}" style="color:inherit;">Promotions</a>
+    <span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">Create Promotion</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/promotions.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="apr-page apr-create-page" id="aprCreatePage">
+
+    <!-- ================= PAGE HEADER ================= -->
+    <header class="apr-header apr-reveal">
+      <div class="apr-header-text">
+        <a href="{% url 'admin-promotions' %}" class="apr-back-link">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+          Promotions
+        </a>
+        <h1 class="apr-header-title">Create Promotion</h1>
+        <p class="apr-header-subtitle">Define a new marketplace campaign. It will be saved as a draft until you're ready to activate it.</p>
+      </div>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" id="aprCreateForm" novalidate>
+      {% csrf_token %}
+
+      <div class="apr-form-layout">
+        <!-- ================= MAIN COLUMN ================= -->
+        <div class="apr-form-main">
+
+          <!-- ============ BASIC INFORMATION ============ -->
+          <section class="apr-form-card apr-reveal">
+            <div class="apr-form-card-head">
+              <h2 class="apr-form-card-title"><i class="bi bi-info-circle"></i> Basic Information</h2>
+            </div>
+
+            <div class="apr-field">
+              <label for="aprName" class="apr-label">Promotion Name <span class="apr-required">*</span></label>
+              <input
+                type="text"
+                id="aprName"
+                name="name"
+                class="apr-input {% if errors.name %}is-invalid{% endif %}"
+                placeholder="e.g. Summer Sale"
+                value="{{ form_data.name|default:'' }}"
+                maxlength="150"
+                required
+              />
+              {% if errors.name %}
+                <span class="apr-field-error">{{ errors.name.0 }}</span>
+              {% else %}
+                <span class="apr-field-hint">This is the campaign's public-facing name.</span>
+              {% endif %}
+            </div>
+
+            <div class="apr-field">
+              <label for="aprBadgeText" class="apr-label">Badge Text <span class="apr-optional">(optional)</span></label>
+              <input
+                type="text"
+                id="aprBadgeText"
+                name="badge_text"
+                class="apr-input {% if errors.badge_text %}is-invalid{% endif %}"
+                placeholder="e.g. UP TO 40% OFF"
+                value="{{ form_data.badge_text|default:'' }}"
+                maxlength="60"
+              />
+              {% if errors.badge_text %}
+                <span class="apr-field-error">{{ errors.badge_text.0 }}</span>
+              {% else %}
+                <span class="apr-field-hint">Short hero badge shown on the promotion's landing page. Leave blank to use the default label for its state.</span>
+              {% endif %}
+            </div>
+
+            <div class="apr-field">
+              <label for="aprShortDescription" class="apr-label">Short Description <span class="apr-optional">(optional)</span></label>
+              <input
+                type="text"
+                id="aprShortDescription"
+                name="short_description"
+                class="apr-input {% if errors.short_description %}is-invalid{% endif %}"
+                placeholder="One-line pitch shown under the campaign title"
+                value="{{ form_data.short_description|default:'' }}"
+                maxlength="255"
+              />
+              {% if errors.short_description %}<span class="apr-field-error">{{ errors.short_description.0 }}</span>{% endif %}
+            </div>
+
+            <div class="apr-field">
+              <label for="aprDescription" class="apr-label">Description <span class="apr-optional">(optional)</span></label>
+              <textarea
+                id="aprDescription"
+                name="description"
+                class="apr-textarea {% if errors.description %}is-invalid{% endif %}"
+                rows="4"
+                placeholder="Longer campaign copy — used lower on the promotion page."
+              >{{ form_data.description|default:'' }}</textarea>
+              {% if errors.description %}<span class="apr-field-error">{{ errors.description.0 }}</span>{% endif %}
+            </div>
+          </section>
+
+          <!-- ============ CATEGORIES ============ -->
+          <section class="apr-form-card apr-reveal">
+            <div class="apr-form-card-head">
+              <h2 class="apr-form-card-title"><i class="bi bi-grid"></i> Categories</h2>
+              <span class="apr-optional">(optional)</span>
+            </div>
+            <p class="apr-section-note">Curate which categories this promotion highlights on its landing page. Leave empty to derive categories automatically from participating products later.</p>
+
+            <div class="apr-category-search">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+              <input type="search" id="aprCategorySearch" placeholder="Search categories..." aria-label="Search categories" />
+            </div>
+
+            <div class="apr-category-grid" id="aprCategoryGrid">
+              {% for category in categories %}
+                <label class="apr-category-checkbox" data-category-name="{{ category.name|lower }}">
+                  <input
+                    type="checkbox"
+                    name="categories"
+                    value="{{ category.id }}"
+                    {% if category.id|stringformat:"s" in selected_category_ids %}checked{% endif %}
+                  />
+                  <span>{{ category.name }}</span>
+                </label>
+              {% empty %}
+                <p class="apr-empty-inline">No active categories are available yet.</p>
+              {% endfor %}
+            </div>
+            <p class="apr-empty-inline is-hidden" id="aprCategoryNoResults">No categories match your search.</p>
+          </section>
+        </div>
+
+        <!-- ================= SIDEBAR COLUMN ================= -->
+        <div class="apr-form-side">
+
+          <!-- ============ CAMPAIGN SETTINGS ============ -->
+          <section class="apr-form-card apr-reveal">
+            <div class="apr-form-card-head">
+              <h2 class="apr-form-card-title"><i class="bi bi-calendar-range"></i> Campaign Settings</h2>
+            </div>
+
+            <div class="apr-field">
+              <label for="aprStartAt" class="apr-label">Starts <span class="apr-required">*</span></label>
+              <input
+                type="datetime-local"
+                id="aprStartAt"
+                name="start_at"
+                class="apr-input {% if errors.start_at %}is-invalid{% endif %}"
+                value="{{ form_data.start_at|default:'' }}"
+                required
+              />
+              {% if errors.start_at %}<span class="apr-field-error">{{ errors.start_at.0 }}</span>{% endif %}
+            </div>
+
+            <div class="apr-field">
+              <label for="aprEndAt" class="apr-label">Ends <span class="apr-required">*</span></label>
+              <input
+                type="datetime-local"
+                id="aprEndAt"
+                name="end_at"
+                class="apr-input {% if errors.end_at %}is-invalid{% endif %}"
+                value="{{ form_data.end_at|default:'' }}"
+                required
+              />
+              {% if errors.end_at %}
+                <span class="apr-field-error">{{ errors.end_at.0 }}</span>
+              {% else %}
+                <span class="apr-field-hint" id="aprDateHint">Must be after the start date and time.</span>
+              {% endif %}
+            </div>
+
+            <div class="apr-field">
+              <label class="apr-label">Status</label>
+              <div class="apr-status-static">
+                <span class="apr-badge apr-badge-muted">Draft</span>
+                <span class="apr-field-hint">New promotions always start as Draft. Activate it from Promotion Details once it's ready.</span>
+              </div>
+            </div>
+
+            <div class="apr-field">
+              <label for="aprMaxDiscount" class="apr-label">Maximum Discount <span class="apr-optional">(optional)</span></label>
+              <div class="apr-input-suffix-wrap">
+                <input
+                  type="number"
+                  id="aprMaxDiscount"
+                  name="maximum_discount_percentage"
+                  class="apr-input {% if errors.maximum_discount_percentage %}is-invalid{% endif %}"
+                  placeholder="e.g. 40"
+                  min="1"
+                  max="100"
+                  value="{{ form_data.maximum_discount_percentage|default:'' }}"
+                />
+                <span class="apr-input-suffix">%</span>
+              </div>
+              {% if errors.maximum_discount_percentage %}
+                <span class="apr-field-error">{{ errors.maximum_discount_percentage.0 }}</span>
+              {% else %}
+                <span class="apr-field-hint">The highest discount any product in this promotion may advertise.</span>
+              {% endif %}
+            </div>
+          </section>
+
+          <!-- ============ MEDIA ============ -->
+          <section class="apr-form-card apr-reveal">
+            <div class="apr-form-card-head">
+              <h2 class="apr-form-card-title"><i class="bi bi-image"></i> Media</h2>
+              <span class="apr-optional">(optional)</span>
+            </div>
+
+            <div class="apr-field">
+              <label class="apr-label">Banner</label>
+              <div class="apr-upload-box" id="aprBannerUploadBox">
+                <input type="file" name="banner" id="aprBannerInput" accept="image/*" class="apr-upload-input" />
+                <label for="aprBannerInput" class="apr-upload-label">
+                  <i class="bi bi-cloud-arrow-up"></i>
+                  <span class="apr-upload-text">Click to upload a banner image</span>
+                  <span class="apr-upload-filename" id="aprBannerFileName"></span>
+                </label>
+                <img class="apr-upload-preview" id="aprBannerPreview" alt="Banner preview" hidden />
+                <button type="button" class="apr-upload-remove is-hidden" id="aprBannerRemoveBtn">
+                  <i class="bi bi-x-lg"></i> Remove
+                </button>
+              </div>
+              {% if errors.banner %}<span class="apr-field-error">{{ errors.banner.0 }}</span>{% endif %}
+              <span class="apr-field-hint">Full-width hero image for the promotion landing page.</span>
+            </div>
+
+            <div class="apr-field">
+              <label class="apr-label">Thumbnail</label>
+              <div class="apr-upload-box" id="aprThumbnailUploadBox">
+                <input type="file" name="thumbnail" id="aprThumbnailInput" accept="image/*" class="apr-upload-input" />
+                <label for="aprThumbnailInput" class="apr-upload-label">
+                  <i class="bi bi-cloud-arrow-up"></i>
+                  <span class="apr-upload-text">Click to upload a thumbnail</span>
+                  <span class="apr-upload-filename" id="aprThumbnailFileName"></span>
+                </label>
+                <img class="apr-upload-preview" id="aprThumbnailPreview" alt="Thumbnail preview" hidden />
+                <button type="button" class="apr-upload-remove is-hidden" id="aprThumbnailRemoveBtn">
+                  <i class="bi bi-x-lg"></i> Remove
+                </button>
+              </div>
+              {% if errors.thumbnail %}<span class="apr-field-error">{{ errors.thumbnail.0 }}</span>{% endif %}
+              <span class="apr-field-hint">Smaller crop used on homepage promo cards. Falls back to the banner if left blank.</span>
+            </div>
+          </section>
+
+          <!-- ============ HOMEPAGE ============ -->
+          <section class="apr-form-card apr-reveal">
+            <div class="apr-form-card-head">
+              <h2 class="apr-form-card-title"><i class="bi bi-house-door"></i> Homepage</h2>
+            </div>
+
+            <div class="apr-toggle-row">
+              <div class="apr-toggle-text">
+                <strong>Display on Homepage</strong>
+                <small>Feature this promotion once it goes live</small>
+              </div>
+              <label class="apr-toggle-switch">
+                <input
+                  type="checkbox"
+                  id="aprHomepageToggle"
+                  name="display_on_homepage"
+                  value="true"
+                  {% if form_data.display_on_homepage %}checked{% endif %}
+                />
+                <span class="apr-toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="apr-field" id="aprHomepagePriorityField">
+              <label for="aprHomepagePriority" class="apr-label">Homepage Priority</label>
+              <input
+                type="number"
+                id="aprHomepagePriority"
+                name="homepage_priority"
+                class="apr-input {% if errors.homepage_priority %}is-invalid{% endif %}"
+                min="0"
+                value="{{ form_data.homepage_priority|default:'0' }}"
+              />
+              {% if errors.homepage_priority %}
+                <span class="apr-field-error">{{ errors.homepage_priority.0 }}</span>
+              {% else %}
+                <span class="apr-field-hint">Lower numbers are shown first among featured promotions.</span>
+              {% endif %}
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- ================= FORM FOOTER ================= -->
+      <footer class="apr-form-footer apr-reveal">
+        <a href="{% url 'admin-promotions' %}" class="apr-btn apr-btn-secondary">Cancel</a>
+        <button type="submit" class="apr-btn apr-btn-primary" id="aprSubmitBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Create Promotion
+        </button>
+      </footer>
+    </form>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/promotions.js' %}"></script>
+{% endblock %}

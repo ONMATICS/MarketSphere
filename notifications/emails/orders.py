@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from notifications.services.email import send_marketplace_email
+from admin_panel.notification_settings import notification_channel_enabled
 
 
 def _get_absolute_url(path):
@@ -20,7 +21,7 @@ def _get_order_url(order):
 def send_order_placed_email(order):
     buyer = order.user
 
-    if not buyer.email:
+    if not buyer.email or not notification_channel_enabled("ORDER_CREATED", "BUYER", "email"):
         return False
 
     return send_marketplace_email(
@@ -38,7 +39,7 @@ def send_order_placed_email(order):
 def send_order_confirmed_email(order):
     buyer = order.user
 
-    if not buyer.email:
+    if not buyer.email or not notification_channel_enabled("ORDER_CONFIRMED", "BUYER", "email"):
         return False
 
     return send_marketplace_email(
@@ -56,7 +57,7 @@ def send_order_confirmed_email(order):
 def send_order_shipped_email(order):
     buyer = order.user
 
-    if not buyer.email:
+    if not buyer.email or not notification_channel_enabled("ORDER_SHIPPED", "BUYER", "email"):
         return False
 
     return send_marketplace_email(
@@ -74,7 +75,7 @@ def send_order_shipped_email(order):
 def send_order_delivered_email(order):
     buyer = order.user
 
-    if not buyer.email:
+    if not buyer.email or not notification_channel_enabled("ORDER_DELIVERED", "BUYER", "email"):
         return False
 
     return send_marketplace_email(
@@ -92,7 +93,7 @@ def send_order_delivered_email(order):
 def send_order_cancelled_email(order, cancellation_reason=None):
     buyer = order.user
 
-    if not buyer.email:
+    if not buyer.email or not notification_channel_enabled("ORDER_CANCELLED", "BUYER", "email"):
         return False
 
     return send_marketplace_email(

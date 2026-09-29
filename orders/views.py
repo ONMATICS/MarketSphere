@@ -15,6 +15,8 @@ from . import services as order_service
 from .invoice import generate_invoice
 from .models import Order
 from admin_panel.checkout import get_checkout_settings
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import ActivityLog
 from .packing_slip import generate_packing_slip
 from .shipping_label import generate_shipping_label
 
@@ -39,39 +41,93 @@ def orders(request):
 
 def order(request, order_number):
     order = order_service.get_user_order(request.user, order_number)
-    context = {"order": order}
+    context = {
+        "order": order,
+        "order_activity_logs": ActivityLog.objects.select_related("actor").filter(
+            target_content_type=ContentType.objects.get_for_model(Order),
+            target_object_id=order.pk,
+        )[:20],
+    }
     return render(request, "order_detail.html", context)
 
 
-def checkout(request):
+def checkout(request, cart_item_id=None):
     if not request.user.is_authenticated:
         if not get_checkout_settings().guest_checkout:
             messages.info(request, "Please sign in before checking out.")
             return redirect("login")
-        messages.info(request, "Guest checkout is not available until an account is created.")
+
+        messages.info(
+            request,
+            "Guest checkout is not available until an account is created."
+        )
         return redirect("signup")
 
     addresses = account_service.get_user_addresses(request.user)
     cart = cart_service.get_user_cart(request.user)
-    totals = cart_service.get_cart_totals(request.user)
-    pricing_by_id = {item.id: pricing for item, pricing in totals["pricing"]}
-    for item in cart.items.all():
+
+    if cart_item_id is not None:
+        selected_item = cart.items.select_related(
+            "product",
+            "product__seller",
+            "promotion_product__promotion",
+        ).filter(
+            id=cart_item_id
+        ).first()
+
+        if not selected_item:
+            messages.error(request, "The selected cart item could not be found.")
+            return redirect("cart")
+        
+        # Calculate pricing for the selected item only.
+        totals = cart_service.get_cart_totals(
+            request.user,
+            cart_items=[selected_item],
+        )
+
+        checkout_items = [selected_item]
+
+    else:
+        totals = cart_service.get_cart_totals(request.user)
+        checkout_items = list(cart.items.all())
+
+
+    pricing_by_id = {
+        item.id: pricing
+        for item, pricing in totals["pricing"]
+    }
+
+    for item in checkout_items:
         item.pricing = pricing_by_id[item.id]
+
     if totals["promotion_ended"]:
-        messages.warning(request, "A promotion in your cart ended, so its price was updated.")
+        messages.warning(
+            request,
+            "A promotion in your cart ended, so its price was updated."
+        )
+
     context = {
         "addresses": addresses,
         "cart": cart,
+        "checkout_items": checkout_items,
         "subtotal": totals["original_subtotal"],
+        "shipping_cost": totals["shipping_fee"],
         "discount": totals["discount"],
         "total": totals["total"],
         "cart_pricing": totals["pricing"],
+        "buy_now": cart_item_id is not None,
+        "selected_cart_item_id": cart_item_id,
     }
+
     return render(request, "checkout.html", context)
+import json
+import logging
+from django.http import JsonResponse
 
-
+logger = logging.getLogger(__name__)
 @login_required
 def place_new_order(request):
+
     if request.method != "POST":
         return JsonResponse(
             {
@@ -80,8 +136,17 @@ def place_new_order(request):
             },
             status=400,
         )
+
     try:
         data = json.loads(request.body)
+
+        cart_item_id = data.get("cartItemId")
+
+        if cart_item_id is not None:
+            try:
+                cart_item_id = int(cart_item_id)
+            except (TypeError, ValueError):
+                raise ValueError("Invalid cart item.")
 
         created_orders = order_service.place_order(
             user=request.user,
@@ -90,14 +155,24 @@ def place_new_order(request):
             email=data.get("email"),
             phone=data.get("phone"),
             notes=data.get("notes", ""),
+            cart_item_id=cart_item_id,
         )
 
-        # Assuming standard checkout redirects to a single order confirmation.
-        # Grabbing the first order's number if multiple sellers were involved.
-        primary_order_number = created_orders[0].order_number if created_orders else ""
+        if not created_orders:
+            raise ValueError("No orders were created.")
+
+        primary_order_number = created_orders[0].order_number
+
+        request.session[
+            f"checkout_batch_{primary_order_number}"
+        ] = [
+            order.order_number
+            for order in created_orders
+        ]
 
         return JsonResponse(
             {
+                "success": True,
                 "status": "success",
                 "orderNumber": primary_order_number,
             }
@@ -114,20 +189,41 @@ def place_new_order(request):
             status=400,
         )
 
-
 @login_required
 def order_confirmation(request, order_number):
-    order = order_service.get_user_order(request.user, order_number)
+    # 1. Check if this order number acts as a key for a multi-seller batch
+    batch_key = f'checkout_batch_{order_number}'
+    batch_numbers = request.session.get(batch_key)
+
+    orders = []
+    if batch_numbers:
+        # Fetch all orders generated during that specific checkout session
+        for num in batch_numbers:
+            try:
+                order = order_service.get_user_order(request.user, num)
+                if order:
+                    orders.append(order)
+            except Exception:
+                logger.error(f"Could not retrieve order {num} for confirmation page.")
+    else:
+        # Fallback: If session expired or accessed directly via a single order link,
+        # just fetch the single order natively.
+        order = order_service.get_user_order(request.user, order_number)
+        if order:
+            orders.append(order)
+
+    # 2. Calculate the grand total across all seller orders for the sidebar
+    # (Assuming order.total is a numeric type; convert to float/Decimal if necessary)
+    checkout_total = sum(order.total for order in orders if hasattr(order, 'total'))
 
     return render(
         request,
         "confirmation.html",
         {
-            "order": order,
+            "orders": orders,               # Passes the iterable list to your new HTML loop
+            "checkout_total": checkout_total, # Passes the sum to the new HTML sidebar
         },
     )
-
-
 @login_required
 def update_shipping(request, order_number):
     if request.method != "POST":

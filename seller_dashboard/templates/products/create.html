@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block seller_content %}
-  <div class="pf-page" id="pfPage" data-dirty="false">
+  <div class="pf-page" id="pfPage" data-dirty="false" data-max-images="{{ catalog_settings.maximum_product_images|default:8 }}" data-max-image-size-mb="{{ catalog_settings.maximum_image_size_mb|default:5 }}">
     <!-- ================= 1. HEADER ================= -->
     <header class="pf-header pf-reveal">
       <div class="pf-header-text">
@@ -32,14 +32,14 @@
 
       <div class="pf-header-actions">
         <button type="button" class="pf-btn pf-btn-ghost" id="pfCancelTopBtn">Cancel</button>
-        <button type="button" class="pf-btn pf-btn-secondary" id="pfSaveDraftTopBtn" data-loading-label="Saving Draft&hellip;">
+        {% if allow_seller_drafts %}<button type="button" class="pf-btn pf-btn-secondary" id="pfSaveDraftTopBtn" data-loading-label="Saving Draft&hellip;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
             <path d="M17 21v-8H7v8"></path>
             <path d="M7 3v5h8"></path>
           </svg>
           <span class="pf-btn-label">Save Draft</span>
-        </button>
+        </button>{% endif %}
         <button type="button" class="pf-btn pf-btn-primary" id="pfPublishTopBtn" data-loading-label="Publishing&hellip;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 2 11 13"></path>
@@ -173,7 +173,7 @@
                 <p class="pf-upload-subtitle">
                   or <span class="pf-upload-link">browse from your device</span>
                 </p>
-                <p class="pf-upload-guidelines">JPG, PNG or WEBP &middot; up to 8 images &middot; 5MB max each &middot; 1000&times;1000px recommended</p>
+                <p class="pf-upload-guidelines">JPG, PNG or WEBP &middot; up to {{ catalog_settings.maximum_product_images|default:8 }} images &middot; {{ catalog_settings.maximum_image_size_mb|default:5 }}MB max each &middot; 1000&times;1000px recommended</p>
               </div>
 
               <div class="pf-image-grid" id="pfImageGrid">
@@ -293,7 +293,7 @@
 
                 <div class="pf-field">
                   <label for="pfMinStock" class="pf-label pf-label-static">Minimum Stock Level</label>
-                  <input type="number" id="pfMinStock" name="min_stock_level" class="pf-input" placeholder="5" min="0" step="1" inputmode="numeric" />
+                  <input type="number" id="pfMinStock" name="min_stock_level" class="pf-input" value="{{ catalog_settings.low_stock_threshold|default:5 }}" placeholder="{{ catalog_settings.low_stock_threshold|default:5 }}" min="0" step="1" inputmode="numeric" />
                   <span class="pf-field-hint">You'll be alerted when stock falls below this.</span>
                 </div>
               </div>
@@ -772,14 +772,14 @@
 
       <div class="pf-sticky-footer-actions">
         <button type="button" class="pf-btn pf-btn-ghost" id="pfCancelBtn">Cancel</button>
-        <button type="button" class="pf-btn pf-btn-secondary" id="pfSaveDraftBtn" data-loading-label="Saving Draft&hellip;">
+        {% if allow_seller_drafts %}<button type="button" class="pf-btn pf-btn-secondary" id="pfSaveDraftBtn" data-loading-label="Saving Draft&hellip;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path>
             <path d="M17 21v-8H7v8"></path>
             <path d="M7 3v5h8"></path>
           </svg>
           <span class="pf-btn-label">Save Draft</span>
-        </button>
+        </button>{% endif %}
         <button type="button" class="pf-btn pf-btn-primary" id="pfPublishBtn" data-loading-label="Publishing&hellip;">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 2 11 13"></path>

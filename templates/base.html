@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       {% block title %}
-        MarketSphere
+        {{ marketplace.marketplace_name|default:'MarketSphere' }}
       {% endblock %}
     </title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <link rel="shortcut icon" href="{% static ' images/logo-icon.png' %}" type="image/x-icon" />
+    {% if marketplace.marketplace_favicon %}<link rel="shortcut icon" href="{{ marketplace.marketplace_favicon.url }}" type="image/x-icon" />{% else %}<link rel="shortcut icon" href="{% static 'images/logo-icon.png' %}" type="image/x-icon" />{% endif %}
     {% block css %}
 
     {% endblock %}
@@ -28,11 +28,11 @@
           <div class="row align-items-center">
             <!-- Logo -->
             <div class="col-lg-2 col-md-3 col-12 text-center text-lg-start mb-3 mb-lg-0">
-              <a href="/" class="text-decoration-none"><h2 class="m-0 app-logo"><img src="{% static 'images/logo-icon.png' %}" class="img-fluid" /> {{ marketplace.marketplace_name }}</h2></a>
+              <a href="/" class="text-decoration-none"><h2 class="m-0 app-logo">{% if marketplace.marketplace_logo %}<img src="{{ marketplace.marketplace_logo.url }}" class="img-fluid" alt="{{ marketplace.marketplace_name }}" />{% else %}<img src="{% static 'images/logo-icon.png' %}" class="img-fluid" alt="" />{% endif %} {{ marketplace.marketplace_name|default:'MarketSphere' }}</h2></a>
             </div>
 
             <!-- Search -->
-            <div class="col-lg-7 col-md-6 col-12 mb-3 mb-lg-0">
+            {% if catalog_settings.search_visibility %}<div class="col-lg-7 col-md-6 col-12 mb-3 mb-lg-0">
               <form method="GET" action="{% url 'search' %}">
                 <div class="input-group search-bar">
                   <input type="search" class="form-control" placeholder="Search products, brands or shops..." name="q" />
@@ -40,7 +40,7 @@
                   <button class="btn" type="submit">Search</button>
                 </div>
               </form>
-            </div>
+            </div>{% endif %}
             {% if not request.user.is_authenticated %}
               <!-- Right Side -->
               <div class="col-lg-3 col-md-3 col-12">
@@ -218,7 +218,7 @@
         <nav class="border-top">
           <div class="container">
             <ul class="nav justify-content-center py-2">
-              <li class="nav-item dropdown position-static">
+              {% if category_visibility %}<li class="nav-item dropdown position-static">
                 <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">☰ Categories</a>
 
                 <div class="dropdown-menu p-0 border-0 shadow">
@@ -243,12 +243,12 @@
 
                         {% for child in category.children.all %}
                           <div class="child-item mb-1">
-                            <a href="https://search/category/{{ child.slug }}" class="dropdown-item fw-bold child-item__link">{{ child.name }}</a>
+                            <a href="{% url "search" %}?category={{ child.slug }}" class="dropdown-item fw-bold child-item__link">{{ child.name }}</a>
 
                             {% if child.children.all %}
                               <div class="child-grandchildren p-2 shadow-sm">
                                 {% for grandchild in child.children.all %}
-                                  <a href="https://search/category/{{ grandchild.slug }}" class="dropdown-item d-inline-flex align-items-center grandchild-item">
+                                  <a href="{% url "search" %}?category={{ grandchild.slug }}" class="dropdown-item d-inline-flex align-items-center grandchild-item">
                                     <i class="bi bi-arrow-right-short"></i>
                                     <span>{{ grandchild.name }}</span>
                                   </a>
@@ -263,7 +263,7 @@
                     {% endfor %}
                   </div>
                 </div>
-              </li>
+              </li>{% endif %}
 
               <li class="nav-item">
                 <a class="nav-link" href="#">Best Sellers</a>
@@ -359,8 +359,11 @@
             <!-- Logo & About -->
             <div class="col-lg-4 col-md-6 mb-4">
               <a href="/" class="text-decoration-none">
-                {% if marketplace.marketplace_logo %}<img src="{{ marketplace.marketplace_logo.url }}" class="img-fluid" />{% else %}<span class="app-logo">MarketSphere</span>{% endif %}
+                <img src="{% static 'images/onmatics_icon.png' %}" class="img-fluid w-25" /><br><span class="app-logo">Onum</span><br>
               </a>
+              {% if marketplace.marketplace_description %}<p class="text-secondary mt-3 mb-2">{{ marketplace.marketplace_description }}</p>{% endif %}
+              {% if marketplace.contact_email %}<a class="text-secondary small" href="mailto:{{ marketplace.contact_email }}">{{ marketplace.contact_email }}</a>{% endif %}
+              {% if marketplace.phone %}<div class="text-secondary small mt-1">{{ marketplace.phone }}</div>{% endif %}
             </div>
 
             <!-- Customer -->
@@ -423,11 +426,11 @@
                 </li>
 
                 <li class="nav-item mt-2">
-                  <a href="#" class="nav-link p-0 text-secondary">Privacy Policy</a>
+                  <a href="{{ marketplace.privacy_url|default:'#' }}" class="nav-link p-0 text-secondary">Privacy Policy</a>
                 </li>
 
                 <li class="nav-item mt-2">
-                  <a href="#" class="nav-link p-0 text-secondary">Terms & Conditions</a>
+                  <a href="{{ marketplace.terms_url|default:'#' }}" class="nav-link p-0 text-secondary">Terms & Conditions</a>
                 </li>
 
                 <li class="nav-item mt-2">
@@ -441,13 +444,13 @@
               <h5 class="mb-3">Follow Us</h5>
 
               <div class="nav-item d-flex flex-column gap-3">
-                <a href="{{ marketplace.social_facebook }}" class="text-dark fs-4"><i class="bi bi-facebook"></i></a>
+                {% if marketplace.social_facebook %}<a href="{{ marketplace.social_facebook }}" class="text-dark fs-4"><i class="bi bi-facebook"></i></a>{% endif %}
 
-                <a href="{{ marketplace.social_instagram }}" class="text-dark fs-4"><i class="bi bi-instagram"></i></a>
+                {% if marketplace.social_instagram %}<a href="{{ marketplace.social_instagram }}" class="text-dark fs-4"><i class="bi bi-instagram"></i></a>{% endif %}
 
-                <a href="{{ marketplace.social_twitter }}" class="text-dark fs-4"><i class="bi bi-twitter-x"></i></a>
+                {% if marketplace.social_twitter %}<a href="{{ marketplace.social_twitter }}" class="text-dark fs-4"><i class="bi bi-twitter-x"></i></a>{% endif %}
 
-                <a href="{{ marketplace.social_linkedin }}" class="text-dark fs-4"><i class="bi bi-linkedin"></i></a>
+                {% if marketplace.social_linkedin %}<a href="{{ marketplace.social_linkedin }}" class="text-dark fs-4"><i class="bi bi-linkedin"></i></a>{% endif %}
               </div>
             </div>
           </div>
@@ -455,7 +458,7 @@
           <hr class="border-secondary" />
 
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <p class="mb-2 mb-md-0 text-secondary">© 2026 MarketSphere. All Rights Reserved.</p>
+            <p class="mb-2 mb-md-0 text-secondary">© {% now "Y" %} {{ marketplace.business_name|default:marketplace.marketplace_name|default:'MarketSphere' }}. All Rights Reserved.</p>
 
             <p class="mb-0 text-secondary">Built with ❤️ using Django</p>
           </div>

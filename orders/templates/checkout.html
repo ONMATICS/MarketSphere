@@ -201,7 +201,7 @@
             <!-- ============ SUMMARY ITEMS ============ -->
             <div class="co-summary-items" id="coSummaryItems">
               <!-- Order items will be rendered here by Django from cart.items -->
-              {% for item in cart.items.all %}
+              {% for item in checkout_items %}
               <div class="co-summary-item">
                 <div class="product-image-placeholder co-summary-item-img">
                   <img src="{{ item.product.primary_image.image.url }}" alt="">
@@ -237,8 +237,7 @@
 
               <div class="co-summary-row">
                 <span>Shipping</span>
-                <!-- Shipping cost will be rendered here by Django -->
-                <span id="coSummaryShipping">Rs. {{ shipping_cost|default:"0"}}</span>
+                <span id="coSummaryShipping">Rs. {{ shipping_cost|default:"0"|floatformat:0}}</span>
               </div>
 
               <div class="co-summary-row co-summary-discount-row{% if not discount %} d-none{% endif %}" id="coSummaryDiscountRow">

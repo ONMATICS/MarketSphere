@@ -531,6 +531,21 @@
         </div>
 
         <ul class="adu-timeline" id="aduTimeline">
+          {% if user_activity_logs %}
+            {% for activity in user_activity_logs %}
+              <li class="adu-timeline-item" data-type="{{ activity.actor_type|lower }}">
+                <span class="adu-timeline-avatar adu-timeline-avatar-success is-icon"><i class="bi bi-activity"></i></span>
+                <div class="adu-timeline-body">
+                  <div class="adu-timeline-top">
+                    <span class="adu-timeline-title">{{ activity.title }}</span>
+                    <span class="adu-status-badge adu-status-badge-active">{{ activity.actor_type|title }}</span>
+                  </div>
+                  <p class="adu-timeline-desc">{{ activity.description|default:activity.action }}</p>
+                  <span class="adu-timeline-time">{{ activity.created_at|timesince }} ago</span>
+                </div>
+              </li>
+            {% endfor %}
+          {% else %}
           <li class="adu-timeline-item" data-type="buyer">
             <span class="adu-timeline-avatar">A</span>
             <div class="adu-timeline-body">
@@ -651,6 +666,7 @@
               <span class="adu-timeline-time">Yesterday</span>
             </div>
           </li>
+          {% endif %}
         </ul>
       </div>
 
@@ -826,6 +842,23 @@
             </tr>
           </thead>
           <tbody id="aduUsersTableBody">
+            {% if recent_active_users %}
+              {% for user in recent_active_users %}
+                <tr data-search="{{ user.get_full_name|lower }} {{ user.username|lower }} {{ user.email|lower }}">
+                  <td data-label="User">
+                    <div class="adu-user-cell">
+                      <span class="adu-user-avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</span>
+                      <span><span class="adu-user-name">{{ user.get_full_name|default:user.username }}</span><span class="adu-user-email">{{ user.email }}</span></span>
+                    </div>
+                  </td>
+                  <td data-label="Role"><span class="adu-role-badge{% if user.seller_profile %} r-seller{% endif %}">{% if user.seller_profile %}Seller{% else %}Buyer{% endif %}</span></td>
+                  <td data-label="Status"><span class="adu-status-badge adu-status-badge-active">{{ user.get_account_status_display }}</span></td>
+                  <td data-label="Last Login">{% if user.last_login %}{{ user.last_login|timesince }} ago{% else %}Never{% endif %}</td>
+                  <td data-label="Activity"><span class="adu-activity-mini"><i class="bi bi-clock-history"></i> Recent account activity</span></td>
+                  <td data-label=""></td>
+                </tr>
+              {% endfor %}
+            {% else %}
             <tr data-search="ayesha khan buyer active">
               <td data-label="User">
                 <div class="adu-user-cell">
@@ -1019,6 +1052,7 @@
                 </button>
               </td>
             </tr>
+            {% endif %}
           </tbody>
         </table>
 

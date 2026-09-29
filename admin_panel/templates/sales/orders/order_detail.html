@@ -295,7 +295,7 @@
                 <div class="od-seller-order-identity">
                   <span class="od-seller-avatar">
                     {% if order.seller.store_logo %}
-                      <img src="{{ order.seller.store_logo.url }}" alt="{{ order.seller.store_name }}" />
+                      <img src="{{ order.seller.store_logo }}" alt="{{ order.seller.store_name }}" />
                     {% else %}
                       {{ order.seller.store_name|slice:':1'|upper }}
                     {% endif %}
@@ -362,7 +362,7 @@
                             <div class="od-item-cell">
                               <span class="od-item-thumb">
                                 {% if item.product.primary_image %}
-                                  <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}" />
+                                  <img src="{{ item.product.primary_image.image }}" alt="{{ item.product.name }}" />
                                 {% else %}
                                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
                                 {% endif %}

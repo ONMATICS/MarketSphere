@@ -304,9 +304,33 @@ let deletedImageIds = [];
         var zone = document.getElementById('pfUploadZone');
         var input = document.getElementById('pfImageInput');
         var primarySlot = document.getElementById('pfPrimarySlot');
-        var extraSlots = $all('[data-image-slot]');
+        var page = document.getElementById('pfPage');
+        var grid = document.getElementById('pfImageGrid');
+        var maxImages = Math.max(1, parseInt(page && page.dataset.maxImages, 10) || 8);
+        var maxImageSize = (parseFloat(page && page.dataset.maxImageSizeMb) || 5) * 1024 * 1024;
 
         if (!zone || !input) return;
+
+        // The server is authoritative, but keep the picker in sync with the
+        // configured limit instead of leaving the old four-slot UI in place.
+        if (grid) {
+            var secondary = Array.from(grid.querySelectorAll('[data-image-slot]'));
+            var filledSecondary = secondary.filter(function (slot) {
+                return slot.classList.contains('pf-image-slot-filled');
+            }).length;
+            secondary.filter(function (slot) {
+                return !slot.classList.contains('pf-image-slot-filled');
+            }).forEach(function (slot) { slot.remove(); });
+            var emptyCount = Math.max(0, maxImages - 1 - filledSecondary);
+            for (var slotIndex = 0; slotIndex < emptyCount; slotIndex++) {
+                var slot = document.createElement('div');
+                slot.className = 'pf-image-slot';
+                slot.setAttribute('data-image-slot', '');
+                slot.innerHTML = '<div class="pf-image-slot-empty"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>';
+                grid.appendChild(slot);
+            }
+        }
+        var extraSlots = $all('[data-image-slot]');
         document.querySelectorAll(".pf-image-remove-btn").forEach(function (btn) {
 
             btn.addEventListener("click", function (e) {
@@ -425,6 +449,10 @@ let deletedImageIds = [];
             files.forEach(function (file) {
 
                 if (!file.type.startsWith("image/")) return;
+                if (file.size > maxImageSize) {
+                    if (typeof showToast === 'function') showToast('Each image must be within the configured size limit.', 'danger');
+                    return;
+                }
 
                 const slot = findEmptySlot();
 

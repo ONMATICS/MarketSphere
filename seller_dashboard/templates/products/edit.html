@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block seller_content %}
-  <div class="pf-page" id="pfPage" data-dirty="false">
+  <div class="pf-page" id="pfPage" data-dirty="false" data-max-images="{{ catalog_settings.maximum_product_images|default:8 }}" data-max-image-size-mb="{{ catalog_settings.maximum_image_size_mb|default:5 }}">
     <!-- ================= 1. HEADER ================= -->
     <header class="pf-header pf-reveal">
       <div class="pf-header-text">
@@ -168,14 +168,14 @@
                 <p class="pf-upload-subtitle">
                   or <span class="pf-upload-link">browse from your device</span>
                 </p>
-                <p class="pf-upload-guidelines">JPG, PNG or WEBP &middot; up to 8 images &middot; 5MB max each &middot; 1000&times;1000px recommended</p>
+                <p class="pf-upload-guidelines">JPG, PNG or WEBP &middot; up to {{ catalog_settings.maximum_product_images|default:8 }} images &middot; {{ catalog_settings.maximum_image_size_mb|default:5 }}MB max each &middot; 1000&times;1000px recommended</p>
               </div>
 
               <div class="pf-image-grid" id="pfImageGrid">
                 <!-- Primary Image -->
                 <div class="pf-image-slot pf-image-slot-primary{% if product.primary_image %} pf-image-slot-filled{% endif %}" id="pfPrimarySlot">
                   {% if product.primary_image %}
-                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}" />
+                    <img src="{{ product.primary_image.image }}" alt="{{ product.name }}" />
                   {% else %}
                     <div class="pf-image-slot-empty">
                       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -194,7 +194,7 @@
                 {% for image in product.images.all %}
                   {% if not image.is_primary %}
                     <div class="pf-image-slot pf-image-slot-filled" data-image-slot data-image-id="{{image.id}}">
-                      <img src="{{ image.image.url }}" alt="{{ product.name }}" />
+                      <img src="{{ image.image }}" alt="{{ product.name }}" />
                       <button type="button" class="pf-image-remove-btn" aria-label="Remove image">×</button>
                     </div>
                   {% endif %}

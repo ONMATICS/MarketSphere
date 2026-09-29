@@ -89,7 +89,7 @@ Shopping Cart • MarketSphere
               <a href="{% url "product" item.product.slug %}" class="cart-item-image-link" aria-label="View Wireless Over-Ear Headphones">
                 <!-- Product image will be rendered here by Django from item.product.images -->
                 <div class="product-image-placeholder cart-item-image-placeholder" onclick="window.location.href='{% url 'product' item.product.slug %}'">
-                  <img src="{{ item.product.primary_image.image.url }}" alt="">
+                  <img src="{{ item.product.primary_image.image }}" alt="">
                 </div>
               </a>
             </div>
@@ -105,7 +105,7 @@ Shopping Cart • MarketSphere
                   <span class="product-brand cart-item-brand">{{ item.product.brand|default:"No Brand" }}</span>
                   {% if item.product.stock_quantity == 0 %}
                   <span class="stock-badge out-of-stock cart-item-stock">Out of stock</span>
-                  {% elif item.product.stock_quantity <= 80 %}
+                  {% elif item.product.stock_quantity <= catalog_settings.low_stock_threshold %}
                   <span class="stock-badge low-stock cart-item-stock">Only <strong>{{ item.product.stock_quantity }}</strong> left</span>
                   {% else %}
                   <span class="stock-badge in-stock cart-item-stock">In Stock</span>
@@ -140,6 +140,7 @@ Shopping Cart • MarketSphere
                   <!-- Item subtotal will be recalculated live by cart.js; initial value rendered by Django -->
                   <span class="cart-item-subtotal-value">Rs. {{ item.pricing.line_subtotal|floatformat:0 }}</span>
                 </div>
+                <button type="button" class="btn btn-primary" style="width: 110px !important;" onclick="location.href='{% url 'checkout_item' cart_item_id=item.id %}'">Buy Now</button>
               </div>
             </div>
           </div>

@@ -1,11 +1,11 @@
 <!-- templates/user_management/seller/components/document_card_detail.html -->
 <div class="sld-doc-card">
-  <div class="sld-doc-preview" data-doc-preview data-doc-title="{{ title }}" {% if document and document.file %}data-file-url="{{ document.file.url }}"{% endif %}>
+  <div class="sld-doc-preview" data-doc-preview data-doc-title="{{ title }}" {% if document and document.file %}data-file-url="{{ document.file }}"{% endif %}>
     {% if document and document.file %}
-      {% if document.file.url|lower|slice:'-4:' == '.pdf' %}
+      {% if document.file|lower|slice:'-4:' == '.pdf' %}
         <i class="bi bi-file-earmark-pdf" style="font-size:32px;"></i>
       {% else %}
-        <img src="{{ document.file.url }}" alt="{{ title }}" />
+        <img src="{{ document.file }}" alt="{{ title }}" />
       {% endif %}
     {% else %}
       <i class="bi bi-file-earmark-x" style="font-size:32px;"></i>
@@ -50,12 +50,12 @@
                 class="sld-btn sld-btn-secondary sld-btn-sm"
                 data-action="view"
                 data-document-id="{{ document.id }}"
-                {% if document.file %}data-file-url="{{ document.file.url }}"{% endif %}
+                {% if document.file %}data-file-url="{{ document.file }}"{% endif %}
                 data-document-title="{{ title }}">
         View
         </button>
 
-        <a href="{{ document.file.url }}" download class="sld-btn sld-btn-secondary sld-btn-sm">Download</a>
+                <a href="{{ document.file }}" download class="sld-btn sld-btn-secondary sld-btn-sm">Download</a>
 
     {% elif document.verification_note %}
 
@@ -63,7 +63,7 @@
                 class="sld-btn sld-btn-secondary sld-btn-sm"
                 data-action="view"
                 data-document-id="{{ document.id }}"
-                {% if document.file %}data-file-url="{{ document.file.url }}"{% endif %}
+                {% if document.file %}data-file-url="{{ document.file }}"{% endif %}
                 data-document-title="{{ title }}">
         View
         </button>
@@ -93,7 +93,7 @@
                 class="sld-btn sld-btn-secondary sld-btn-sm"
                 data-action="view"
                 data-document-id="{{ document.id }}"
-                {% if document.file %}data-file-url="{{ document.file.url }}"{% endif %}
+                {% if document.file %}data-file-url="{{ document.file }}"{% endif %}
                 data-document-title="{{ title }}">
         View
         </button>

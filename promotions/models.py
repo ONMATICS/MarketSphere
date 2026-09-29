@@ -75,19 +75,11 @@ class Promotion(models.Model):
     )
 
     # Full-bleed hero banner.
-    banner = models.ImageField(
-        upload_to="promotions/banners/",
-        blank=True,
-        null=True,
-    )
+    banner = models.CharField(max_length=1000, blank=True, null=True)
 
     # Smaller crop for homepage promo cards; falls back to `banner` in
     # the template/service layer when not set.
-    thumbnail = models.ImageField(
-        upload_to="promotions/thumbnails/",
-        blank=True,
-        null=True,
-    )
+    thumbnail = models.CharField(max_length=1000, blank=True, null=True)
 
     start_at = models.DateTimeField()
 

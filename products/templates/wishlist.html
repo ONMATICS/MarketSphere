@@ -84,7 +84,7 @@
                 <span class="product-category-badge">({{ item.product.category.name }})</span>
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' item.product.slug %}'">
-                  <img src="{{ item.product.primary_image.image.url }}" alt="" />
+                  <img src="{{ item.product.primary_image.image }}" alt="" />
                 </div>
               </div>
 
@@ -122,7 +122,7 @@
                   <!-- Stock status will be rendered here by Django based on stock_quantity -->
                   {% if item.product.stock_quantity == 0 %}
                     <span class="stock-badge out-of-stock">Out of Stock</span>
-                  {% elif item.product.stock_quantity <= 10 %}
+                  {% elif item.product.stock_quantity <= catalog_settings.low_stock_threshold %}
                     <span class="stock-badge low-stock">Only {{ item.product.stock_quantity }} left</span>
                   {% else %}
                     <span class="stock-badge in-stock">In Stock</span>

@@ -14,13 +14,21 @@ from django.utils import timezone
 
 from accounts.models import Seller
 from admin_panel.marketplace import get_marketplace_settings
+from admin_panel.catalog import get_catalog_settings
+from admin_panel.settings_data import get_admin_setting
 from orders.models import Order, OrderItem
 from notifications.services.notifications import schedule_low_stock_event
 from .models import Category, Brand, Product, WishlistItem, Cart, CartItem, ProductImage
 from promotions.services import sync_product_promotions
 from promotions.models import Promotion, PromotionProduct
+from services.cloudinary_service import store_product_media
 
 logger = logging.getLogger(__name__)
+
+
+def _upload_product_image(image_file, product_id):
+    result = store_product_media(image_file, product_id=str(product_id), media_type="image")
+    return result.get("secure_url") or result.get("url")
 
 
 # ==============================================================================
@@ -194,6 +202,31 @@ def nullable(value):
     return value
 
 
+def _validate_product_images(images, existing_count=0):
+    catalog_settings = get_catalog_settings()
+    maximum_images = catalog_settings.maximum_product_images
+    maximum_size = catalog_settings.maximum_image_size_mb * 1024 * 1024
+    allowed_types = {
+        value.strip().lower().lstrip(".")
+        for value in str(get_admin_setting("catalog", "allowed_file_types", "jpg, jpeg, png, webp")).split(",")
+        if value.strip()
+    }
+
+    if existing_count + len(images) > maximum_images:
+        raise ValueError(
+            f"A product can have at most {maximum_images} images."
+        )
+
+    for image in images:
+        extension = image.name.rsplit(".", 1)[-1].lower() if "." in image.name else ""
+        if allowed_types and extension not in allowed_types:
+            raise ValueError("This image file type is not allowed.")
+        if image.size > maximum_size:
+            raise ValueError(
+                f"Each product image must be {catalog_settings.maximum_image_size_mb} MB or smaller."
+            )
+
+
 @transaction.atomic
 def create_product(user, post_data, files):
     required_fields = {
@@ -217,6 +250,8 @@ def create_product(user, post_data, files):
     images = files.getlist("images")
     if not images:
         missing_fields.append("At least one product image")
+
+    _validate_product_images(images)
 
     if missing_fields:
         raise ValueError(
@@ -260,7 +295,7 @@ def create_product(user, post_data, files):
     for index, image in enumerate(images):
         ProductImage.objects.create(
             product=product,
-            image=image,
+            image=_upload_product_image(image, product.id),
             is_primary=(index == 0),
             display_order=index + 1,
             alt_text=product.name,
@@ -318,10 +353,11 @@ def save_draft(user, post_data, files):
     )
 
     images = files.getlist("images")
+    _validate_product_images(images)
     for index, image in enumerate(images):
         ProductImage.objects.create(
             product=product,
-            image=image,
+            image=_upload_product_image(image, product.id),
             is_primary=(index == 0),
             display_order=index + 1,
             alt_text=product.name,
@@ -383,12 +419,13 @@ def edit_product(seller, product, post_data, files):
 
     # Add newly uploaded images
     images = files.getlist("images")
-    current_count = product.images.count()
+    current_count = product.images.exclude(id__in=deleted_images).count()
+    _validate_product_images(images, existing_count=current_count)
 
     for index, image in enumerate(images):
         ProductImage.objects.create(
             product=product,
-            image=image,
+            image=_upload_product_image(image, product.id),
             is_primary=(current_count == 0 and index == 0),
             display_order=current_count + index + 1,
             alt_text=product.name,
@@ -714,6 +751,8 @@ def get_search_categories(products):
 
 
 def get_search_brands(products):
+    if not get_catalog_settings().brand_visibility:
+        return Brand.objects.none()
     return Brand.objects.filter(products__in=products, is_active=True).distinct()[:5]
 
 
@@ -852,36 +891,63 @@ def get_cart_item_pricing(cart_item, refresh_promotion=True):
         "is_promotion": bool(promotion_product),
     }
 
-
-def get_cart_totals(user):
+def get_cart_totals(user, cart_items=None):
     cart = get_or_create_cart(user)
-    items = cart.items.select_related(
-        "product", "product__seller", "promotion_product__promotion"
-    )
+
+    if cart_items is None:
+        items = cart.items.select_related(
+            "product",
+            "product__seller",
+            "product__seller__settings",
+            "promotion_product__promotion",
+        )
+    else:
+        items = cart_items
+
     original_subtotal = Decimal("0.00")
     discount = Decimal("0.00")
+    shipping_fee = Decimal("0.00")
     payable_subtotal = Decimal("0.00")
+
     pricing = []
     promotion_ended = False
+    shipping_sellers = set()
+
     for item in items:
         line = get_cart_item_pricing(item)
         item.pricing = line
+
         original_subtotal += (
-            line["original_price"] if line["is_promotion"] else line["effective_price"]
+            line["original_price"]
+            if line["is_promotion"]
+            else line["effective_price"]
         ) * line["quantity"]
+
         discount += line["discount_amount"]
         payable_subtotal += line["line_subtotal"]
+
         promotion_ended = promotion_ended or line["promotion_ended"]
+
+        seller = item.product.seller
+
+        if seller and seller.id not in shipping_sellers:
+            shipping_fee += seller.settings.shipping_fee
+            shipping_sellers.add(seller.id)
+
         pricing.append((item, line))
+
+    print(shipping_fee)
+    total = payable_subtotal + shipping_fee
+
     return {
         "original_subtotal": original_subtotal,
         "discount": discount,
         "subtotal": payable_subtotal,
-        "total": payable_subtotal,
+        "shipping_fee": shipping_fee,
+        "total": total,
         "pricing": pricing,
         "promotion_ended": promotion_ended,
     }
-
 
 def add_to_cart(user, product_slug, promotion_product_id=None, quantity=1):
     product = get_object_or_404(
@@ -1038,9 +1104,16 @@ def upload_product_image(product_slug, image_file, seller):
 
     next_order = (last_order + 1) if last_order is not None else 0
 
+    _validate_product_images([image_file], existing_count=product.images.count())
+
+    try:
+        image_url = _upload_product_image(image_file, product.id)
+    except ValueError as error:
+        return {"success": False, "message": str(error)}
+
     product_image = ProductImage.objects.create(
         product=product,
-        image=image_file,
+        image=image_url,
         display_order=next_order,
     )
 
@@ -1151,7 +1224,7 @@ def export_products_csv(seller):
             product.weight,
             product.get_status_display(),
             "Yes" if product.is_featured else "No",
-            image.image.url if image else "",
+            image.image if image else "",
             product.created_at.strftime("%Y-%m-%d %H:%M"),
             product.updated_at.strftime("%Y-%m-%d %H:%M"),
         ])

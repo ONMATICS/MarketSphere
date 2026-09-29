@@ -35,7 +35,7 @@
        ========================================================= -->
   <section
     class="promod-hero{% if is_ended %} promod-hero-ended{% elif is_upcoming %} promod-hero-upcoming{% endif %}"
-    {% if promotion.banner %}style="--promod-hero-image: url('{{ promotion.banner.url }}');"{% endif %}
+    {% if promotion.banner %}style="--promod-hero-image: url('{{ promotion.banner }}');"{% endif %}
   >
     <div class="container bg-transparent">
       <div class="promod-hero-inner{% if not promotion.banner %} promod-hero-inner-no-image{% endif %}">
@@ -103,7 +103,7 @@
 
         {% if promotion.banner %}
           <div class="promod-hero-visual">
-            <img src="{{ promotion.thumbnail.url }}" alt="{{ promotion.name }}" class="promod-hero-image" />
+            <img src="{{ promotion.thumbnail|default:promotion.banner }}" alt="{{ promotion.name }}" class="promod-hero-image" />
           </div>
         {% endif %}
       </div>

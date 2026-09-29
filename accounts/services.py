@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from allauth.account.models import EmailAddress
 from django.db import transaction
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum, Q, DecimalField, Value, Count
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
@@ -17,6 +18,7 @@ from notifications.emails.account import (
     send_welcome_email,
     send_verification_email as send_successfully_verification_email,
 )
+from notifications.models import ActivityLog
 from orders.models import Order
 from . import validator
 from .models import (
@@ -28,6 +30,7 @@ from .models import (
     SellerSettings,
     SellerProfile,
 )
+from services.cloudinary_service import store_seller_asset
 
 # ==============================================================================
 # USER SERVICES
@@ -687,9 +690,24 @@ def create_seller_application(user, data, files):
         slug=slug,
         store_email=data.get("store_email"),
         store_description=data.get("description"),
-        store_logo=files.get("store_logo"),
-        store_banner=files.get("store_banner"),
     )
+
+    seller_uploads = {}
+    for field_name, resource_type in (("store_logo", "image"), ("store_banner", "image")):
+        uploaded_file = files.get(field_name)
+        if uploaded_file:
+            result = store_seller_asset(
+                uploaded_file,
+                seller_id=str(seller.id),
+                asset_type=field_name,
+                resource_type=resource_type,
+            )
+            seller_uploads[field_name] = result.get("secure_url") or result.get("url")
+
+    if seller_uploads:
+        seller.store_logo = seller_uploads.get("store_logo")
+        seller.store_banner = seller_uploads.get("store_banner")
+        seller.save(update_fields=list(seller_uploads))
 
     application = SellerApplication.objects.create(
         seller=seller,
@@ -712,10 +730,17 @@ def create_seller_application(user, data, files):
         uploaded_file = files.get(input_name)
 
         if uploaded_file:
+            result = store_seller_asset(
+                uploaded_file,
+                seller_id=str(seller.id),
+                asset_type=document_type,
+                resource_type="auto",
+            )
+            document_url = result.get("secure_url") or result.get("url")
             SellerApplicationDocument.objects.create(
                 application=application,
                 document_type=document_type,
-                file=uploaded_file,
+                file=document_url,
             )
 
     SellerSettings.objects.create(
@@ -800,11 +825,13 @@ def update_seller_information(user, data, files):
     # Update files if provided
     store_logo = files.get("store_logo")
     if store_logo:
-        seller.store_logo = store_logo
+        result = store_seller_asset(store_logo, str(seller.id), "store_logo", "image")
+        seller.store_logo = result.get("secure_url") or result.get("url")
 
     store_banner = files.get("store_banner")
     if store_banner:
-        seller.store_banner = store_banner
+        result = store_seller_asset(store_banner, str(seller.id), "store_banner", "image")
+        seller.store_banner = result.get("secure_url") or result.get("url")
 
     seller.save()
     update_application_progress(seller)
@@ -860,9 +887,10 @@ def change_store_banner(seller_id, banner):
     if not seller:
         return None
 
-    seller.store_banner = banner
+    result = store_seller_asset(banner, str(seller.id), "store_banner", "image")
+    seller.store_banner = result.get("secure_url") or result.get("url")
     seller.save(update_fields=["store_banner"])
-    return seller.store_banner.url
+    return seller.store_banner
 
 
 def update_shipping_preferences(seller, data):
@@ -875,6 +903,7 @@ def update_shipping_preferences(seller, data):
     settings.return_address = data.get("return_address", "").strip()
     settings.shipping_notes = data.get("shipping_notes", "").strip()
     settings.auto_mark_shipped = str(data.get("auto_mark_shipped")).lower() == "true"
+    settings.shipping_fee = float(data.get("shipping_fee"))
 
     settings.save()
     return settings
@@ -982,10 +1011,13 @@ def update_seller_document_service(user, data, files):
         document_type=document_type,
     )
 
-    if document.file:
-        document.file.delete(save=False)
-
-    document.file = uploaded_file
+    result = store_seller_asset(
+        uploaded_file,
+        seller_id=str(seller.id),
+        asset_type=document_type,
+        resource_type="auto",
+    )
+    document.file = result.get("secure_url") or result.get("url")
     document.verified = False
     document.verification_note = ""
     document.save()
@@ -1212,19 +1244,16 @@ def get_buyer_wishlist_preview(user, limit=4):
 
 
 def get_buyer_recent_activity(user, limit=6):
-    """ASSUMPTION: there is no activity/audit-log model in the codebase
-    yet. Once one exists (e.g. an AccountActivity model related to
-    User), this will start returning real entries automatically as
-    long as the related_name is one of the ones below; otherwise it
-    degrades to an empty list and the template shows its empty state."""
-    for attr in ("activities", "activity_set", "account_activities"):
-        manager = getattr(user, attr, None)
-        if manager is not None and hasattr(manager, "all"):
-            try:
-                return list(manager.order_by("-created_at")[:limit])
-            except Exception:
-                return list(manager.all()[:limit])
-    return []
+    order_content_type = ContentType.objects.get_for_model(Order)
+    return list(
+        ActivityLog.objects.select_related("actor").filter(
+            Q(actor=user)
+            | Q(
+                target_content_type=order_content_type,
+                target_object_id__in=user.orders.values("pk"),
+            )
+        )[:limit]
+    )
 
 
 def get_buyer_notifications(user, limit=5):

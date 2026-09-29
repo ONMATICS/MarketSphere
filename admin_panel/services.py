@@ -17,8 +17,10 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.text import slugify
 from django.db.models import Prefetch
+from django.contrib.contenttypes.models import ContentType
 
 from allauth.account.models import EmailAddress
+from notifications.models import ActivityLog
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from reportlab.lib.pagesizes import landscape, A4
@@ -38,6 +40,7 @@ from accounts.services import get_seller_application_documents
 from orders.models import Order, OrderItem
 from products import services
 from products.models import Product, Brand, Category
+from services.cloudinary_service import store_catalog_image
 
 
 def get_buyer_details(user_id):
@@ -180,6 +183,15 @@ def get_buyer_details(user_id):
         order.seller_name = order.seller.store_name if order.seller else "Unknown Seller"
         order.items_count = sum(item.quantity for item in order.items.all())
 
+    order_content_type = ContentType.objects.get_for_model(Order)
+    activity_logs = ActivityLog.objects.select_related("actor").filter(
+        Q(actor=buyer)
+        | Q(
+            target_content_type=order_content_type,
+            target_object_id__in=buyer.orders.values("pk"),
+        )
+    )[:20]
+
     return {
         "buyer": buyer,
         "addresses": addresses,
@@ -200,6 +212,7 @@ def get_buyer_details(user_id):
         "spending_trend": bars,
         "recent_orders": recent_orders,
         "wishlist": services.get_user_wishlist(buyer),
+        "activity_logs": activity_logs,
     }
 
 
@@ -509,6 +522,20 @@ def get_seller_detail(user_id):
 
     documents = get_seller_application_documents(seller)
 
+    order_content_type = ContentType.objects.get_for_model(Order)
+    product_content_type = ContentType.objects.get_for_model(Product)
+    activity_logs = ActivityLog.objects.select_related("actor").filter(
+        Q(actor=seller.user)
+        | Q(
+            target_content_type=order_content_type,
+            target_object_id__in=seller.orders.values("pk"),
+        )
+        | Q(
+            target_content_type=product_content_type,
+            target_object_id__in=seller.products.values("pk"),
+        )
+    )[:20]
+
     return {
         "seller": seller,
         "total_sales": total_sales,
@@ -552,6 +579,7 @@ def get_seller_detail(user_id):
         "top_selling_products": top_selling_products,
         "top_categories": top_categories,
         "documents": documents,
+        "activity_logs": activity_logs,
     }
 
 
@@ -894,7 +922,7 @@ def get_product_performance(product):
     revenue = total_sales
     return_rate = None
     current_stock = product.stock_quantity
-    low_stock_threshold = product.min_stock_level
+    low_stock_threshold = get_catalog_settings().low_stock_threshold
     wishlist_adds = product.wishlisted_by.count()
     product_views = None
 
@@ -2006,7 +2034,7 @@ def get_categories_data():
             "slug": category.slug,
             "description": category.description or "",
             "icon": category.icon or "bi bi-grid",
-            "image": category.image.url if category.image else "",
+        "image": category.image if category.image else "",
             "is_active": category.is_active,
             "status": "active" if category.is_active else "inactive",
             "parent_id": category.parent_id,
@@ -2160,8 +2188,8 @@ def brand_payload(brand):
         "facebook": brand.facebook, "instagram": brand.instagram, "linkedin": brand.linkedin,
         "is_active": brand.is_active, "is_featured": brand.is_featured,
         "display_order": brand.display_order,
-        "logo_url": brand.logo.url if brand.logo else "",
-        "cover_image_url": brand.cover_image.url if brand.cover_image else "",
+        "logo_url": brand.logo if brand.logo else "",
+        "cover_image_url": brand.cover_image if brand.cover_image else "",
         "products_count": brand.products.count(),
         "categories_count": brand.products.values("category_id").distinct().count(),
         "created_at": brand.created_at.isoformat(), "updated_at": brand.updated_at.isoformat(),
@@ -2189,7 +2217,7 @@ def brand_detail_payload(brand):
             "stock": product.stock_quantity, "orders": product.order_count, "units_sold": product.units_sold or 0,
             "revenue": float(product.revenue_total or 0), "status": product.status,
             "slug": product.slug if product.slug else "undefined",
-            "image_url": product.primary_image.image.url if product.primary_image else "",
+        "image_url": product.primary_image.image if product.primary_image else "",
         })
 
     category_rows = list(brand.products.values("category__id", "category__name").annotate(
@@ -2299,20 +2327,25 @@ def save_brand(data, files=None, brand=None):
             raise ValidationError("Brand name is required.")
         if not brand.slug:
             brand.slug = slugify(brand.name)
-        if files.get("logo"):
-            brand.logo = files["logo"]
-        if files.get("cover_image"):
-            brand.cover_image = files["cover_image"]
+        uploaded_logo = files.get("logo")
+        uploaded_cover = files.get("cover_image")
         if str(data.get("remove_logo", "")).lower() == "true" and brand.logo:
-            brand.logo.delete(save=False)
             brand.logo = None
         if str(data.get("remove_cover_image", "")).lower() == "true" and brand.cover_image:
-            brand.cover_image.delete(save=False)
             brand.cover_image = None
             
         brand.is_active = True
         brand.full_clean()
         brand.save()
+
+        if uploaded_logo:
+            result = store_catalog_image(uploaded_logo, "brands", str(brand.id), "logo")
+            brand.logo = result.get("secure_url") or result.get("url")
+        if uploaded_cover:
+            result = store_catalog_image(uploaded_cover, "brands", str(brand.id), "cover_image")
+            brand.cover_image = result.get("secure_url") or result.get("url")
+        if uploaded_logo or uploaded_cover:
+            brand.save(update_fields=[field for field, uploaded in (("logo", uploaded_logo), ("cover_image", uploaded_cover)) if uploaded])
     return brand
 
 
@@ -2398,7 +2431,7 @@ def _export_categories_csv(categories):
             category.subcategory_count,
             category.description or "",
             category.icon or "",
-            category.image.url if category.image else "",
+            category.image if category.image else "",
         ])
 
     response = HttpResponse(
@@ -2433,7 +2466,7 @@ def _export_categories_json(categories):
             "subcategory_count": category.subcategory_count,
             "description": category.description or "",
             "icon": category.icon or "",
-            "image": category.image.url if category.image else "",
+            "image": category.image if category.image else "",
             "created_at": category.created_at.isoformat() if getattr(category, "created_at", None) else None,
             "updated_at": category.updated_at.isoformat() if getattr(category, "updated_at", None) else None,
         })
@@ -2612,6 +2645,10 @@ from .models import (
 )
 from .marketplace import invalidate_marketplace_settings_cache
 from .checkout import invalidate_checkout_settings_cache
+from .catalog import invalidate_catalog_settings_cache
+from .notification_settings import invalidate_notification_settings_cache
+from .settings_data import invalidate_admin_settings_data_cache
+from .store import invalidate_store_settings_cache
 
 MARKETPLACE_ONLINE_CACHE_KEY = "marketplace_settings:marketplace_online"
 
@@ -2647,6 +2684,10 @@ def invalidate_platform_settings_cache():
     cache.delete(PLATFORM_SETTINGS_CACHE_KEY)
     invalidate_marketplace_settings_cache()
     invalidate_checkout_settings_cache()
+    invalidate_catalog_settings_cache()
+    invalidate_notification_settings_cache()
+    invalidate_admin_settings_data_cache()
+    invalidate_store_settings_cache()
 
 
 def serialize_setting_value(value):
@@ -2738,7 +2779,9 @@ from admin_panel.models import (
 
 
 def get_store_settings():
-    return StoreSettings.load()
+    from .store import get_store_settings as get_cached_store_settings
+
+    return get_cached_store_settings()
 
 
 def get_marketplace_settings():
@@ -2754,4 +2797,6 @@ def get_checkout_settings():
 
 
 def get_catalog_settings():
-    return CatalogSettings.load()
+    from .catalog import get_catalog_settings as get_cached_catalog_settings
+
+    return get_cached_catalog_settings()

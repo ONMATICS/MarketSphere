@@ -307,7 +307,7 @@
                 <td data-label="" class="bu-col-avatar">
                   <span class="bu-avatar" aria-hidden="true">
                     {% if seller.store_logo %}
-                      <img src="{{ seller.store_logo.url }}" alt="{{ seller.store_name }}" />
+                      <img src="{{ seller.store_logo }}" alt="{{ seller.store_name }}" />
                     {% else %}
                       {{ seller.store_name|slice:':1'|upper }}
                     {% endif %}

@@ -671,9 +671,9 @@
           <div class="set-form-card">
             <h3 class="set-form-card-title">Media &amp; Stock Limits</h3>
             <div class="set-field-grid">
-              <div class="set-field"><label for="setMaxImages">Maximum Product Images</label><input type="number" id="setMaxImages" name="max_product_images" min="1" value="{{ max_product_images|default:'8' }}" data-set-track /></div>
+              <div class="set-field"><label for="setMaxImages">Maximum Product Images</label><input type="number" id="setMaxImages" name="maximum_product_images" min="1" value="{{ maximum_product_images|default:'8' }}" data-set-track /></div>
               <div class="set-field"><label for="setMaxVariants">Maximum Product Variants</label><input type="number" id="setMaxVariants" name="max_product_variants" min="1" value="{{ max_product_variants|default:'20' }}" data-set-track /></div>
-              <div class="set-field"><label for="setMaxImageSize">Maximum Image Size (MB)</label><input type="number" id="setMaxImageSize" name="max_image_size_mb" min="1" value="{{ max_image_size_mb|default:'5' }}" data-set-track /></div>
+              <div class="set-field"><label for="setMaxImageSize">Maximum Image Size (MB)</label><input type="number" id="setMaxImageSize" name="maximum_image_size_mb" min="1" value="{{ maximum_image_size_mb|default:'5' }}" data-set-track /></div>
               <div class="set-field"><label for="setAllowedFileTypes">Allowed File Types</label><input type="text" id="setAllowedFileTypes" name="allowed_file_types" value="{{ allowed_file_types|default:'jpg, jpeg, png, webp' }}" data-set-track /></div>
               <div class="set-field"><label for="setLowStockThreshold">Low Stock Threshold</label><input type="number" id="setLowStockThreshold" name="low_stock_threshold" min="0" value="{{ low_stock_threshold|default:'10' }}" data-set-track /></div>
             </div>
@@ -947,19 +947,19 @@
           </div>
         </div>
 
-        <form class="set-form" data-set-form novalidate>
+        <form class="set-form" data-set-form data-notification-form novalidate>
           <div class="set-form-card">
             <h3 class="set-form-card-title">Buyer Notifications</h3>
             <table class="set-notif-table">
               <thead><tr><th>Event</th><th>Email</th><th>In-App</th><th>Push</th></tr></thead>
               <tbody>
-                {% comment %} {% for event in "Order Confirmation,Order Shipped,Order Delivered,Order Cancelled,Refund Processed,Review Request,Password Reset,Account Verification"|split:"," %} {% endcomment %}
-                <tr><td>{{ event|default:"none" }}</td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                {% for event, label in notification_buyer_events %}
+                <tr data-notification-audience="BUYER" data-notification-event="{{ event }}"><td>{{ label }}</td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="email" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="in_app" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="push" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
                 </tr>
-                {% comment %} {% endfor %} {% endcomment %}
+                {% endfor %}
               </tbody>
             </table>
           </div>
@@ -969,13 +969,13 @@
             <table class="set-notif-table">
               <thead><tr><th>Event</th><th>Email</th><th>In-App</th><th>Push</th></tr></thead>
               <tbody>
-                {% comment %} {% for event in "New Order,Order Cancelled,Product Approved,Product Rejected,Application Status,Low Stock Alert,Payment Notification"|split:"," %} {% endcomment %}
-                <tr><td>{{ event|default:"None" }}</td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                {% for event, label in notification_seller_events %}
+                <tr data-notification-audience="SELLER" data-notification-event="{{ event }}"><td>{{ label }}</td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="email" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="in_app" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="push" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
                 </tr>
-                {% comment %} {% endfor %} {% endcomment %}
+                {% endfor %}
               </tbody>
             </table>
           </div>
@@ -985,13 +985,13 @@
             <table class="set-notif-table">
               <thead><tr><th>Event</th><th>Email</th><th>In-App</th><th>Push</th></tr></thead>
               <tbody>
-                {% comment %} {% for event in "New Seller Application,Payment Failure,Fraud Alert,System Error,Security Alert"|split:"," %} {% endcomment %}
-                <tr><td>{{ event|default:"none" }}</td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" checked data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
-                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                {% for event, label in notification_admin_events %}
+                <tr data-notification-audience="ADMIN" data-notification-event="{{ event }}"><td>{{ label }}</td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="email" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="in_app" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
+                  <td><label class="set-switch set-switch-sm"><input type="checkbox" data-notification-channel="push" data-set-track /><span class="set-switch-track"><span class="set-switch-thumb"></span></span></label></td>
                 </tr>
-                {% comment %} {% endfor %} {% endcomment %}
+                {% endfor %}
               </tbody>
             </table>
           </div>

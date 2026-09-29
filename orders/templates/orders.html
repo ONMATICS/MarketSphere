@@ -34,22 +34,6 @@
           <h1 class="mo-page-title">My Orders</h1>
           <p class="mo-page-subtitle">View and manage all of your previous purchases.</p>
         </div>
-
-        <!-- ============ FUTURE: SEARCH / FILTER TOOLBAR ============ -->
-        <!--        
-          Structural space reserved for future search + status filter +
-          date-range controls. Intentionally left unimplemented — no
-          backend/query wiring yet. When added, this should follow the
-          .filter-card / .sort-select patterns already used on
-          search_results.html for visual consistency.
-
-          <div class="mo-toolbar">
-            <input type="search" class="form-control" placeholder="Search by order number or product..." />
-            <select class="form-select mo-status-filter">
-              <option>All Statuses</option>
-            </select>
-          </div>
-                -->
       </div>
     </div>
   </section>
@@ -57,8 +41,8 @@
   <!-- ================= ORDERS BODY ================= -->
   <section class="mo-section">
     <div class="container">
+      
       <!-- ================= ORDERS LIST ================= -->
-
       <div class="mo-orders-list" id="ordersList">
         {% if paginator.count == 0 %}
           <div class="mo-empty-state" id="ordersEmptyState">
@@ -72,90 +56,100 @@
         {% else %}
           {% for order in orders %}
             <div class="mo-order-card">
-              <div class="mo-order-card-head">
-                <div class="mo-order-id-block">
-                  <span class="mo-order-number"><!-- order.order_number -->#MS-{{ order.order_number }}</span>
-                  <div class="d-flex gap-1">
-                    <span class="mo-order-date"><i class="bi bi-calendar-event"></i> Placed on {{ order.created_at|date }}</span>
-                    <span class="mo-order-date">|</span>
-                    <span class="mo-order-date">Expected Delievery on <!-- order.ETA|date -->{{ order.estimated_delivery|date|default:"5-7 business days" }}</span>
-                  </div>
+              
+              <!-- CARD HEADER: ID, Date, & Status -->
+              <div class="mo-order-card-header">
+                <div class="mo-order-header-info">
+                  <span class="mo-order-number">#MS-{{ order.order_number }}</span>
+                  <span class="mo-order-date"><i class="bi bi-calendar-event"></i> Placed on {{ order.created_at|date }}</span>
                 </div>
-                {% if order.status == 'pending' %}
-                  <span class="mo-status-badge mo-status-pending"><i class="bi bi-hourglass-split"></i> Pending</span>
-                {% elif order.status == 'confirmed' %}
-                  <span class="mo-status-badge mo-status-confirmed"><i class="bi bi-check-circle"></i> Confirmed</span>
-                {% elif order.status == 'processing' %}
-                  <span class="mo-status-badge mo-status-processing"><i class="bi bi-gear"></i> Processing</span>
-                {% elif order.status == 'shipped' %}
-                  <span class="mo-status-badge mo-status-shipped"><i class="bi bi-truck"></i> Shipped</span>
-                {% elif order.status == 'delivered' %}
-                  <span class="mo-status-badge mo-status-delivered"><i class="bi bi-check2-circle"></i> Delivered</span>
-                {% elif order.status == 'cancelled' %}
-                  <span class="mo-status-badge mo-status-cancelled"><i class="bi bi-x-circle"></i> Cancelled</span>
-                {% endif %}
+                <div class="mo-order-header-status">
+                  {% if order.status == 'pending' %}
+                    <span class="mo-status-badge mo-status-pending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                  {% elif order.status == 'confirmed' %}
+                    <span class="mo-status-badge mo-status-confirmed"><i class="bi bi-check-circle"></i> Confirmed</span>
+                  {% elif order.status == 'processing' %}
+                    <span class="mo-status-badge mo-status-processing"><i class="bi bi-gear"></i> Processing</span>
+                  {% elif order.status == 'shipped' %}
+                    <span class="mo-status-badge mo-status-shipped"><i class="bi bi-truck"></i> Shipped</span>
+                  {% elif order.status == 'delivered' %}
+                    <span class="mo-status-badge mo-status-delivered"><i class="bi bi-check2-circle"></i> Delivered</span>
+                  {% elif order.status == 'cancelled' %}
+                    <span class="mo-status-badge mo-status-cancelled"><i class="bi bi-x-circle"></i> Cancelled</span>
+                  {% endif %}
+                </div>
               </div>
 
+              <!-- CARD BODY: Products, Summary, & Primary Action -->
               <div class="mo-order-card-body">
-                <div class="mo-order-preview">
-                  <!-- Product thumbnails will be rendered here by Django from order.items -->
-                  <div class="mo-thumb-strip">
-                    {% for item in order.items.all|slice:3 %}
-                      <span class="mo-order-thumb" title="{{ item.product.name }}"><img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}" /></span>
-                    {% endfor %}
-                    <!-- Overflow count will be rendered here by Django, e.g. order.items.count|add:'-3' -->
-                    {% if order.items.count > 3 %}
-                      <span class="mo-thumb-more">+{{ order.items.count|add:-3 }}</span>
-                    {% endif %}
+                <div class="row align-items-center gy-3">
+                  
+                  <!-- Thumbnails -->
+                  <div class="col-12 col-md-4">
+                    <div class="mo-thumb-strip">
+                      {% for item in order.items.all|slice:3 %}
+                        <span class="mo-order-thumb" title="{{ item.product.name }}">
+                          <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.name }}" />
+                        </span>
+                      {% endfor %}
+                      {% if order.items.count > 3 %}
+                        <span class="mo-thumb-more">+{{ order.items.count|add:-3 }}</span>
+                      {% endif %}
+                    </div>
                   </div>
-                </div>
 
-                <div class="mo-order-summary">
-                  <div class="mo-order-summary-item">
-                    <span class="mo-summary-label">Items</span>
-                    <span class="mo-summary-value">{{ order.total_items }}</span>
+                  <!-- Summary Details -->
+                  <div class="col-12 col-md-5">
+                    <div class="mo-summary-grid">
+                      <div class="mo-summary-block">
+                        <span class="mo-summary-label">Total Items</span>
+                        <span class="mo-summary-value">{{ order.total_items }}</span>
+                      </div>
+                      <div class="mo-summary-block">
+                        <span class="mo-summary-label">Order Total</span>
+                        <span class="mo-summary-value mo-summary-total">Rs. {{ order.total|floatformat:0 }}</span>
+                      </div>
+                      <div class="mo-summary-block">
+                        <span class="mo-summary-label">Est. Delivery</span>
+                        <span class="mo-summary-value text-muted">{{ order.estimated_delivery|date|default:"5-7 business days" }}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="mo-order-summary-item">
-                    <span class="mo-summary-label">Total</span>
-                    <span class="mo-summary-value mo-summary-total"><!-- order.total -->Rs. {{ order.total|floatformat:0 }}</span>
+
+                  <!-- View Details Button -->
+                  <div class="col-12 col-md-3 text-md-end">
+                    <a href="{% url 'order' order_number=order.order_number %}" class="btn btn-hero-primary mo-view-details-btn w-100 justify-content-center">
+                      View Details <i class="bi bi-arrow-right"></i>
+                    </a>
                   </div>
-                </div>
-
-                <div class="mo-order-actions">
-                  <!-- View Details: Django will wire this to the order detail / confirmation route -->
-                  <a href="{% url 'order' order_number=order.order_number %}" class="btn btn-hero-primary mo-view-details-btn">View Details <i class="bi bi-arrow-right"></i></a>
-
-                  {% comment %}FUTURE ACTIONS (structural space only, not implemented): - Cancel Order (only for pending/confirmed statuses) - Download Invoice - Reorder - Track Order (opens a tracking timeline component){% endcomment %}
+                  
                 </div>
               </div>
-              <div class="mo-order-actions-secondary mt-3">
-                {% if order.status in 'pending confirmed processing' %}
-                  <a href="{% url 'cancel-order' order_number=order.order_number %}" class="mo-action-link"><i class="bi bi-x-circle"></i> Cancel Order</a>
-                  <span class="mo-order-date">|</span>
-                {% endif %}
-                {% if order.status == 'delivered' %}
-                  <a href="{% url 'reorder' order_number=order.order_number %}" class="mo-action-link"><i class="bi bi-arrow-repeat"></i> Reorder</a>
-                  <span class="mo-order-date">|</span>
-                {% endif %}
-                {% if order.status != 'canceled' %}
-                  <a href="#" class="mo-action-link"><i class="bi bi-truck"></i> Track Order</a>
-                {% endif %}
-                <span class="mo-order-date">|</span>
-                <a href="{% url 'download_invoice' order.order_number %}" target="_blank" class="mo-action-link"><i class="bi bi-download"></i> Download Invoice</a>
+
+              <!-- CARD FOOTER: Secondary Actions -->
+              <div class="mo-order-card-footer">
+                <div class="mo-order-actions-secondary">
+                  {% if order.status in 'pending confirmed processing' %}
+                    <a href="{% url 'cancel-order' order_number=order.order_number %}" class="mo-action-link text-danger"><i class="bi bi-x-circle"></i> Cancel Order</a>
+                  {% endif %}
+                  {% if order.status == 'delivered' %}
+                    <a href="{% url 'reorder' order_number=order.order_number %}" class="mo-action-link"><i class="bi bi-arrow-repeat"></i> Reorder</a>
+                  {% endif %}
+                  {% if order.status != 'canceled' %}
+                    <a href="#" class="mo-action-link"><i class="bi bi-truck"></i> Track Order</a>
+                  {% endif %}
+                  <a href="{% url 'download_invoice' order.order_number %}" target="_blank" class="mo-action-link"><i class="bi bi-download"></i> Download Invoice</a>
+                </div>
               </div>
+
             </div>
           {% endfor %}
         {% endif %}
       </div>
       <!-- ================= END ORDERS LIST ================= -->
 
+      <!-- Pagination -->
       {% if paginator.num_pages > 1 %}
-      <!--
-      -->
-      <!--         Structural space only — mirrors .search-pagination-wrap /
-           .pagination markup used on search_results.html. Will be wired
-           to a paginated orders queryset once the backend view exists.
-      -->
       <nav aria-label="Orders pagination" class="mo-pagination-wrap">
         <ul class="pagination justify-content-center">
           <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}"><a class="page-link" href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}">Previous</a></li>
@@ -166,6 +160,7 @@
         </ul>
       </nav>
       {% endif %}
+      
     </div>
   </section>
 {% endblock %}

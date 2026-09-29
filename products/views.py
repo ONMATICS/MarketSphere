@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from accounts.models import Seller
 from admin_panel.marketplace import get_marketplace_settings
+from admin_panel.catalog import categories_are_visible, get_catalog_settings
 from promotions.services import get_current_homepage_promotion
 from promotions.models import PromotionProduct
 
@@ -13,10 +14,11 @@ from promotions.models import PromotionProduct
 def home(request):
     homepage_promotion = get_current_homepage_promotion()
     marketplace_settings = get_marketplace_settings()
-    categories = services.get_all_categories()
+    catalog_settings = get_catalog_settings()
+    categories = services.get_all_categories() if categories_are_visible() else services.get_all_categories().none()
     brands = (
         services.get_all_brands().filter(is_featured=True)
-        if marketplace_settings.featured_brands
+        if marketplace_settings.featured_brands and catalog_settings.brand_visibility
         else services.get_all_brands().none()
     )
     featured_products = (
@@ -38,8 +40,12 @@ def home(request):
         "featured_products": featured_products,
         "featured_sellers": featured_sellers,
         "show_featured_products": marketplace_settings.featured_products,
-        "show_featured_brands": marketplace_settings.featured_brands,
+        "show_featured_brands": (
+            marketplace_settings.featured_brands
+            and catalog_settings.brand_visibility
+        ),
         "show_featured_sellers": marketplace_settings.featured_sellers,
+        "show_categories": categories_are_visible(),
         "new_products": new_products,
         "wishlist_ids": services.get_wishlist_ids(request.user),
         "homepage_promotion": homepage_promotion,
@@ -54,6 +60,7 @@ from . import services
 
 
 def search(request):
+    catalog_settings = get_catalog_settings()
     q = request.GET.get("q", "").strip()
     category_slugs = request.GET.getlist("category")
     brand_slugs = request.GET.getlist("brand")
@@ -66,6 +73,8 @@ def search(request):
     # Base set: query only. Sidebar options are computed from THIS,
     # so the sidebar doesn't shrink as filters are applied.
     base_products = services.get_search_products(q)
+    if not catalog_settings.search_visibility:
+        base_products = base_products.none()
     featured = request.GET.get("featured") == "1"
     new_arrivals = request.GET.get("new_arrivals") == "1"
     if featured:
@@ -86,7 +95,11 @@ def search(request):
             or sort_value
         )
     categories = services.get_search_categories(base_products)
+    if not categories_are_visible():
+        categories = categories.none()
     brands = services.get_search_brands(base_products)
+    if not catalog_settings.brand_visibility:
+        brands = brands.none()
     # Full set: query + every active filter, for the actual grid.
     filtered_products = services.filter_products(
         base_products,
@@ -127,6 +140,9 @@ def search_categories(request):
 
     query = request.GET.get("q", "")
 
+    if not get_catalog_settings().search_visibility:
+        return JsonResponse({"categories": []})
+
     categories = Category.objects.filter(name__icontains=query).order_by("name")[:10]
 
     return JsonResponse(
@@ -150,6 +166,10 @@ from products.models import Brand
 def search_brands(request):
 
     query = request.GET.get("q", "")
+    catalog_settings = get_catalog_settings()
+
+    if not catalog_settings.search_visibility or not catalog_settings.brand_visibility:
+        return JsonResponse({"brands": []})
 
     brands = Brand.objects.filter(name__icontains=query).order_by("name")[:10]
 
@@ -294,6 +314,7 @@ def cart(request):
         "subtotal": totals["subtotal"],
         "total": totals["total"],
         "original_subtotal": totals["original_subtotal"],
+        "shipping_cost": totals["shipping_fee"],
         "discount": totals["discount"],
         "cart_pricing": totals["pricing"],
         "promotion_ended": totals["promotion_ended"],
@@ -319,6 +340,7 @@ def add_to_cart(request, product_slug):
         {
             "success": True,
             "quantity": cart_item.quantity,
+            "cart_item_id": cart_item.id,
             "cart_count": services.cart_count(request.user),
             "subtotal": str(totals["subtotal"]),
             "discount": str(totals["discount"]),

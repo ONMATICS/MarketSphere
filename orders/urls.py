@@ -5,6 +5,11 @@ urlpatterns = [
     path("", views.orders, name="orders"),
     path("<str:order_number>", views.order, name="order"),
     path("checkout/", views.checkout, name="checkout"),
+    path(
+        "checkout/item/<int:cart_item_id>/",
+        views.checkout,
+        name="checkout_item",
+    ),
     path("place-order/", views.place_new_order, name="place-order"),
     path(
         "confirmation/<str:order_number>/",

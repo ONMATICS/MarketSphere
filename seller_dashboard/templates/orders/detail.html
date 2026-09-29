@@ -366,7 +366,7 @@
                   <tr>
                     <td data-label="">
                       <div class="sod-product-thumb">
-                        <img src="{{ item.product.primary_image.image.url }}" alt="" />
+                        <img src="{{ item.product.primary_image.image }}" alt="" />
                       </div>
                     </td>
                     <td data-label="Product">
@@ -478,6 +478,20 @@
           </div>
 
           <div class="sod-activity-feed is-collapsed" id="sodActivityFeed">
+            {% if order_activity_logs %}
+              {% for activity in order_activity_logs %}
+                <div class="sod-activity-item">
+                  <span class="sod-activity-icon sod-activity-icon-success">
+                    <i class="bi bi-activity"></i>
+                  </span>
+                  <div class="sod-activity-body">
+                    <span class="sod-activity-title">{{ activity.title }}</span>
+                    <span class="sod-activity-desc">{{ activity.description|default:activity.action }}</span>
+                    <span class="sod-activity-time">{{ activity.created_at|date:'F j, Y · g:i A' }}</span>
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
             <!-- Order Placed -->
             <div class="sod-activity-item">
               <span class="sod-activity-icon sod-activity-icon-success">
@@ -583,6 +597,7 @@
                   <span class="sod-activity-time">{{ order.updated_at|date:'F j, Y · g:i A' }}</span>
                 </div>
               </div>
+            {% endif %}
             {% endif %}
           </div>
 

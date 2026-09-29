@@ -1,0 +1,333 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+  Manage Products — {{ promotion.name }}
+{% endblock %}
+
+{% block active_page %}
+  promotions
+{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span>
+    <span class="adh-breadcrumb-sep">/</span>
+    <a href="{% url 'admin-promotions' %}" style="color:inherit;">Promotions</a>
+    <span class="adh-breadcrumb-sep">/</span>
+    <a href="{% url 'admin-promotion-detail' promotion.slug %}" style="color:inherit;">{{ promotion.name }}</a>
+    <span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">Products</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/promotions.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="apr-page apr-manage-page" id="aprManagePage">
+
+    <!-- ================= HEADER ================= -->
+    <header class="apr-manage-header apr-reveal">
+      <a href="{% url 'admin-promotion-detail' promotion.slug %}" class="apr-back-link">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+        {{ promotion.name }}
+      </a>
+
+      <div class="apr-manage-header-row">
+        <div>
+          <h1 class="apr-header-title">Manage Promotion Products</h1>
+          <div class="apr-manage-subrow">
+            <strong>{{ promotion.name }}</strong>
+            <span class="apr-badge apr-badge-{{ promotion.display_status_class }}">{{ promotion.display_status }}</span>
+            <span class="apr-meta-chip">{{ promotion.start_at|date:"M d" }} &ndash; {{ promotion.end_at|date:"M d, Y" }}</span>
+          </div>
+        </div>
+
+        <div class="apr-manage-summary">
+          <div class="apr-manage-summary-item">
+            <span class="apr-manage-summary-value">{{ summary.total_products }}</span>
+            <span class="apr-manage-summary-label">Total Products</span>
+          </div>
+          <div class="apr-manage-summary-item">
+            <span class="apr-manage-summary-value">{{ summary.featured_products }}</span>
+            <span class="apr-manage-summary-label">Featured</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= TOOLBAR ================= -->
+    <section class="apr-toolbar-card apr-reveal" aria-label="Product filters">
+      <form method="get" class="apr-toolbar" id="aprProductsToolbarForm">
+        <div class="apr-search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          <input type="search" name="q" class="apr-search-input" placeholder="Search products by name or SKU..." value="{{ search_query }}" aria-label="Search promotion products" />
+        </div>
+
+        <div class="apr-toolbar-filters">
+          <div class="apr-select-wrap">
+            <select name="seller" class="apr-select" aria-label="Filter by seller">
+              <option value="">All Sellers</option>
+              {% for seller in sellers %}
+                <option value="{{ seller.id }}" {% if seller_filter == seller.id|stringformat:"s" %}selected{% endif %}>{{ seller.store_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="apr-select-wrap">
+            <select name="category" class="apr-select" aria-label="Filter by category">
+              <option value="">All Categories</option>
+              {% for category in categories %}
+                <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="apr-select-wrap">
+            <select name="featured" class="apr-select" aria-label="Filter by featured status">
+              <option value="">All Products</option>
+              <option value="featured" {% if featured_filter == "featured" %}selected{% endif %}>Featured</option>
+              <option value="not_featured" {% if featured_filter == "not_featured" %}selected{% endif %}>Not Featured</option>
+            </select>
+          </div>
+
+          <button type="submit" class="apr-btn apr-btn-primary apr-btn-sm">Filter</button>
+          <a href="{% url 'admin-manage-promotion-products' promotion.slug %}" class="apr-btn apr-btn-secondary apr-btn-sm">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>Clear
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <!-- ================= PRODUCTS TABLE ================= -->
+    <section class="apr-table-card apr-reveal" aria-label="Promotion products table">
+      <div class="apr-table-wrap">
+        <table class="apr-table" id="aprProductsTable">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Seller</th>
+              <th scope="col">Regular Price</th>
+              <th scope="col">Promotion Price</th>
+              <th scope="col">Discount</th>
+              <th scope="col">Featured</th>
+              <th scope="col" class="apr-col-actions"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for promo_item in promotion_products %}
+              <tr class="apr-row" id="aprRow{{ promo_item.id }}" data-promo-item-id="{{ promo_item.id }}">
+                <td data-label="Product">
+                  <div class="apr-identity-cell">
+                    <span class="apr-thumb">
+                      {% if promo_item.product.primary_image %}
+                        <img src="{{ promo_item.product.primary_image.image }}" alt="{{ promo_item.product.name }}" />
+                      {% else %}
+                        <i class="bi bi-image"></i>
+                      {% endif %}
+                    </span>
+                    <div class="apr-identity-text">
+                      <a href="{% url 'catalog-product' promo_item.product.slug %}" class="apr-promo-name apr-product-link" target="_blank" rel="noopener">{{ promo_item.product.name }}</a>
+                      {% if promo_item.product.sku %}
+                        <span class="apr-promo-desc">SKU: {{ promo_item.product.sku }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+
+                <td data-label="Seller">
+                  {% if promo_item.product.seller %}
+                    <a href="{% url 'user-seller' sellerId=promo_item.product.seller.id %}" class="apr-seller-link" target="_blank" rel="noopener">{{ promo_item.product.seller.store_name }}</a>
+                  {% else %}
+                    <span class="apr-muted-text">—</span>
+                  {% endif %}
+                </td>
+
+                <td data-label="Regular Price">Rs. {{ promo_item.original_price|floatformat:0 }}</td>
+
+                <td data-label="Promotion Price">
+                  <strong class="apr-promo-price-value">Rs. {{ promo_item.promotion_price|floatformat:0 }}</strong>
+                </td>
+
+                <td data-label="Discount">
+                  <span class="apr-badge apr-badge-success apr-discount-value">{{ promo_item.discount_percentage|floatformat:0 }}% OFF</span>
+                </td>
+
+                <td data-label="Featured">
+                  <span class="apr-featured-badge {% if not promo_item.is_featured %}is-hidden{% endif %}">
+                    <i class="bi bi-star-fill"></i> Featured
+                  </span>
+                  <span class="apr-muted-text apr-not-featured-text {% if promo_item.is_featured %}is-hidden{% endif %}">Not Featured</span>
+                </td>
+
+                <td data-label="" class="apr-col-actions">
+                  <div class="apr-dropdown apr-row-dropdown">
+                    <button type="button" class="apr-icon-btn apr-dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-label="More actions for {{ promo_item.product.name }}">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.2"></circle><circle cx="12" cy="12" r="1.2"></circle><circle cx="12" cy="19" r="1.2"></circle></svg>
+                    </button>
+
+                    <div class="apr-dropdown-menu" role="menu">
+                      <a href="{% url 'catalog-product' promo_item.product.slug %}" class="apr-dropdown-item" role="menuitem" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>View Product
+                      </a>
+                      {% if promo_item.product.seller %}
+                        <a href="{% url 'user-seller' sellerId=promo_item.product.seller.id %}" class="apr-dropdown-item" role="menuitem" target="_blank" rel="noopener">
+                          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"></path><path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"></path></svg>View Seller
+                        </a>
+                      {% endif %}
+                      <div class="apr-dropdown-divider" role="separator"></div>
+                      <button
+                        type="button"
+                        class="apr-dropdown-item apr-edit-price-btn"
+                        role="menuitem"
+                        data-promo-item-id="{{ promo_item.id }}"
+                        data-product-name="{{ promo_item.product.name }}"
+                        data-regular-price="{{ promo_item.original_price|floatformat:0 }}"
+                        data-current-price="{{ promo_item.promotion_price|floatformat:0 }}"
+                        data-url="{% url 'admin-update-promotion-product-price' promo_item.id %}"
+                      >
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>Edit Promo Price
+                      </button>
+                      <button
+                        type="button"
+                        class="apr-dropdown-item apr-toggle-featured-btn"
+                        role="menuitem"
+                        data-promo-item-id="{{ promo_item.id }}"
+                        data-featured="{{ promo_item.is_featured|yesno:'true,false' }}"
+                        data-url="{% url 'admin-toggle-promotion-product-featured' promo_item.id %}"
+                      >
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2Z"></path></svg><span class="apr-toggle-featured-label">{% if promo_item.is_featured %}Unfeature{% else %}Feature{% endif %}</span>
+                      </button>
+                      <div class="apr-dropdown-divider" role="separator"></div>
+                      <button
+                        type="button"
+                        class="apr-dropdown-item is-danger apr-remove-btn"
+                        role="menuitem"
+                        data-promo-item-id="{{ promo_item.id }}"
+                        data-product-name="{{ promo_item.product.name }}"
+                        data-url="{% url 'admin-remove-promotion-product' promo_item.id %}"
+                      >
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>Remove from Promotion
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr class="apr-empty-row">
+                <td colspan="7">
+                  <div class="apr-empty-state">
+                    <div class="apr-empty-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path></svg>
+                    </div>
+
+                    {% if search_query or seller_filter or category_filter or featured_filter %}
+                      <h3 class="apr-empty-title">No matching products</h3>
+                      <p class="apr-empty-subtitle">No products match your current search or filters.</p>
+                      <a href="{% url 'admin-manage-promotion-products' promotion.slug %}" class="apr-btn apr-btn-primary">Clear Filters</a>
+                    {% else %}
+                      <h3 class="apr-empty-title">No Products in This Promotion</h3>
+                      <p class="apr-empty-subtitle">No products are currently participating in this campaign. Products are assigned to promotions through the seller promotion workflow.</p>
+                      <a href="{% url 'admin-promotion-detail' promotion.slug %}" class="apr-btn apr-btn-secondary">Back to Promotion Details</a>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ================= PAGINATION ================= -->
+      {% if paginator.num_pages > 1 %}
+        <div class="apr-pagination-bar">
+          <span class="apr-pagination-count">
+            Showing <strong>{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong> products
+          </span>
+
+          <nav class="apr-pagination" aria-label="Promotion products pagination">
+            <a class="apr-page-btn {% if not page_obj.has_previous %}is-disabled{% endif %}"
+               href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+               aria-label="Previous page">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+            </a>
+
+            {% for num in paginator.page_range %}
+              <a class="apr-page-btn {% if num == page_obj.number %}is-active{% endif %}"
+                 href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={{ num }}"
+                 {% if num == page_obj.number %}aria-current="page"{% endif %}>{{ num }}</a>
+            {% endfor %}
+
+            <a class="apr-page-btn {% if not page_obj.has_next %}is-disabled{% endif %}"
+               href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ paginator.num_pages }}{% endif %}"
+               aria-label="Next page">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+          </nav>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <!-- ================= EDIT PROMO PRICE MODAL ================= -->
+  <div class="apr-modal-overlay is-hidden" id="aprEditPriceModal">
+    <div class="apr-modal" role="dialog" aria-modal="true" aria-labelledby="aprEditPriceModalTitle">
+      <button type="button" class="apr-modal-close" id="aprEditPriceModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+      </button>
+
+      <h3 class="apr-modal-title" id="aprEditPriceModalTitle">Edit Promotion Price</h3>
+      <p class="apr-modal-text">Set the price this product is advertised at while the promotion runs. This does not change the product's regular price.</p>
+
+      <div class="apr-modal-kv">
+        <div><span>Product</span><strong id="aprEditPriceProductName">—</strong></div>
+        <div><span>Regular Price</span><strong id="aprEditPriceRegular">—</strong></div>
+        <div><span>Current Promotion Price</span><strong id="aprEditPriceCurrent">—</strong></div>
+      </div>
+
+      <div class="apr-field">
+        <label for="aprNewPromoPrice" class="apr-label">New Promotion Price</label>
+        <div class="apr-input-suffix-wrap apr-input-prefix-wrap">
+          <span class="apr-input-prefix">Rs.</span>
+          <input type="number" id="aprNewPromoPrice" class="apr-input" min="1" step="1" />
+        </div>
+        <span class="apr-field-error is-hidden" id="aprEditPriceError"></span>
+      </div>
+
+      <div class="apr-modal-actions">
+        <button type="button" class="apr-btn apr-btn-secondary" id="aprEditPriceCancelBtn">Cancel</button>
+        <button type="button" class="apr-btn apr-btn-primary" id="aprEditPriceSaveBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= REMOVE CONFIRMATION MODAL ================= -->
+  <div class="apr-modal-overlay is-hidden" id="aprRemoveModal">
+    <div class="apr-modal" role="dialog" aria-modal="true" aria-labelledby="aprRemoveModalTitle">
+      <button type="button" class="apr-modal-close" id="aprRemoveModalClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+      </button>
+
+      <div class="apr-modal-icon c-danger"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></div>
+
+      <h3 class="apr-modal-title" id="aprRemoveModalTitle">Remove product from promotion?</h3>
+      <p class="apr-modal-text"><strong id="aprRemoveProductName">This product</strong> will no longer participate in <strong>{{ promotion.name }}</strong>.</p>
+      <p class="apr-modal-note"><i class="bi bi-info-circle"></i> This does not delete the product from the marketplace.</p>
+
+      <div class="apr-modal-actions">
+        <button type="button" class="apr-btn apr-btn-secondary" id="aprRemoveCancelBtn">Cancel</button>
+        <button type="button" class="apr-btn apr-btn-danger" id="aprRemoveConfirmBtn">Remove Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div class="apr-toast-container" id="aprToastContainer" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/promotions.js' %}"></script>
+{% endblock %}

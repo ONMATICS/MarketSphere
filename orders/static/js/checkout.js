@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<i class="bi bi-arrow-repeat spin"></i> <span>Placing Order...</span>';
 
             const selectedAddress = document.querySelector(".co-address-option.is-selected");
+            const cartItemId = window.location.pathname.match(/\/checkout\/item\/(\d+)\/?/)?.[1] || "";
 
             if (!selectedAddress) {
                 showToast("Please select a shipping address.", "warning");
@@ -252,6 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 email: document.querySelector('input[name="email"]').value,
                 phone: document.querySelector('input[name="phone"]').value,
                 notes: document.getElementById("coOrderNotes")?.value || "",
+                cartItemId: cartItemId,
             };
 
             fetch("/order/place-order/", {

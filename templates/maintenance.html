@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MarketSphere - Under Maintenance</title>
+    <title>{{ marketplace.marketplace_name|default:'MarketSphere' }} - Under Maintenance</title>
+    {% if marketplace.marketplace_favicon %}<link rel="shortcut icon" href="{{ marketplace.marketplace_favicon.url }}" type="image/x-icon">{% endif %}
     <style>
       :root { 
         color-scheme: light; 
@@ -67,7 +68,8 @@
         </svg>
       </div>
 
-      <h1>MarketSphere is under maintenance</h1>
+      {% if marketplace.marketplace_logo %}<img src="{{ marketplace.marketplace_logo.url }}" alt="{{ marketplace.marketplace_name }}" style="max-width:220px;max-height:80px;object-fit:contain;margin-bottom:1.5rem;">{% endif %}
+      <h1>{{ marketplace.marketplace_name|default:'MarketSphere' }} is under maintenance</h1>
       
       <p>We are currently performing scheduled backend upgrades to improve your multi-vendor shopping experience. Our team is fine-tuning the platform to make it faster and more reliable.</p>
       

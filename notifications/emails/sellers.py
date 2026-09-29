@@ -4,6 +4,7 @@ from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
 from notifications.services.email import send_marketplace_email
+from admin_panel.notification_settings import notification_channel_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ def send_application_received_email(application):
 
 def send_seller_verified_email(seller):
     user = getattr(seller, "user", None)
-    if not getattr(user, "email", ""):
+    if not getattr(user, "email", "") or not notification_channel_enabled("SELLER_APPLICATION_APPROVED", "SELLER", "email"):
         return False
 
     return _send(
@@ -119,7 +120,7 @@ def send_seller_rejected_email(application, rejection_reason=None):
     seller = application.seller
     user = seller.user
 
-    if not getattr(user, "email", ""):
+    if not getattr(user, "email", "") or not notification_channel_enabled("SELLER_APPLICATION_REJECTED", "SELLER", "email"):
         return False
 
     return _send(
@@ -150,7 +151,7 @@ def _preference_enabled(seller, preference):
 def send_new_order_email(order):
     seller = getattr(order, "seller", None)
     recipient = _seller_email(seller)
-    if not recipient or not _preference_enabled(seller, "email_new_order"):
+    if not recipient or not _preference_enabled(seller, "email_new_order") or not notification_channel_enabled("ORDER_CREATED", "SELLER", "email"):
         return False
     return _send(
         subject="New Order Received — MarketSphere",
@@ -168,7 +169,7 @@ def send_new_order_email(order):
 def send_cancelled_order_email(order, cancellation_reason=None):
     seller = getattr(order, "seller", None)
     recipient = _seller_email(seller)
-    if not recipient or not _preference_enabled(seller, "email_cancelled_order"):
+    if not recipient or not _preference_enabled(seller, "email_cancelled_order") or not notification_channel_enabled("ORDER_CANCELLED", "SELLER", "email"):
         return False
     return _send(
         subject="Order Cancelled — MarketSphere",
@@ -187,7 +188,7 @@ def send_cancelled_order_email(order, cancellation_reason=None):
 def send_delivered_order_email(order):
     seller = getattr(order, "seller", None)
     recipient = _seller_email(seller)
-    if not recipient or not _preference_enabled(seller, "email_delivered_order"):
+    if not recipient or not _preference_enabled(seller, "email_delivered_order") or not notification_channel_enabled("ORDER_DELIVERED", "SELLER", "email"):
         return False
     return _send(
         subject="Order Delivered — MarketSphere",
@@ -205,7 +206,7 @@ def send_delivered_order_email(order):
 def send_low_stock_email(product):
     seller = getattr(product, "seller", None)
     recipient = _seller_email(seller)
-    if not recipient or not _preference_enabled(seller, "email_low_stock"):
+    if not recipient or not _preference_enabled(seller, "email_low_stock") or not notification_channel_enabled("LOW_STOCK", "SELLER", "email"):
         return False
     return _send(
         subject="Low Stock Alert — MarketSphere",

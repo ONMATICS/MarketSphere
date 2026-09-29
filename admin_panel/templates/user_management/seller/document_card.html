@@ -3,13 +3,13 @@
     <div class="sad-doc-preview"
          {% if document and document.file %}
             data-sad-doc-preview
-            data-doc-src="{{ document.file.url }}"
+            data-doc-src="{{ document.file }}"
          {% endif %}
          data-doc-title="{{ title }}">
 
         {% if document and document.file %}
 
-            {% if document.file.url|lower|slice:"-4:" == ".pdf" %}
+            {% if document.file|lower|slice:"-4:" == ".pdf" %}
 
                 <svg width="30" height="30" viewBox="0 0 24 24"
                      fill="none"
@@ -21,7 +21,7 @@
 
             {% else %}
 
-                <img src="{{ document.file.url }}" alt="{{ title }}">
+                <img src="{{ document.file }}" alt="{{ title }}">
 
             {% endif %}
 
@@ -133,7 +133,7 @@
                 type="button"
                 class="sad-btn sad-btn-secondary sad-btn-sm"
                 data-sad-doc-preview
-                data-doc-src="{{ document.file.url }}"
+                data-doc-src="{{ document.file }}"
                 data-doc-title="{{ title }}"
                 data-document-type="{{ document_key }}"
                 data-document-id="{{ document.id }}"
@@ -144,7 +144,7 @@
             </button>
 
             <a
-                href="{{ document.file.url }}"
+                href="{{ document.file }}"
                 download
                 class="sad-btn sad-btn-secondary sad-btn-sm">
 

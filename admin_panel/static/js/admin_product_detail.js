@@ -2053,6 +2053,9 @@
         var addBtn = document.getElementById("apdThumbAddBtn");
         var addBtn2 = document.getElementById("apdAddMediaBtn");
         var addBtn3 = document.getElementById("apdAddMediaBtn2");
+        var mediaPanel = document.querySelector('[data-apd-panel="media-gallery"]');
+        var maxImages = Math.max(1, parseInt(mediaPanel && mediaPanel.dataset.maxImages, 10) || 8);
+        var maxImageSize = (parseFloat(mediaPanel && mediaPanel.dataset.maxImageSizeMb) || 5) * 1024 * 1024;
         if (thumbs.length === 0 && !strip) return;
 
 
@@ -2260,6 +2263,24 @@
                     );
                     return;
                 }
+
+                var remaining = Math.max(0, maxImages - thumbs.length);
+                if (files.length > remaining) {
+                    showToast("You can upload up to " + maxImages + " images for this product.", "danger");
+                    files = files.slice(0, remaining);
+                }
+                files = files.filter(function (file) {
+                    if (!file.type || file.type.indexOf("image/") !== 0) {
+                        showToast("Only image files can be uploaded.", "danger");
+                        return false;
+                    }
+                    if (file.size > maxImageSize) {
+                        showToast("Each image must be within the configured size limit.", "danger");
+                        return false;
+                    }
+                    return true;
+                });
+                if (!files.length) return;
 
                 try {
                     for (var i = 0; i < files.length; i++) {

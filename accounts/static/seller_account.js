@@ -1,18 +1,9 @@
-
 document.addEventListener('DOMContentLoaded', function () {
 
     /* =========================================================
-       NOTE: This file is intentionally frontend-only, matching
-       the pattern used in orders/static/js/checkout.js and
-       orders/static/js/order_detail.js. There are no fetch()
-       calls and no real submissions here — "Save" actions only
-       simulate a short delay and give UI feedback. Once the
-       seller-account backend (views/URLs) exists, replace the
-       simulated blocks below with real requests without touching
-       the surrounding DOM/animation logic.
+       NOTE: This file handles the Seller Account frontend interactions.
+       Ensure backend endpoints match the fetch() URLs.
        ========================================================= */
-
-
 
     /* =========================================================
        BUTTON LOADING STATE HELPER
@@ -87,10 +78,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* =========================================================
-       EDIT STORE INFORMATION (modal, placeholder save)
+       EDIT STORE INFORMATION
        ========================================================= */
     const editStoreModalEl = document.getElementById('saEditStoreModal');
     const saveStoreBtn = document.getElementById('saSaveStoreBtn');
+    
+    // File inputs for Store Info Modal UI
+    const storeLogo = document.getElementById('store_logo');
+    const storeBanner = document.getElementById('store_banner');
+    const logoFileName = document.getElementById('logo-file-name');
+    const bannerFileName = document.getElementById('banner-file-name');
+
+    if (storeLogo && logoFileName) {
+        storeLogo.addEventListener('change', function() {
+            logoFileName.textContent = this.files.length > 0 ? this.files[0].name : '';
+        });
+    }
+    
+    if (storeBanner && bannerFileName) {
+        storeBanner.addEventListener('change', function() {
+            bannerFileName.textContent = this.files.length > 0 ? this.files[0].name : '';
+        });
+    }
 
     let editStoreModal = null;
     if (editStoreModalEl && window.bootstrap && window.bootstrap.Modal) {
@@ -104,8 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const storeName = document.getElementById('saStoreNameInput');
             const storeEmail = document.getElementById('saStoreEmailInput');
             const description = document.getElementById('saStoreDescriptionInput');
-            const storeLogo = document.getElementById('store_logo');
-            const storeBanner = document.getElementById('store_banner');
 
             if (storeName && !storeName.value.trim()) {
                 showToast('Please enter a store name before saving.', 'error');
@@ -121,11 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append("store_email", storeEmail.value.trim());
             formData.append("store_description", description.value.trim());
 
-            if (storeLogo.files.length > 0) {
+            if (storeLogo && storeLogo.files.length > 0) {
                 formData.append("store_logo", storeLogo.files[0]);
             }
 
-            if (storeBanner.files.length > 0) {
+            if (storeBanner && storeBanner.files.length > 0) {
                 formData.append("store_banner", storeBanner.files[0]);
             }
 
@@ -144,10 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (editStoreModal) {
                             editStoreModal.hide();
                         }
-
                         showToast(data.message, "success");
-
-                        // Optional: refresh the page so updated information appears
                         window.location.reload();
                     } else {
                         showToast(data.message || "Unable to update store information.", "error");
@@ -155,16 +159,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     console.error(error);
-
                     setButtonLoading(saveStoreBtn, false);
-
                     showToast("Something went wrong. Please try again.", "error");
                 });
         });
     }
 
     /* =========================================================
-       UPDATE BUSINESS ADDRESS (modal, placeholder save)
+       UPDATE BUSINESS ADDRESS
        ========================================================= */
     const editAddressModalEl = document.getElementById('saEditAddressModal');
     const saveAddressBtn = document.getElementById('saSaveAddressBtn');
@@ -199,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
             setButtonLoading(saveAddressBtn, true, 'Saving...');
 
             const formData = new FormData();
-
             formData.append("fullName", fullName.value.trim());
             formData.append("phone", phone.value.trim());
             formData.append("address", addressLine.value.trim());
@@ -216,15 +217,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(data => {
                     setButtonLoading(saveAddressBtn, false);
-
                     if (data.success) {
-                        if (editAddressModal) {
-                            editAddressModal.hide();
-                        }
-
+                        if (editAddressModal) editAddressModal.hide();
                         showToast(data.message, "success");
-
-                        // Refresh the page to display updated address
                         window.location.reload();
                     } else {
                         showToast(data.message || "Unable to update business address.", "error");
@@ -232,114 +227,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     console.error(error);
-
                     setButtonLoading(saveAddressBtn, false);
-
                     showToast("Something went wrong. Please try again.", "error");
                 });
         });
     }
 
     /* =========================================================
-   UPDATE SELLER PROFILE
-   ========================================================= */
-    /* =========================================================
-     UPDATE SELLER PROFILE
-     ========================================================= */
-
+       UPDATE SELLER PROFILE
+       ========================================================= */
     const profileModalEl = document.getElementById("saProfileModal");
     const saveProfileBtn = document.getElementById("saProfileSaveBtn");
 
     let profileModal = null;
-
     if (profileModalEl && window.bootstrap?.Modal) {
         profileModal = new window.bootstrap.Modal(profileModalEl);
     }
 
     if (saveProfileBtn) {
-
         saveProfileBtn.addEventListener("click", function () {
-
-            if (saveProfileBtn.classList.contains("is-loading")) {
-                return;
-            }
+            if (saveProfileBtn.classList.contains("is-loading")) return;
 
             const formData = new FormData();
-
-            formData.append(
-                "business_category",
-                document.getElementById("saBusinessCategoryInput").value.trim()
-            );
-
-            formData.append(
-                "business_type",
-                document.getElementById("saBusinessTypeInput").value.trim()
-            );
-
-            formData.append(
-                "national_id_number",
-                document.getElementById("saNationalIdInput").value.trim()
-            );
-
-            formData.append(
-                "years_in_business",
-                document.getElementById("saYearsBusinessInput").value.trim()
-            );
-
-            formData.append(
-                "expected_monthly_volume",
-                document.getElementById("saMonthlyVolumeInput").value.trim()
-            );
-
-            formData.append(
-                "website",
-                document.getElementById("saWebsiteInput").value.trim()
-            );
-
-            formData.append(
-                "product_categories",
-                document.getElementById("saProductCategoriesInput").value.trim()
-            );
-
-            formData.append(
-                "facebook_label",
-                document.getElementById("saFacebookLabelInput").value.trim()
-            );
-
-            formData.append(
-                "facebook_url",
-                document.getElementById("saFacebookUrlInput").value.trim()
-            );
-
-            formData.append(
-                "linkedin_label",
-                document.getElementById("saLinkedinLabelInput").value.trim()
-            );
-
-            formData.append(
-                "linkedin_url",
-                document.getElementById("saLinkedinUrlInput").value.trim()
-            );
-
-            formData.append(
-                "instagram_label",
-                document.getElementById("saInstagramLabelInput").value.trim()
-            );
-
-            formData.append(
-                "instagram_url",
-                document.getElementById("saInstagramUrlInput").value.trim()
-            );
-
-            formData.append(
-                "twitter_label",
-                document.getElementById("saTwitterLabelInput").value.trim()
-            );
-
-            formData.append(
-                "twitter_url",
-                document.getElementById("saTwitterUrlInput").value.trim()
-            );
+            formData.append("business_category", document.getElementById("saBusinessCategoryInput").value.trim());
+            formData.append("business_type", document.getElementById("saBusinessTypeInput").value.trim());
+            formData.append("national_id_number", document.getElementById("saNationalIdInput").value.trim());
+            formData.append("years_in_business", document.getElementById("saYearsBusinessInput").value.trim());
+            formData.append("expected_monthly_volume", document.getElementById("saMonthlyVolumeInput").value.trim());
+            formData.append("website", document.getElementById("saWebsiteInput").value.trim());
+            formData.append("product_categories", document.getElementById("saProductCategoriesInput").value.trim());
+            formData.append("facebook_label", document.getElementById("saFacebookLabelInput").value.trim());
+            formData.append("facebook_url", document.getElementById("saFacebookUrlInput").value.trim());
+            formData.append("linkedin_label", document.getElementById("saLinkedinLabelInput").value.trim());
+            formData.append("linkedin_url", document.getElementById("saLinkedinUrlInput").value.trim());
+            formData.append("instagram_label", document.getElementById("saInstagramLabelInput").value.trim());
+            formData.append("instagram_url", document.getElementById("saInstagramUrlInput").value.trim());
+            formData.append("twitter_label", document.getElementById("saTwitterLabelInput").value.trim());
+            formData.append("twitter_url", document.getElementById("saTwitterUrlInput").value.trim());
 
             setButtonLoading(saveProfileBtn, true, "Saving...");
 
@@ -351,9 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData,
             })
                 .then(async (response) => {
-
                     const data = await response.json();
-
                     setButtonLoading(saveProfileBtn, false);
 
                     if (!response.ok) {
@@ -362,36 +284,23 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     if (data.success) {
-
-                        profileModal.hide();
-
+                        if (profileModal) profileModal.hide();
                         showToast(data.message, "success");
-
                         window.location.reload();
-
                     } else {
-
                         showToast(data.message || "Unable to update seller profile.", "error");
-
                     }
-
                 })
                 .catch((error) => {
-
                     console.error(error);
-
                     setButtonLoading(saveProfileBtn, false);
-
                     showToast("Something went wrong. Please try again.", "error");
-
                 });
-
         });
-
     }
 
     /* =========================================================
-       GO TO SELLER DASHBOARD (placeholder — no dashboard yet)
+       GO TO SELLER DASHBOARD
        ========================================================= */
     const dashboardBtn = document.getElementById('saDashboardBtn');
 
@@ -403,15 +312,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* =========================================================
-       REACTIVATE STORE (placeholder — no backend yet)
+       REACTIVATE STORE
        ========================================================= */
     const reactivateBtn = document.getElementById('saReactivateBtn');
 
-    // const reactivateBtn = document.getElementById("reactivateAccount");
-
     if (reactivateBtn) {
         reactivateBtn.addEventListener("click", function () {
-
             if (reactivateBtn.classList.contains("is-loading")) return;
 
             const confirmed = window.confirm(
@@ -430,44 +336,24 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(response => response.json())
                 .then(data => {
-
                     setButtonLoading(reactivateBtn, false);
-
                     if (data.status === "success") {
-                        showToast(
-                            data.message || "Your seller account has been reactivated.",
-                            "success"
-                        );
-
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
+                        showToast(data.message || "Your seller account has been reactivated.", "success");
+                        setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        showToast(
-                            data.message || "Unable to reactivate your account.",
-                            "error"
-                        );
+                        showToast(data.message || "Unable to reactivate your account.", "error");
                     }
-
                 })
                 .catch(error => {
-
                     console.error(error);
-
                     setButtonLoading(reactivateBtn, false);
-
-                    showToast(
-                        "Something went wrong. Please try again.",
-                        "error"
-                    );
-
+                    showToast("Something went wrong. Please try again.", "error");
                 });
-
         });
     }
 
     /* =========================================================
-       SELLER TOOLS GRID (Product Management, Analytics, etc.)
+       SELLER TOOLS GRID (Future Features)
        ========================================================= */
     const futureToolButtons = document.querySelectorAll('.sa-future-btn.is-disabled');
 
@@ -479,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* =========================================================
-       BUTTON RIPPLE EFFECT (matches order_detail.js / confirmation.js)
+       BUTTON RIPPLE EFFECT
        ========================================================= */
     function bindRipple(el) {
         el.addEventListener('click', function (e) {
@@ -517,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .forEach(bindRipple);
 
     /* =========================================================
-       SCROLL REVEAL (matches home.js / order_detail.js pattern)
+       SCROLL REVEAL
        ========================================================= */
     const revealTargets = document.querySelectorAll('.sa-card, .sa-profile-card');
 
@@ -543,91 +429,18 @@ document.addEventListener('DOMContentLoaded', function () {
             el.classList.add('is-visible');
         });
     }
-});
-/* =========================================================
-   SELLER APPLICATION DOCUMENTS (Frontend Only)
-   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    const documentCards = document.querySelectorAll(".sa-document-card");
-
-    documentCards.forEach(card => {
-
-        /* ---------------------------------------------
-           Create hidden file input
-        --------------------------------------------- */
-
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*,.pdf";
-        fileInput.hidden = true;
-
-        card.appendChild(fileInput);
-
-        /* ---------------------------------------------
-           Buttons
-        --------------------------------------------- */
-
-        const uploadBtn = card.querySelector(".btn-hero-primary");
-        const changeBtn = card.querySelector(".btn-hero-primary");
-        const previewArea = card.querySelector(".sa-document-preview");
-
-        if (uploadBtn) {
-            uploadBtn.addEventListener("click", () => fileInput.click());
-        }
-
-        if (changeBtn && changeBtn !== uploadBtn) {
-            changeBtn.addEventListener("click", () => fileInput.click());
-        }
-
-        /* ---------------------------------------------
-           Drag & Drop
-        --------------------------------------------- */
-
-        previewArea.addEventListener("dragover", function (e) {
-            e.preventDefault();
-            previewArea.classList.add("drag-over");
-        });
-
-        previewArea.addEventListener("dragleave", function () {
-            previewArea.classList.remove("drag-over");
-        });
-
-        previewArea.addEventListener("drop", function (e) {
-
-            e.preventDefault();
-
-            previewArea.classList.remove("drag-over");
-
-            if (!e.dataTransfer.files.length) return;
-
-            handleSelectedFile(e.dataTransfer.files[0], card);
-
-        });
-
-        /* ---------------------------------------------
-           File Picker
-        --------------------------------------------- */
-
-        fileInput.addEventListener("change", function () {
-
-            if (!this.files.length) return;
-
-            handleSelectedFile(this.files[0], card);
-
-        });
-
-    });
-
-});
-/* =========================================================
-   Seller Application Documents Module
-   ========================================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
+    /* =========================================================
+       INITIALIZE SELLER APPLICATION DOCUMENTS
+       ========================================================= */
     attachDocumentEvents();
+
 });
+
+
+/* =========================================================
+   SELLER APPLICATION DOCUMENTS MODULE
+   ========================================================= */
 
 /**
  * Attach event listeners to all document cards (click, change, drag & drop)
@@ -757,7 +570,11 @@ function uploadSellerDocument(file, card, triggerBtn) {
     formData.append("document_type", documentType);
 
     if (triggerBtn) {
-        setButtonLoading(triggerBtn, true, "Uploading...");
+        // Temporarily change button visual to loading state
+        const originalHtml = triggerBtn.innerHTML;
+        triggerBtn.dataset.originalHtml = originalHtml;
+        triggerBtn.innerHTML = '<i class="bi bi-arrow-repeat sa-spin"></i> Uploading...';
+        triggerBtn.disabled = true;
     }
 
     fetch("/accounts/update-seller-document/", {
@@ -772,15 +589,12 @@ function uploadSellerDocument(file, card, triggerBtn) {
             try {
                 data = await response.json();
             } catch (jsonError) {
-                // Response was not JSON (e.g. 500 HTML page)
+                // Response was not JSON
             }
 
             if (!response.ok) {
                 const errorMessage =
-                    data.message ||
-                    data.error ||
-                    data.detail ||
-                    `Server error (${response.status}).`;
+                    data.message || data.error || data.detail || `Server error (${response.status}).`;
                 throw new Error(errorMessage);
             }
 
@@ -797,14 +611,15 @@ function uploadSellerDocument(file, card, triggerBtn) {
         })
         .finally(() => {
             if (triggerBtn) {
-                setButtonLoading(triggerBtn, false);
+                triggerBtn.disabled = false;
+                if (triggerBtn.dataset.originalHtml) {
+                    triggerBtn.innerHTML = triggerBtn.dataset.originalHtml;
+                    delete triggerBtn.dataset.originalHtml;
+                }
             }
         });
 }
 
-/**
- * Update UI elements only after successful upload
- */
 /**
  * Update UI elements only after successful upload
  */
@@ -814,20 +629,19 @@ function updateDocumentCard(card, file, responseData) {
     const statusBadge = card.querySelector(".sa-document-status");
     const actions = card.querySelector(".sa-document-actions");
 
-    // Assign fileUrl and fileName to dataset for the View action
+    // Assign fileUrl based on backend response or fallback to local preview
     if (responseData && responseData.document_url) {
         card.dataset.fileUrl = responseData.document_url;
     } else {
         card.dataset.fileUrl = URL.createObjectURL(file);
     }
     
-    // Store the filename (fallback to the uploaded file name if not returned by backend)
     card.dataset.fileName = (responseData && responseData.file_name) ? responseData.file_name : file.name;
 
     // Status Badge
     if (statusBadge) {
         statusBadge.className = "sa-document-status pending";
-        statusBadge.innerHTML = '<i class="bi bi-hourglass-split"></i> Pending Verification';
+        statusBadge.innerHTML = '<i class="bi bi-hourglass-split"></i> Pending Review';
     }
 
     // Upload Date
@@ -869,7 +683,7 @@ function updateDocumentCard(card, file, responseData) {
 }
 
 /**
- * Open uploaded document
+ * Open uploaded document handles Cloudinary URLs safely
  */
 function openDocument(card) {
     const fileUrl = card.dataset.fileUrl;
@@ -880,7 +694,10 @@ function openDocument(card) {
         return;
     }
 
-    const isPdf = fileName.endsWith(".pdf") || fileUrl.toLowerCase().endsWith(".pdf");
+    // Cloudinary URLs sometimes append query strings (e.g., ?v=16234). 
+    // Strip them off before checking the extension.
+    const cleanUrl = fileUrl.split('?')[0].toLowerCase();
+    const isPdf = fileName.endsWith(".pdf") || cleanUrl.endsWith(".pdf");
 
     if (isPdf) {
         window.open(fileUrl, "_blank");

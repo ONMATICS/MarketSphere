@@ -168,7 +168,7 @@
     }
 
     /* =========================================================
-       EDIT PROFILE MODAL (avatar preview + simulated save)
+       EDIT PROFILE MODAL (avatar preview + save)
        ========================================================= */
     function initEditProfileModal() {
         const uploadInput = document.getElementById("bpAvatarUploadInput");
@@ -285,13 +285,15 @@
                     return;
                 }
 
-                const payload = {
-                    first_name: firstName ? firstName.value.trim() : "",
-                    last_name: lastName ? lastName.value.trim() : "",
-                    username: username ? username.value.trim() : "",
-                    email: email ? email.value.trim() : "",
-                    phone: phone ? phone.value.trim() : "",
-                };
+                const payload = new FormData();
+                payload.append("first_name", firstName ? firstName.value.trim() : "");
+                payload.append("last_name", lastName ? lastName.value.trim() : "");
+                payload.append("username", username ? username.value.trim() : "");
+                payload.append("email", email ? email.value.trim() : "");
+                payload.append("phone", phone ? phone.value.trim() : "");
+
+                const profileImage = uploadInput && uploadInput.files && uploadInput.files[0];
+                if (profileImage) payload.append("profile_image", profileImage);
 
                 setButtonLoading(saveBtn, true, "Saving...");
 
@@ -299,12 +301,11 @@
                     const response = await fetch(endpoint, {
                         method: "POST",
                         headers: {
-                            "Content-Type": "application/json",
                             "X-CSRFToken": csrfToken,
                             "X-Requested-With": "XMLHttpRequest",
                         },
                         credentials: "same-origin",
-                        body: JSON.stringify(payload),
+                        body: payload,
                     });
 
                     let data = {};
@@ -337,8 +338,8 @@
 
                     if (heroName) {
                         const fullName = [
-                            data.user?.first_name ?? payload.first_name,
-                            data.user?.last_name ?? payload.last_name,
+                            data.user?.first_name ?? firstName?.value.trim(),
+                            data.user?.last_name ?? lastName?.value.trim(),
                         ]
                             .filter(Boolean)
                             .join(" ")
@@ -353,7 +354,23 @@
 
                     if (heroUsername) {
                         heroUsername.textContent =
-                            data.user?.username ?? payload.username;
+                            data.user?.username ?? username?.value.trim();
+                    }
+
+                    if (data.user?.profile_image_url) {
+                        const heroAvatarWrap = document.querySelector(".bp-hero-avatar-wrap");
+                        const heroAvatar = heroAvatarWrap?.querySelector(".bp-hero-avatar");
+                        if (heroAvatar) {
+                            if (heroAvatar.tagName === "IMG") {
+                                heroAvatar.src = data.user.profile_image_url;
+                            } else {
+                                const image = document.createElement("img");
+                                image.src = data.user.profile_image_url;
+                                image.alt = data.user.username || "Profile";
+                                image.className = "bp-hero-avatar";
+                                heroAvatar.replaceWith(image);
+                            }
+                        }
                     }
 
                     const modalEl = document.getElementById("bpEditProfileModal");

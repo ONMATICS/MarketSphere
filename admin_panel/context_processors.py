@@ -5,6 +5,7 @@ from django.db.models import Avg, DurationField, ExpressionWrapper, F, Q, Sum
 from django.utils import timezone
 
 from accounts.models import Seller, User
+from notifications.models import ActivityLog
 from orders.models import Order
 from products.models import Category, Product
 
@@ -113,7 +114,9 @@ def admin_context(request):
     products_change = _calculate_change(current_month_products, previous_month_products)
 
     pending_products = Product.objects.filter(status=Product.Status.PENDING).count()
-    low_stock_products = Product.objects.filter(stock_quantity__lte=20).count()
+    low_stock_products = Product.objects.filter(
+        stock_quantity__lte=get_catalog_settings().low_stock_threshold
+    ).count()
 
     # Optimized Category Ranking: Only counts DELIVERED orders
     top_selling_categories = (
@@ -742,7 +745,12 @@ def admin_context(request):
             "security_status": security_status,
             "security_bars": security_bars,
             "security_caption": security_caption,
-        }
+        },
+        "activity_logs": ActivityLog.objects.select_related("actor")[:6],
+        "user_activity_logs": ActivityLog.objects.select_related("actor")[:50],
+        "recent_active_users": User.objects.select_related("seller_profile").order_by(
+            "-last_login", "-date_joined"
+        )[:8],
     }
 
 
@@ -750,6 +758,9 @@ def admin_context(request):
 
 from admin_panel.marketplace import get_marketplace_settings
 from admin_panel.checkout import get_checkout_settings
+from admin_panel.catalog import get_catalog_settings
+from admin_panel.notification_settings import get_notification_settings
+from admin_panel.settings_data import get_admin_settings_data
 from admin_panel.services import get_store_settings
 
 
@@ -760,4 +771,7 @@ def marketplace(request):
         "marketplace": store_settings,
         "marketplace_settings": get_marketplace_settings(),
         "checkout_settings": get_checkout_settings(),
+          "catalog_settings": get_catalog_settings(),
+          "notification_settings": get_notification_settings(),
+          "admin_settings_data": get_admin_settings_data(),
     }

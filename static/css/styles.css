@@ -1,5 +1,4 @@
 * {
-    background-color: #F7F1DE;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -93,7 +92,7 @@
     background: linear-gradient(135deg, #FFFDF8 0%, #F8F0DD 100%) !important;
     border-bottom: 1px solid #D9D2C4;
 }
-.ms-notification-eyebrow { display: block; margin-bottom: 4px; color: #9D6638; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.ms-notification-eyebrow { display: block; margin-bottom: 4px; color: #9D6638; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background-color: transparent;}
 .ms-notification-head h2 { margin: 0; color: #4E220F; font-size: 18px; line-height: 1.2; }
 .ms-notification-clear { width: auto !important; margin-top: 2px; padding: 0 !important; color: #9D6638 !important; background: transparent !important; border: 0 !important; font-size: 12px !important; font-weight: 700; white-space: nowrap; }
 .ms-notification-clear:hover { color: #4E220F !important; text-decoration: underline; text-underline-offset: 3px; border: none !important; }

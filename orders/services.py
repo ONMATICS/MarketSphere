@@ -59,7 +59,7 @@ def _new_order_number(order_format):
             return order_number
     return uuid4().hex[:12].upper()
 
-from notifications.models import Notification
+from notifications.models import ActivityLog, Notification
 from notifications.services.notifications import (
     schedule_low_stock_event,
     schedule_notification,
@@ -94,6 +94,19 @@ def _send_delivered_emails(order):
 
 from accounts.models import Address
 
+from collections import defaultdict
+from decimal import Decimal
+
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+
+from accounts.models import Address, SellerSettings
+from products.models import Product
+from orders.models import Order, OrderItem
+from products.models import CartItem, Cart
+from notifications.models import Notification, ActivityLog
+
 
 @transaction.atomic
 def place_order(
@@ -103,30 +116,60 @@ def place_order(
     email=None,
     phone=None,
     notes="",
+    cart_item_id=None,
 ):
-    cart_items = (
+    cart_items_qs = (
         CartItem.objects
-        .select_related("product", "product__seller", "cart", "promotion_product__promotion")
+        .select_related(
+            "product",
+            "product__seller",
+            "cart",
+            "promotion_product__promotion",
+        )
         .filter(cart__user=user)
         .select_for_update()
     )
 
-    if not cart_items.exists():
+    if cart_item_id is not None:
+        cart_items_qs = cart_items_qs.filter(id=cart_item_id)
+
+    cart_items = list(cart_items_qs)
+
+    if not cart_items:
+        if cart_item_id is not None:
+            raise ValueError(
+                "The selected cart item could not be found."
+            )
+
         raise ValueError("Your cart is empty.")
 
     marketplace_settings = get_marketplace_settings()
     checkout_settings = get_checkout_settings()
-    seller_ids = set(cart_items.values_list("product__seller_id", flat=True))
+
+    seller_ids = {
+        item.product.seller_id
+        for item in cart_items
+    }
+
     if (
-        (not marketplace_settings.multi_seller_orders or not checkout_settings.split_orders)
+        (
+            not marketplace_settings.multi_seller_orders
+            or not checkout_settings.split_orders
+        )
         and len(seller_ids) > 1
     ):
         raise ValueError(
-            "Orders containing products from multiple sellers are currently unavailable."
+            "Orders containing products from multiple sellers "
+            "are currently unavailable."
         )
 
-    if checkout_settings.require_email and not (email or getattr(user, "email", "")):
-        raise ValueError("An email address is required to place an order.")
+    if (
+        checkout_settings.require_email
+        and not (email or getattr(user, "email", ""))
+    ):
+        raise ValueError(
+            "An email address is required to place an order."
+        )
 
     address = get_object_or_404(
         Address,
@@ -139,18 +182,22 @@ def place_order(
         or f"{user.first_name} {user.last_name}".strip()
         or user.username
     )
+
     email = email or user.email
     phone = phone or address.phone or user.contact
 
     if checkout_settings.require_phone and not phone:
-        raise ValueError("A phone number is required to place an order.")
+        raise ValueError(
+            "A phone number is required to place an order."
+        )
 
     items_by_seller = defaultdict(list)
 
     for item in cart_items:
         if item.product.seller_id is None:
             raise ValueError(
-                f"'{item.product.name}' has no seller assigned and cannot be ordered."
+                f"'{item.product.name}' has no seller assigned "
+                "and cannot be ordered."
             )
 
         items_by_seller[item.product.seller_id].append(item)
@@ -158,14 +205,18 @@ def place_order(
     created_orders = []
 
     for seller_id, items in items_by_seller.items():
+
         order_subtotal = Decimal("0.00")
         order_discount = Decimal("0.00")
+
         pending_order_items = []
 
         order = Order.objects.create(
             user=user,
             seller_id=seller_id,
-            order_number=_new_order_number(checkout_settings.order_number_format),
+            order_number=_new_order_number(
+                checkout_settings.order_number_format
+            ),
             status=(
                 Order.Status.CONFIRMED
                 if checkout_settings.auto_confirm_orders
@@ -176,34 +227,65 @@ def place_order(
             shipping_address=address.address_line_1,
             shipping_city=address.city,
             shipping_postal_code=address.postal_code,
-            buyer_notes=notes if checkout_settings.allow_order_notes else "",
+            buyer_notes=(
+                notes
+                if checkout_settings.allow_order_notes
+                else ""
+            ),
         )
 
         for item in items:
-            product = Product.objects.select_for_update().select_related("seller").get(
-                pk=item.product_id
+
+            product = (
+                Product.objects
+                .select_for_update()
+                .select_related("seller")
+                .get(pk=item.product_id)
             )
+
             item.product = product
+
             pricing = get_cart_item_pricing(item)
+
             price = pricing["effective_price"]
 
-            if product.status != Product.Status.PUBLISHED or not product.seller or product.seller.status != product.seller.Status.VERIFIED:
-                raise ValueError(f"'{product.name}' is no longer available for purchase.")
+            if (
+                product.status != Product.Status.PUBLISHED
+                or not product.seller
+                or product.seller.status
+                != product.seller.Status.VERIFIED
+            ):
+                raise ValueError(
+                    f"'{product.name}' is no longer available "
+                    "for purchase."
+                )
 
-            if product.stock_quantity < item.quantity and not checkout_settings.backorders:
+            if (
+                product.stock_quantity < item.quantity
+                and not checkout_settings.backorders
+            ):
                 raise ValueError(
                     f"Only {product.stock_quantity} units of "
                     f"'{product.name}' are available."
                 )
 
             item_total = pricing["line_subtotal"]
+
             order_subtotal += (
-                pricing["original_price"] if pricing["is_promotion"] else pricing["effective_price"]
+                pricing["original_price"]
+                if pricing["is_promotion"]
+                else pricing["effective_price"]
             ) * item.quantity
+
             order_discount += pricing["discount_amount"]
 
             previous_stock = product.stock_quantity
-            product.stock_quantity = max(0, product.stock_quantity - item.quantity)
+
+            product.stock_quantity = max(
+                0,
+                product.stock_quantity - item.quantity,
+            )
+
             product.status = (
                 Product.Status.OUT_OF_STOCK
                 if product.stock_quantity == 0
@@ -211,9 +293,17 @@ def place_order(
             )
 
             product.save(
-                update_fields=["stock_quantity", "status"]
+                update_fields=[
+                    "stock_quantity",
+                    "status",
+                ]
             )
-            schedule_low_stock_event(product, previous_stock, product.stock_quantity)
+
+            schedule_low_stock_event(
+                product,
+                previous_stock,
+                product.stock_quantity,
+            )
 
             pending_order_items.append(
                 OrderItem(
@@ -227,23 +317,55 @@ def place_order(
 
         if order_subtotal < checkout_settings.min_checkout_amount:
             raise ValueError(
-                f"The minimum checkout amount is {checkout_settings.min_checkout_amount}."
+                f"The minimum checkout amount is "
+                f"{checkout_settings.min_checkout_amount}."
             )
+
         if (
             marketplace_settings.max_order_amount
-            and order_subtotal > marketplace_settings.max_order_amount
+            and order_subtotal
+            > marketplace_settings.max_order_amount
         ):
             raise ValueError(
-                f"The maximum order amount is {marketplace_settings.max_order_amount}."
+                f"The maximum checkout amount is "
+                f"{marketplace_settings.max_order_amount}."
             )
 
-        OrderItem.objects.bulk_create(pending_order_items)
+        OrderItem.objects.bulk_create(
+            pending_order_items
+        )
+
+        # ---------------------------------------------------------
+        # SHIPPING
+        # ---------------------------------------------------------
+
+        seller_settings = (
+            SellerSettings.objects
+            .filter(seller_id=seller_id)
+            .first()
+        )
 
         shipping_cost = Decimal("0.00")
-        discount = Decimal("0.00")
+
+        if seller_settings:
+            shipping_cost = (
+                seller_settings.shipping_fee
+                or Decimal("0.00")
+            )
+
+        # ---------------------------------------------------------
+        # TOTALS
+        # ---------------------------------------------------------
+
         tax = Decimal("0.00")
         discount = order_discount
-        total = order_subtotal + shipping_cost + tax - discount
+
+        total = (
+            order_subtotal
+            + shipping_cost
+            + tax
+            - discount
+        )
 
         order.subtotal = order_subtotal
         order.shipping_cost = shipping_cost
@@ -267,27 +389,58 @@ def place_order(
 
         schedule_notification(
             user_id=user.id,
-            notification_type=Notification.NotificationType.ORDER_CREATED,
+            notification_type=(
+                Notification.NotificationType.ORDER_CREATED
+            ),
             title="Order placed successfully",
             message=(
-                f"Your order #{order.order_number} has been placed successfully."
+                f"Your order #{order.order_number} "
+                "has been placed successfully."
             ),
             audience=Notification.Audience.BUYER,
             icon="bi-bag-check",
-            target_url=reverse("order", kwargs={"order_number": order.order_number}),
+            target_url=reverse(
+                "order",
+                kwargs={
+                    "order_number": order.order_number
+                },
+            ),
+            activity=True,
+            activity_category=ActivityLog.Category.ORDER,
+            activity_action="ORDER_CREATED",
+            activity_title="Order placed",
+            activity_description=(
+                f"Order #{order.order_number} was placed."
+            ),
+            activity_actor=user,
+            activity_actor_type=(
+                ActivityLog.ActorType.BUYER
+            ),
+            activity_target=order,
+            activity_metadata={
+                "order_number": order.order_number
+            },
         )
 
         schedule_notification(
             user_id=seller.user_id,
-            notification_type=Notification.NotificationType.ORDER_CREATED,
+            notification_type=(
+                Notification.NotificationType.ORDER_CREATED
+            ),
             title="New order needs attention",
             message=(
-                f"You received a new order #{order.order_number} "
+                f"You received a new order "
+                f"#{order.order_number} "
                 f"worth {order.total}."
             ),
             audience=Notification.Audience.SELLER,
             icon="bi-bag-check",
-            target_url=reverse("order-detail", kwargs={"order_no": order.order_number}),
+            target_url=reverse(
+                "order-detail",
+                kwargs={
+                    "order_no": order.order_number
+                },
+            ),
         )
 
         transaction.on_commit(
@@ -295,7 +448,10 @@ def place_order(
             robust=True,
         )
 
-    cart_items.delete()
+    # Delete only the cart items that were actually ordered.
+    CartItem.objects.filter(
+        id__in=[item.id for item in cart_items]
+    ).delete()
 
     return created_orders
 
@@ -345,6 +501,15 @@ def cancel_user_order(user, order_number):
         icon="bi-x-circle",
         audience=Notification.Audience.SELLER,
         target_url=reverse("order-detail", kwargs={"order_no": order.order_number}),
+        activity=True,
+        activity_category=ActivityLog.Category.ORDER,
+        activity_action="ORDER_CANCELLED",
+        activity_title="Order cancelled",
+        activity_description=f"Order #{order.order_number} was cancelled.",
+        activity_actor=user,
+        activity_actor_type=ActivityLog.ActorType.BUYER,
+        activity_target=order,
+        activity_metadata={"order_number": order.order_number},
     )
     transaction.on_commit(
         lambda order=order: _send_cancelled_emails(order),
@@ -564,6 +729,15 @@ def update_order_status(seller, order_number, status):
             icon="bi-box-seam",
             target_url=reverse("order", kwargs={"order_number": order.order_number}),
             audience=Notification.Audience.BUYER,
+            activity=True,
+            activity_category=ActivityLog.Category.ORDER,
+            activity_action=f"ORDER_{status.upper()}",
+            activity_title=f"Order {status_display}",
+            activity_description=f"Order #{order.order_number} is now {status_display}.",
+            activity_actor=seller.user,
+            activity_actor_type=ActivityLog.ActorType.SELLER,
+            activity_target=order,
+            activity_metadata={"order_number": order.order_number, "status": status},
         )
         if notification_type and status in {
                 Order.Status.DELIVERED,

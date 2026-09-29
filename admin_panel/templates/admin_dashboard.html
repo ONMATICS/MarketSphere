@@ -310,6 +310,20 @@
         </div>
 
         <ul class="adh-activity-feed" id="adhActivityFeed">
+          {% if activity_logs %}
+            {% for activity in activity_logs %}
+              <li class="adh-activity-item">
+                <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
+                  <i class="bi bi-activity"></i>
+                </span>
+                <span class="adh-activity-body">
+                  <strong>{{ activity.title }}</strong>
+                  <span>{{ activity.description|default:activity.action }}</span>
+                  <small>{{ activity.created_at|timesince }} ago</small>
+                </span>
+              </li>
+            {% endfor %}
+          {% else %}
           <li class="adh-activity-item">
             <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -387,6 +401,7 @@
               <small>3 hours ago</small>
             </span>
           </li>
+          {% endif %}
         </ul>
       </div>
     </section>

@@ -361,7 +361,7 @@
                 <span class="bm-checkbox-box"></span>
               </label>
             </td>
-            <td data-label="" class="bm-col-logo"><span class="bm-logo-thumb"{% if brand.logo %} style="background-image:url('{{ brand.logo.url }}'); background-size:cover; color:transparent;"{% endif %}>{{ brand.name|slice:':2'|upper }}</span></td>
+            <td data-label="" class="bm-col-logo"><span class="bm-logo-thumb"{% if brand.logo %} style="background-image:url('{{ brand.logo }}'); background-size:cover; color:transparent;"{% endif %}>{{ brand.name|slice:':2'|upper }}</span></td>
             <td data-label="Brand"><div class="bm-brand-cell"><span class="bm-brand-name">{{ brand.name }}</span></div></td>
             <td data-label="Slug"><span class="bm-brand-slug">/{{ brand.slug }}</span></td>
             <td data-label="Products"><span class="bm-count-value">{{ brand.products_count|default:0 }}</span></td>

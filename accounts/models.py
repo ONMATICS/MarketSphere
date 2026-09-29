@@ -141,9 +141,11 @@ class Seller(models.Model):
 
     store_description = models.TextField(blank=True, null=True)
 
-    store_logo = models.ImageField(upload_to="store_logos/", blank=True, null=True)
+    # Cloudinary URL. Existing local values are kept untouched; new uploads use
+    # the seller's Cloudinary folder through accounts.services.
+    store_logo = models.URLField(blank=True, null=True, max_length=1000)
 
-    store_banner = models.ImageField(upload_to="store_banners/", blank=True, null=True)
+    store_banner = models.URLField(blank=True, null=True, max_length=1000)
 
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.DRAFT
@@ -268,15 +270,22 @@ class SellerApplicationDocument(models.Model):
         choices=DocumentType.choices,
     )
 
-    file = models.FileField(
-        upload_to="seller_documents/", null=True, blank=True
-    )
+    # Cloudinary URL for images, PDFs, and other seller application files.
+    file = models.URLField(blank=True, null=True, max_length=1000)
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     verified = models.BooleanField(default=False)
 
     verification_note = models.TextField(blank=True)
+
+    @property
+    def is_image(self):
+        """Keep document previews working for Cloudinary URL-backed files."""
+        if not self.file:
+            return False
+        path = self.file.split("?", 1)[0].lower()
+        return path.endswith((".jpg", ".jpeg", ".png", ".webp"))
 
 class SellerApplicationFlag(models.Model):
 
@@ -326,6 +335,11 @@ class SellerSettings(models.Model):
     auto_mark_shipped = models.BooleanField(default=False)
     shipping_notes = models.TextField(blank=True)
     return_address = models.TextField(blank=True)
+    shipping_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
 
     # Notifications
     email_new_order = models.BooleanField(default=True)

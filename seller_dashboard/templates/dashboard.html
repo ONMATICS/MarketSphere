@@ -291,7 +291,7 @@
                 <strong>{{ product.name }}</strong>
                 <small>SKU: {{ product.sku }}</small>
               </span>
-              {% if product.stock_quantity < 10 %}
+              {% if product.stock_quantity < catalog_settings.low_stock_threshold %}
                 <span class="dh-lowstock-count dh-lowstock-critical">{{ product.stock_quantity }} left</span>
               {% else %}
                 <span class="dh-lowstock-count dh-lowstock-warning">{{ product.stock_quantity }} left</span>
@@ -313,7 +313,36 @@
       </div>
     </section>
 
-    <!-- ================= 6 & 7. STORE PERFORMANCE + SELLER TIPS ================= -->
+    <!-- ================= 6. LIVE ACTIVITY ================= -->
+    <section class="dh-card dh-reveal" aria-label="Store activity">
+      <div class="dh-card-head">
+        <div>
+          <h2 class="dh-card-title">Store Activity</h2>
+          <p class="dh-card-subtitle">Recent events connected to your store</p>
+        </div>
+      </div>
+      {% if dashboard_activity_logs %}
+        <ul class="dh-tips-list">
+          {% for activity in dashboard_activity_logs %}
+            <li class="dh-tip-item">
+              <span class="dh-tip-icon" aria-hidden="true"><i class="bi bi-activity"></i></span>
+              <span>
+                <strong>{{ activity.title }}</strong><br />
+                {{ activity.description|default:activity.action }}
+                <small class="d-block text-muted">{{ activity.created_at|timesince }} ago</small>
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="dh-empty-state">
+          <p>No activity yet</p>
+          <span>Order and inventory events will appear here.</span>
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- ================= 7 & 8. STORE PERFORMANCE + SELLER TIPS ================= -->
     <section class="dh-split-grid dh-split-grid-wide" aria-label="Store performance and seller tips">
       <!-- ============ STORE PERFORMANCE ============ -->
       <div class="dh-card dh-reveal">

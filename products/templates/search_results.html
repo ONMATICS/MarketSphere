@@ -13,7 +13,10 @@ Search Results • MarketSphere
 {% block content %}
 <!-- ================= BREADCRUMB ================= -->
 <section class="pd-breadcrumb-wrap">
-  <div class="container">
+<div class="container">
+  {% if not catalog_settings.search_visibility %}
+    <div class="alert alert-warning mt-4" role="status">Search is currently unavailable. Please try again later.</div>
+  {% endif %}
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-0">
         <li class="breadcrumb-item">
@@ -204,7 +207,7 @@ Search Results • MarketSphere
                 <span class="product-category-badge">({{ product.category.name }})</span>
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' product.slug %}'">
-                  <img src="{{ product.primary_image.image.url }}" alt="" />
+                  <img src="{{ product.primary_image.image }}" alt="" />
                 </div>
               </div>
 
@@ -257,7 +260,7 @@ Search Results • MarketSphere
                   Out of Stock
                   </span>
 
-                  {% elif product.stock_quantity <= 80 %} <span class="stock-badge low-stock">
+                  {% elif product.stock_quantity <= catalog_settings.low_stock_threshold %} <span class="stock-badge low-stock">
                     Only {{ product.stock_quantity }} left
                     </span>
 

@@ -13,6 +13,36 @@ urlpatterns = [
         views.seller_application,
         name="seller-application",
     ),
+    path("promotions/", views.admin_promotions, name="admin-promotions"),
+    path(
+        "promotions/create/",
+        views.admin_create_promotion,
+        name="admin-create-promotion",
+    ),
+        path("promotions/", views.admin_promotions, name="admin-promotions"),
+    path("promotions/create/", views.admin_create_promotion, name="admin-create-promotion"),
+    path("promotions/<slug:promotion_slug>/edit/", views.admin_edit_promotion, name="admin-edit-promotion"),
+    path("promotions/<slug:promotion_slug>/", views.admin_promotion_detail, name="admin-promotion-detail"),
+        path(
+        "promotions/products/<int:promotion_product_id>/price/",
+        views.update_promotion_product_price,
+        name="admin-update-promotion-product-price",
+    ),
+    path(
+        "promotions/products/<int:promotion_product_id>/toggle-featured/",
+        views.toggle_promotion_product_featured,
+        name="admin-toggle-promotion-product-featured",
+    ),
+    path(
+        "promotions/products/<int:promotion_product_id>/remove/",
+        views.remove_promotion_product,
+        name="admin-remove-promotion-product",
+    ),
+    path(
+        "promotions/<slug:promotion_slug>/products/",
+        views.admin_manage_promotion_products,
+        name="admin-manage-promotion-products",
+    ),
     path("catalog/products/", views.catalog_products, name="catalog-products"),
     path(
         "catalog/products/<slug:product_slug>",
@@ -26,10 +56,13 @@ urlpatterns = [
         views.category_api_detail,
         name="admin-category-api-detail",
     ),
-
     path("catalog/brands", views.catalog_brands, name="catalog-brands"),
     path("catalog/brands/api/", views.brand_api, name="admin-brand-api"),
-    path("catalog/brands/api/<int:brand_id>/", views.brand_api_detail, name="admin-brand-api-detail"),
+    path(
+        "catalog/brands/api/<int:brand_id>/",
+        views.brand_api_detail,
+        name="admin-brand-api-detail",
+    ),
     path("catalog/brands/import/", views.brand_import_api, name="admin-brand-import"),
     path("catalog/brands/export/", views.brand_export_api, name="admin-brands-export"),
     path("sales/orders", views.sales_orders, name="sales-orders"),
@@ -37,7 +70,6 @@ urlpatterns = [
     path("sales/payments", views.payment_management, name="payment-management"),
     path("settings", views.admin_settings, name="admin-settings"),
     path("change-account-state/", views.change_state, name="change-account-state"),
-
     path(
         "user/buyers/<int:user_id>/reset-password/",
         views.admin_reset_password,

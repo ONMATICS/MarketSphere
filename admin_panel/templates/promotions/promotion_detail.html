@@ -1,0 +1,302 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+  {{ promotion.name }}
+{% endblock %}
+
+{% block active_page %}
+  promotions
+{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span>
+    <span class="adh-breadcrumb-sep">/</span>
+    <a href="{% url 'admin-promotions' %}" style="color:inherit;">Promotions</a>
+    <span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">{{ promotion.name }}</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/promotions.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="apr-page apr-detail-page" id="aprDetailPage">
+
+    <!-- ================= PAGE HEADER ================= -->
+    <header class="apr-detail-header apr-reveal">
+      <div class="apr-detail-header-top">
+        <a href="{% url 'admin-promotions' %}" class="apr-back-link">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
+          Promotions
+        </a>
+
+        <div class="apr-detail-identity">
+          <div class="apr-detail-thumb">
+            {% if promotion.banner %}
+              <img src="{{ promotion.banner }}" alt="{{ promotion.name }}" />
+            {% else %}
+              <i class="bi bi-image"></i>
+            {% endif %}
+          </div>
+
+          <div class="apr-detail-identity-text">
+            <div class="apr-detail-title-row">
+              <h1 class="apr-detail-title">{{ promotion.name }}</h1>
+              <span class="apr-badge apr-badge-{{ promotion.display_status_class }}">{{ promotion.display_status }}</span>
+              {% if promotion.badge_text %}
+                <span class="apr-badge apr-badge-info">{{ promotion.badge_text }}</span>
+              {% endif %}
+            </div>
+
+            {% if promotion.short_description %}
+              <p class="apr-detail-subtitle">{{ promotion.short_description }}</p>
+            {% endif %}
+
+            <div class="apr-detail-meta-row">
+              <span class="apr-meta-chip">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+                {{ promotion.start_at|date:"M d, Y" }} &rarr; {{ promotion.end_at|date:"M d, Y" }}
+              </span>
+              {% if promotion.maximum_discount_percentage %}
+                <span class="apr-meta-sep">&middot;</span>
+                <span class="apr-meta-chip">Up to {{ promotion.maximum_discount_percentage }}% off</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="apr-detail-header-actions">
+        <button type="button" class="apr-btn apr-btn-secondary" onclick="window.location.href='{% url 'admin-edit-promotion' promotion.slug %}'">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"></path></svg>Edit Promotion
+        </button>
+        <a href="{% url 'admin-manage-promotion-products' promotion.slug %}" class="apr-btn apr-btn-primary">
+           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path></svg>Manage Products
+        </a>
+      </div>
+    </header>
+
+    <!-- ================= DETAIL LAYOUT ================= -->
+    <div class="apr-detail-layout">
+
+      <!-- ================= SIDEBAR: OVERVIEW ================= -->
+      <aside class="apr-detail-side">
+        <section class="apr-card apr-reveal">
+          <div class="apr-card-head">
+            <h2 class="apr-card-title"><i class="bi bi-clipboard-data"></i> Overview</h2>
+          </div>
+
+          <div class="apr-overview-list">
+            <div class="apr-overview-row"><span>Status</span><span class="apr-badge apr-badge-{{ promotion.display_status_class }}">{{ promotion.display_status }}</span></div>
+            <div class="apr-overview-row"><span>Maximum Discount</span><strong>{% if promotion.maximum_discount_percentage %}{{ promotion.maximum_discount_percentage }}%{% else %}&mdash;{% endif %}</strong></div>
+            <div class="apr-overview-row"><span>Products</span><strong>{{ products_count }}</strong></div>
+            <div class="apr-overview-row">
+              <span>Homepage</span>
+              {% if promotion.display_on_homepage %}
+                <span class="apr-homepage-pill is-on"><i class="bi bi-check-circle-fill"></i> Enabled</span>
+              {% else %}
+                <span class="apr-homepage-pill is-off"><i class="bi bi-dash-circle"></i> Disabled</span>
+              {% endif %}
+            </div>
+            <div class="apr-overview-row apr-overview-row-block">
+              <span>Campaign Period</span>
+              <div class="apr-period-block">
+                <strong>{{ promotion.start_at|date:"M d, Y, g:i A" }}</strong>
+                <div class="apr-period-track"><span class="apr-period-dot"></span><span class="apr-period-line"></span><span class="apr-period-dot"></span></div>
+                <strong>{{ promotion.end_at|date:"M d, Y, g:i A" }}</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- ================= MAIN COLUMN ================= -->
+      <div class="apr-detail-main">
+
+        <!-- ============ CAMPAIGN INFORMATION ============ -->
+        <section class="apr-card apr-reveal">
+          <div class="apr-card-head">
+            <h2 class="apr-card-title"><i class="bi bi-info-circle"></i> Campaign Information</h2>
+          </div>
+
+          <div class="apr-info-grid">
+            <div class="apr-info-item">
+              <span class="apr-info-label">Name</span>
+              <span class="apr-info-value">{{ promotion.name }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Slug</span>
+              <span class="apr-info-value">{{ promotion.slug }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Badge Text</span>
+              <span class="apr-info-value">{{ promotion.badge_text|default:"—" }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Maximum Discount</span>
+              <span class="apr-info-value">{% if promotion.maximum_discount_percentage %}{{ promotion.maximum_discount_percentage }}%{% else %}—{% endif %}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Starts</span>
+              <span class="apr-info-value">{{ promotion.start_at|date:"M d, Y, g:i A" }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Ends</span>
+              <span class="apr-info-value">{{ promotion.end_at|date:"M d, Y, g:i A" }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Homepage Visibility</span>
+              <span class="apr-info-value">{{ promotion.display_on_homepage|yesno:"Enabled,Disabled" }}</span>
+            </div>
+            <div class="apr-info-item">
+              <span class="apr-info-label">Homepage Priority</span>
+              <span class="apr-info-value">{{ promotion.homepage_priority }}</span>
+            </div>
+            <div class="apr-info-item apr-info-item-wide">
+              <span class="apr-info-label">Short Description</span>
+              <span class="apr-info-value">{{ promotion.short_description|default:"No short description provided." }}</span>
+            </div>
+            <div class="apr-info-item apr-info-item-wide">
+              <span class="apr-info-label">Description</span>
+              <span class="apr-info-value">{{ promotion.description|default:"No description provided."|linebreaksbr }}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ MEDIA ============ -->
+        <section class="apr-card apr-reveal">
+          <div class="apr-card-head">
+            <h2 class="apr-card-title"><i class="bi bi-image"></i> Media</h2>
+          </div>
+
+          <div class="apr-media-grid">
+            <div class="apr-media-block">
+              <span class="apr-info-label">Banner</span>
+              <div class="apr-media-preview apr-media-preview-banner">
+                {% if promotion.banner %}
+                  <img src="{{ promotion.banner }}" alt="{{ promotion.name }} banner" />
+                {% else %}
+                  <div class="apr-media-empty"><i class="bi bi-image"></i><span>No banner uploaded</span></div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="apr-media-block">
+              <span class="apr-info-label">Thumbnail</span>
+              <div class="apr-media-preview apr-media-preview-thumb">
+                {% if promotion.thumbnail %}
+                  <img src="{{ promotion.thumbnail }}" alt="{{ promotion.name }} thumbnail" />
+                {% else %}
+                  <div class="apr-media-empty"><i class="bi bi-image"></i><span>No thumbnail uploaded</span></div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ CATEGORIES ============ -->
+        <section class="apr-card apr-reveal">
+          <div class="apr-card-head">
+            <h2 class="apr-card-title"><i class="bi bi-grid"></i> Categories</h2>
+          </div>
+
+          {% if display_categories %}
+            <div class="apr-category-chip-row">
+              {% for category in display_categories %}
+                <span class="apr-category-chip">{{ category.name }}</span>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="apr-empty-inline">No categories assigned to this promotion yet.</p>
+          {% endif %}
+        </section>
+
+        <!-- ============ PROMOTION PRODUCTS ============ -->
+        <section class="apr-card apr-reveal">
+          <div class="apr-card-head">
+            <div>
+              <h2 class="apr-card-title"><i class="bi bi-box-seam"></i> Promotion Products</h2>
+              <p class="apr-card-subtitle">Products participating in this campaign, across all sellers</p>
+            </div>
+            <a href="{% url 'admin-manage-promotion-products' promotion.slug %}" class="apr-btn apr-btn-primary">
+              Manage Products
+            </a>
+          </div>
+
+          {% if products_count %}
+            <div class="apr-promo-products-count">{{ products_count }} Product{{ products_count|pluralize }} participating</div>
+
+            <div class="apr-table-wrap">
+              <table class="apr-table apr-table-compact">
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Seller</th>
+                    <th scope="col">Promotion Price</th>
+                    <th scope="col">Featured</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for promo_item in product_preview %}
+                    <tr class="apr-row">
+                      <td data-label="Product">
+                        <div class="apr-identity-cell">
+                          <span class="apr-thumb">
+                            {% if promo_item.product.primary_image %}
+                              <img src="{{ promo_item.product.primary_image.image }}" alt="{{ promo_item.product.name }}" />
+                            {% else %}
+                              <i class="bi bi-image"></i>
+                            {% endif %}
+                          </span>
+                          <div class="apr-identity-text">
+                            <strong class="apr-promo-name">{{ promo_item.product.name }}</strong>
+                          </div>
+                        </div>
+                      </td>
+                      <td data-label="Seller">{{ promo_item.product.seller.store_name|default:"—" }}</td>
+                      <td data-label="Promotion Price">
+                        <strong>Rs. {{ promo_item.promotion_price|floatformat:0 }}</strong>
+                        <span class="apr-muted-text">was Rs. {{ promo_item.original_price|floatformat:0 }}</span>
+                      </td>
+                      <td data-label="Featured">
+                        {% if promo_item.is_featured %}
+                          <span class="apr-badge apr-badge-success">Featured</span>
+                        {% else %}
+                          <span class="apr-muted-text">—</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            {% if products_count > product_preview|length %}
+              <p class="apr-promo-products-more">Showing {{ product_preview|length }} of {{ products_count }} products — open Manage Products to see the full list.</p>
+            {% endif %}
+          {% else %}
+            <div class="apr-empty-state apr-empty-state-compact">
+              <div class="apr-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8l9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path></svg>
+              </div>
+              <h3 class="apr-empty-title">No products are participating yet</h3>
+              <p class="apr-empty-subtitle">Sellers assign their eligible products to this promotion. Once they do, they'll appear here.</p>
+              <a href="{% url 'admin-manage-promotion-products' promotion.slug %}" class="apr-btn apr-btn-secondary apr-btn-sm">Manage Products</a>
+            </div>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div class="apr-toast-container" id="aprToastContainer" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/promotions.js' %}"></script>
+{% endblock %}

@@ -54,7 +54,7 @@
 
               <div class="pd-gallery-image-wrap" id="pdImageWrap">
                 {% if product.primary_image %}
-                  <img src="{{ product.primary_image.image.url }}" alt="{{ product.primary_image.alt_text|default:product.name }}" id="pdMainImage" class="pd-main-image" />
+                  <img src="{{ product.primary_image.image }}" alt="{{ product.primary_image.alt_text|default:product.name }}" id="pdMainImage" class="pd-main-image" />
                 {% else %}
                   <img src="{% static 'images/logo-icon.png' %}" alt="No Image" id="pdMainImage" class="pd-main-image" />
                 {% endif %}
@@ -70,7 +70,7 @@
             <!-- Thumbnail Strip -->
             <div class="pd-thumb-strip" id="pdThumbStrip" role="listbox" aria-label="Product thumbnails">
               {% for image in product.images.all %}
-                <button type="button" class="pd-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.counter0 }}" data-image="{{ image.image.url }}" aria-label="View image {{ forloop.counter }}"><img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" /></button>
+                <button type="button" class="pd-thumb {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.counter0 }}" data-image="{{ image.image }}" aria-label="View image {{ forloop.counter }}"><img src="{{ image.image }}" alt="{{ image.alt_text|default:product.name }}" /></button>
               {% empty %}
                 <button type="button" class="pd-thumb is-active"><img src="{% static 'images/logo-icon.png' %}" alt="No image" /></button>
               {% endfor %}
@@ -138,7 +138,7 @@
               {% if product.stock_quantity == 0 %}
                 <i class="bi bi-exclamation-circle text-error"></i>
                 <span class="pd-stock-note">Oops! We are <strong>Out of Stock</strong></span>
-              {% elif product.stock_quantity <= 80 %}
+              {% elif product.stock_quantity <= catalog_settings.low_stock_threshold %}
                 <i class="bi bi-exclamation-circle text-warning"></i>
                 <span class="pd-stock-note">Only <strong>{{ product.stock_quantity }}</strong> left — order soon</span>
               {% else %}
@@ -160,13 +160,10 @@
                 <input type="number" class="pd-qty-input" id="pdQtyInput" value="1" min="1" max="5" aria-label="Quantity" />
                 <button type="button" class="pd-qty-btn" id="pdQtyPlus" aria-label="Increase quantity"><i class="bi bi-plus"></i></button>
               </div>
-
               <div class="pd-action-buttons">
-                <!-- Add to Cart: Django will wire this to cart logic -->
-                <button type="button" class="btn pd-btn-add-cart" id="pdAddToCartBtn" data-add-url="{% url 'add_to_cart' product_slug=product.slug %}{% if promotion_product %}?promotion_product_id={{ promotion_product.id }}{% endif %}"{% if promotion_product %} data-promotion-product-id="{{ promotion_product.id }}"{% endif %}><i class="bi bi-cart4"></i> Add to Cart</button> <!-- Buy Now: Django will wire this to checkout logic -->
-                <button type="button" class="btn pd-btn-buy-now" id="pdBuyNowBtn"><i class="bi bi-lightning-charge-fill"></i> Buy Now</button>
+                  <button type="button" class="btn pd-btn-add-cart" id="pdAddToCartBtn" data-add-url="{% url 'add_to_cart' product_slug=product.slug %}{% if promotion_product %}?promotion_product_id={{ promotion_product.id }}{% endif %}" {% if promotion_product %}data-promotion-product-id="{{ promotion_product.id }}"{% endif %}><i class="bi bi-cart4"></i> Add to Cart</button>
+                  <button type="button" class="btn pd-btn-buy-now" id="pdBuyNowBtn"><i class="bi bi-lightning-charge-fill"></i> Buy Now</button>
               </div>
-
               <div class="pd-secondary-actions">
                 <!-- Wishlist toggle: Django will persist wishlist state -->
                 <button type="button"
@@ -690,7 +687,7 @@
             <input class="form-check-input" type="checkbox" id="fbt-1" checked disabled data-product-id="{{ product.id }}"/>
           </div>
           <div class="pd-fbt-image">
-            <img src="{{ product.primary_image.image.url }}" alt="" />
+            <img src="{{ product.primary_image.image }}" alt="" />
           </div>
           <div class="pd-fbt-info">
             <span class="pd-fbt-label">This item</span>
@@ -711,7 +708,7 @@
               <input class="form-check-input" type="checkbox" id="fbt-2" checked data-product-id="{{ product.id }}"/>
             </div>
             <div class="pd-fbt-image">
-              <img src="{{ product.primary_image.image.url }}" alt="" />
+            <img src="{{ product.primary_image.image }}" alt="" />
             </div>
             <div class="pd-fbt-info">
               <label for="fbt-2" class="pd-fbt-label-link">{{ product.name }}</label>
@@ -775,7 +772,7 @@
                 {% comment %} <span class="product-category-badge">({{ product.category.name }})</span> {% endcomment %}
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' product.slug %}'">
-                  <img src="{{ product.primary_image.image.url }}" alt="" />
+                  <img src="{{ product.primary_image.image }}" alt="" />
                 </div>
               </div>
               <div class="product-card-body">
@@ -804,7 +801,7 @@
                 </div>
                 {% if product.stock_quantity <= 0 %}
                   <span class="stock-badge out-of-stock">Out of Stock</span>
-                {% elif product.stock_quantity <= 80 %}
+                {% elif product.stock_quantity <= catalog_settings.low_stock_threshold %}
                   <span class="stock-badge low-stock">Only {{ product.stock_quantity }} left</span>
                 {% else %}
                   <span class="stock-badge in-stock">In Stock ({{ product.total_sold|default:"0"}} sold)</span>
@@ -868,7 +865,7 @@
                 {% comment %} <span class="product-category-badge">({{ product.category.name }})</span> {% endcomment %}
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' product.slug %}'">
-                  <img src="{{ product.primary_image.image.url }}" alt="" />
+                  <img src="{{ product.primary_image.image }}" alt="" />
                 </div>
               </div>
               <div class="product-card-body">
@@ -897,7 +894,7 @@
                 </div>
                 {% if product.stock_quantity <= 0 %}
                   <span class="stock-badge out-of-stock">Out of Stock</span>
-                {% elif product.stock_quantity <= 80 %}
+                {% elif product.stock_quantity <= catalog_settings.low_stock_threshold %}
                   <span class="stock-badge low-stock">Only {{ product.stock_quantity }} left</span>
                 {% else %}
                   <span class="stock-badge in-stock">In Stock ({{ product.total_sales|default:0 }}k sold)</span>

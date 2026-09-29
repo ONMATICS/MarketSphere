@@ -322,6 +322,25 @@
     </div>
   </section>
 
+  <section class="container od-card mt-4" aria-label="Order activity">
+    <div class="od-card-head">
+      <h2 class="od-card-title"><i class="bi bi-activity"></i> Order Activity</h2>
+    </div>
+    {% if order_activity_logs %}
+      <div class=" list-group-flush">
+        {% for activity in order_activity_logs %}
+          <div class="list-group-item px-0">
+            <strong>{{ activity.title }}</strong>
+            <p class="mb-1">{{ activity.description|default:activity.action }}</p>
+            <small class="text-muted">{{ activity.created_at|timesince }} ago</small>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No activity has been recorded for this order yet.</p>
+    {% endif %}
+  </section>
+
   <!-- ================= TOAST CONTAINER ================= -->
   <div class="od-toast-container" id="odToastContainer" aria-live="polite"></div>
 

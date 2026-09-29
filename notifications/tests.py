@@ -1,11 +1,11 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from django.db import transaction
 from django.test import TestCase
 
 from accounts.models import Seller, SellerSettings, User
-from notifications.models import Notification
-from notifications.services.notifications import schedule_low_stock_event
+from notifications.models import ActivityLog, Notification
+from notifications.services.notifications import notify, schedule_low_stock_event
 from orders.models import Order
 from orders.services import update_order_status
 from products.models import Product
@@ -31,6 +31,35 @@ class NotificationIntegrationTests(TestCase):
             shipping_address="1 Test Street",
             shipping_city="Test City",
         )
+
+    def test_notify_can_create_notification_email_and_activity_log(self):
+        email_service = Mock()
+
+        with self.captureOnCommitCallbacks(execute=True):
+            notification = notify(
+                user_id=self.buyer.id,
+                notification_type=Notification.NotificationType.ORDER_CREATED,
+                title="Order placed",
+                message="Your order was placed.",
+                audience=Notification.Audience.BUYER,
+                email=True,
+                email_service=email_service,
+                email_object=self.order,
+                activity=True,
+                activity_category=ActivityLog.Category.ORDER,
+                activity_action="ORDER_CREATED",
+                activity_actor=self.buyer,
+                activity_actor_type=ActivityLog.ActorType.BUYER,
+                activity_target=self.order,
+                activity_metadata={"order_number": self.order.order_number},
+            )
+
+        self.assertIsNotNone(notification)
+        email_service.assert_called_once_with(self.order)
+        activity = ActivityLog.objects.get(action="ORDER_CREATED")
+        self.assertEqual(activity.actor, self.buyer)
+        self.assertEqual(activity.target, self.order)
+        self.assertEqual(activity.metadata["order_number"], "ORDER-1")
 
     def test_repeated_delivered_status_creates_one_event_and_email(self):
         with self.captureOnCommitCallbacks(execute=True):

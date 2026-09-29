@@ -1148,7 +1148,7 @@
                       <span class="product-category-badge">({{ item.product.category.name }})</span>
 
                       <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' item.product.slug %}'">
-                        <img src="{{ item.product.primary_image.image.url }}" alt="" />
+                        <img src="{{ item.product.primary_image.image }}" alt="" />
                       </div>
                     </div>
 
@@ -1313,6 +1313,17 @@
               </div>
 
               <ul class="bd-timeline" id="bdTimeline">
+                {% if activity_logs %}
+                  {% for activity in activity_logs %}
+                    <li class="bd-timeline-item" data-type="{{ activity.category|lower }}">
+                      <span class="bd-timeline-dot c-accent"><i class="bi bi-activity"></i></span>
+                      <div class="bd-timeline-body">
+                        <div class="bd-timeline-top"><strong>{{ activity.title }}</strong><span class="bd-badge c-success">{{ activity.action|title }}</span></div>
+                        <p>{{ activity.description|default:activity.action }}</p><span class="bd-timeline-time">{{ activity.created_at|timesince }} ago</span>
+                      </div>
+                    </li>
+                  {% endfor %}
+                {% else %}
                 <li class="bd-timeline-item" data-type="order">
                   <span class="bd-timeline-dot c-accent">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1423,6 +1434,7 @@
                     <p>Ayesha Khan registered via email signup.</p><span class="bd-timeline-time">Nov 3, 2025 &middot; 4:12 PM</span>
                   </div>
                 </li>
+                {% endif %}
               </ul>
             </div>
           </section>

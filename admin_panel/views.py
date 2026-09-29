@@ -3,7 +3,7 @@ from django.db.models.functions import Coalesce
 from decimal import Decimal
 
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from accounts import services as account_services
 from accounts.models import User, Address
 from orders.models import Order
@@ -15,6 +15,7 @@ from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.core.exceptions import ValidationError
 from products.models import Brand, Category
+from notifications.models import ActivityLog
 import json
 import csv
 from django.utils.text import slugify
@@ -171,6 +172,30 @@ SETTINGS_SECTION_MODELS = {
     "notifications": NotificationSettings,
 }
 
+NOTIFICATION_EVENTS = {
+    "buyer": [
+        ("ORDER_CREATED", "Order placed"),
+        ("ORDER_CONFIRMED", "Order confirmed"),
+        ("ORDER_SHIPPED", "Order shipped"),
+        ("ORDER_DELIVERED", "Order delivered"),
+        ("ORDER_CANCELLED", "Order cancelled"),
+        ("WISHLIST_PRICE_DROP", "Wishlist price drop"),
+    ],
+    "seller": [
+        ("ORDER_CREATED", "New order"),
+        ("ORDER_CANCELLED", "Order cancelled"),
+        ("LOW_STOCK", "Low stock alert"),
+        ("SELLER_APPLICATION_APPROVED", "Application approved"),
+        ("SELLER_APPLICATION_REJECTED", "Application rejected"),
+    ],
+    "admin": [
+        ("SELLER_APPLICATION_APPROVED", "Seller application approved"),
+        ("SELLER_APPLICATION_REJECTED", "Seller application rejected"),
+        ("ORDER_CANCELLED", "Order cancelled"),
+        ("SYSTEM", "System alert"),
+    ],
+}
+
 
 def _json_value(value):
     if isinstance(value, Decimal):
@@ -221,6 +246,9 @@ def admin_settings(request):
             "marketplace_logo_url": store.marketplace_logo.url if store.marketplace_logo else "",
             "marketplace_favicon_url": store.marketplace_favicon.url if store.marketplace_favicon else "",
             "settings_payload": payload,
+            "notification_buyer_events": NOTIFICATION_EVENTS["buyer"],
+            "notification_seller_events": NOTIFICATION_EVENTS["seller"],
+            "notification_admin_events": NOTIFICATION_EVENTS["admin"],
             "audit_log_entries": [
                 {
                     "category": entry.section,
@@ -234,6 +262,8 @@ def admin_settings(request):
                 }
                 for entry in AdminAuditLog.objects.select_related("admin")[:100]
             ],
+            "activity_logs": ActivityLog.objects.select_related("actor")[:100],
+            "user_activity_logs": ActivityLog.objects.select_related("actor")[:100],
         })
         return render(request, "admin_settings.html", context)
 
@@ -252,7 +282,9 @@ def admin_settings(request):
         if not key.startswith("__")
     }
     for key, uploaded in request.FILES.items():
-        if uploaded:
+        # Browsers submit an empty UploadedFile for an untouched file input.
+        # It must not overwrite an existing StoreSettings image.
+        if uploaded and getattr(uploaded, "name", ""):
             values[key] = uploaded
 
     with transaction.atomic():
@@ -277,6 +309,8 @@ def admin_settings(request):
                         converted = int(raw_value or 0)
                     elif field.get_internal_type() == "DecimalField":
                         converted = Decimal(raw_value or 0)
+                    elif field.get_internal_type() == "JSONField":
+                        converted = json.loads(raw_value or "{}")
                     else:
                         converted = raw_value
                     old_value = getattr(model_instance, key)
@@ -402,10 +436,15 @@ def category_api(request):
                         data.get("icon") or ""
                     ).strip(),
                     is_active=is_active,
-                    image=image if image else None,
                 )
                 category.full_clean()
                 category.save()
+                if image:
+                    result = services.store_catalog_image(
+                        image, "categories", str(category.id), "image"
+                    )
+                    category.image = result.get("secure_url") or result.get("url")
+                    category.save(update_fields=["image"])
             else:
                 category_id = request.resolver_match.kwargs.get(
                     "category_id"
@@ -442,11 +481,14 @@ def category_api(request):
                 ).strip()
                 category.is_active = is_active
 
-                if image:
-                    category.image = image
-
                 category.full_clean()
                 category.save()
+                if image:
+                    result = services.store_catalog_image(
+                        image, "categories", str(category.id), "image"
+                    )
+                    category.image = result.get("secure_url") or result.get("url")
+                    category.save(update_fields=["image"])
 
     except IntegrityError:
         return _category_api_error(
@@ -456,6 +498,8 @@ def category_api(request):
         return _category_api_error(
             "Category data or image is invalid. Please check the submitted fields."
         )
+    except ValueError as error:
+        return _category_api_error(str(error))
 
     return JsonResponse({
         "ok": True,
@@ -560,12 +604,16 @@ def category_api_detail(request, category_id):
 
             category.parent = parent
 
-    if image:
-        category.image = image
-
     try:
         category.full_clean()
         category.save()
+
+        if image:
+            result = services.store_catalog_image(
+                image, "categories", str(category.id), "image"
+            )
+            category.image = result.get("secure_url") or result.get("url")
+            category.save(update_fields=["image"])
 
     except IntegrityError:
         return _category_api_error(
@@ -575,6 +623,8 @@ def category_api_detail(request, category_id):
         return _category_api_error(
             "Category data or image is invalid. Please check the submitted fields."
         )
+    except ValueError as error:
+        return _category_api_error(str(error))
 
     return JsonResponse({
         "ok": True,
@@ -2191,3 +2241,203 @@ def edit_product_view(request, product_slug):
             },
         }
     )
+
+from promotions.models import Promotion
+from promotions import services as promotion_services
+
+
+def admin_promotions(request):
+    search_query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "").strip()
+
+    promotions_qs = promotion_services.get_admin_promotions_queryset(
+        search=search_query,
+        status=status_filter,
+    )
+
+    summary = promotion_services.get_admin_promotion_summary()
+
+    paginator = Paginator(promotions_qs, 10)
+    page_obj = paginator.get_page(request.GET.get("page", 1))
+
+    promotion_services.annotate_promotion_display_status(page_obj.object_list)
+
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+
+    return render(request, "promotions/promotions_list.html", {
+        "promotions": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "pagination_query": query_params,
+        "summary": summary,
+        "search_query": search_query,
+        "status_filter": status_filter,
+        "status_choices": Promotion.Status.choices,
+    })
+
+def admin_create_promotion(request):
+    categories = Category.objects.filter(is_active=True).order_by("name")
+
+    if request.method == "POST":
+        try:
+            success, message, promotion, errors = promotion_services.create_promotion_service(
+                request.POST, request.FILES,
+            )
+        except ValueError as exc:
+            success, message, promotion, errors = False, str(exc), None, {}
+
+        if success:
+            messages.success(request, message)
+            return redirect("admin-promotions")
+
+        messages.error(request, message)
+
+        return render(request, "promotions/promotion_create.html", {
+            "categories": categories,
+            "errors": errors,
+            "form_data": request.POST,
+            "selected_category_ids": request.POST.getlist("categories"),
+        })
+
+    return render(request, "promotions/promotion_create.html", {
+        "categories": categories,
+        "errors": {},
+        "form_data": {},
+        "selected_category_ids": [],
+    })
+
+
+def admin_promotion_detail(request, promotion_slug):
+    context = promotion_services.get_admin_promotion_detail(promotion_slug)
+    promotion_services.annotate_promotion_display_status([context["promotion"]])
+    return render(request, "promotions/promotion_detail.html", context)
+
+def admin_edit_promotion(request, promotion_slug):
+    categories = Category.objects.filter(is_active=True).order_by("name")
+    context = promotion_services.get_admin_promotion_detail(promotion_slug)
+
+    if request.method == "POST":
+        try:
+            success, message, promotion, errors = promotion_services.update_promotion_service(
+                request.POST, request.FILES, promotion_slug
+            )
+        except ValueError as exc:
+            success, message, promotion, errors = False, str(exc), {}
+
+        if success:
+            messages.success(request, message)
+            return redirect("admin-promotion-detail", promotion_slug=promotion.slug)
+
+        # ON FAILURE: Do not redirect. Re-render the form with the errors and the user's input.
+        messages.error(request, message)
+        return render(request, "promotions/promotion_edit.html", {
+            "categories": categories,
+            "errors": errors,                             # Pass the validation errors
+            "form_data": request.POST,                    # Keep what the user just typed
+            "promotion": context["promotion"],            # Keep the DB object for image URLs
+            "selected_category_ids": request.POST.getlist("categories"), # Keep selected checkboxes
+        })
+
+    # ON GET (Initial page load):
+    return render(request, "promotions/promotion_edit.html", {
+        "categories": categories,
+        "errors": {},
+        "form_data": context["promotion"].__dict__,
+        "promotion": context["promotion"], 
+        "selected_category_ids": [str(cat.id) for cat in context["promotion"].categories.all()],
+    })
+
+from promotions.models import PromotionProduct
+
+
+def admin_manage_promotion_products(request, promotion_slug):
+    promotion = get_object_or_404(Promotion, slug=promotion_slug)
+    promotion_services.annotate_promotion_display_status([promotion])
+
+    search_query = request.GET.get("q", "").strip()
+    seller_filter = request.GET.get("seller", "").strip()
+    category_filter = request.GET.get("category", "").strip()
+    featured_filter = request.GET.get("featured", "").strip()
+    sort = request.GET.get("sort", "").strip()
+
+    queryset = promotion_services.get_admin_promotion_products_queryset(
+        promotion,
+        search=search_query,
+        seller_id=seller_filter or None,
+        category_id=category_filter or None,
+        featured=featured_filter or None,
+        sort=sort or None,
+    )
+
+    filters = promotion_services.get_promotion_product_filters(promotion)
+    summary = promotion_services.get_promotion_products_summary(promotion)
+
+    paginator = Paginator(queryset, 10)
+    page_obj = paginator.get_page(request.GET.get("page", 1))
+
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+
+    return render(request, "promotions/manage_products.html", {
+        "promotion": promotion,
+        "promotion_products": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "pagination_query": query_params,
+        "summary": summary,
+        "sellers": filters["sellers"],
+        "categories": filters["categories"],
+        "search_query": search_query,
+        "seller_filter": seller_filter,
+        "category_filter": category_filter,
+        "featured_filter": featured_filter,
+        "sort": sort,
+    })
+
+
+@require_POST
+def update_promotion_product_price(request, promotion_product_id):
+    try:
+        data = json.loads(request.body or "{}")
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({"success": False, "message": "Invalid request data."}, status=400)
+
+    try:
+        promotion_product = promotion_services.update_promotion_product_price_service(
+            promotion_product_id, data.get("promotion_price"),
+        )
+    except ValueError as exc:
+        return JsonResponse({"success": False, "message": str(exc)}, status=400)
+
+    return JsonResponse({
+        "success": True,
+        "message": "Promotion price updated successfully.",
+        "promotion_price": str(promotion_product.promotion_price),
+        "discount_percentage": str(promotion_product.discount_percentage),
+    })
+
+
+@require_POST
+def toggle_promotion_product_featured(request, promotion_product_id):
+    promotion_product = promotion_services.toggle_promotion_product_featured_service(
+        promotion_product_id,
+    )
+    return JsonResponse({
+        "success": True,
+        "is_featured": promotion_product.is_featured,
+        "message": (
+            "Product marked as featured."
+            if promotion_product.is_featured
+            else "Product unmarked as featured."
+        ),
+    })
+
+
+@require_POST
+def remove_promotion_product(request, promotion_product_id):
+    promotion_services.remove_promotion_product_service(promotion_product_id)
+    return JsonResponse({
+        "success": True,
+        "message": "Product removed from the promotion.",
+    })

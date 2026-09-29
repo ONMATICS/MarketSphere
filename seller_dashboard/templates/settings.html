@@ -133,7 +133,7 @@
                 <input type="file" id="seLogoInput" class="se-visually-hidden" accept="image/*" />
                 <div class="se-logo-preview" id="seLogoPreview">
                   {% if seller.store_logo %}
-                    <img src="{{ seller.store_logo.url }}" alt="store logo" />
+                    <img src="{{ seller.store_logo }}" alt="store logo" />
                   {% else %}
                     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M3 9l1-5h16l1 5"></path>
@@ -151,7 +151,7 @@
                 <input type="file" id="seBannerInput" class="se-visually-hidden" accept="image/*" />
                 <div class="se-banner-preview" id="seBannerPreview">
                   {% if seller.store_banner %}
-                  <img src="{{ seller.store_banner.url}}" alt="store banner">
+                  <img src="{{ seller.store_banner }}" alt="store banner">
                   {% else %}
                   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -268,7 +268,7 @@
             </h2>
           </div>
 
-          <div class="se-field-row se-field-row-2">
+          <div class="se-field-row se-field-row-3">
             <div class="se-field">
               <label for="seDefaultCourier" class="se-label">Default Courier</label>
               <div class="se-select-wrap">
@@ -291,6 +291,10 @@
                     <option value="5" {% if seller.settings.default_handling_time == 5 %}selected{% endif %}>5 business days</option>
                 </select>
               </div>
+            </div>
+            <div class="se-field">
+              <label for="seHandlingTime" class="se-label">Default Shipping Fee</label>
+                <input type="number" id="seShippingFee" class="se-input" value="{{ seller.settings.shipping_fee}}">
             </div>
           </div>
 
@@ -411,8 +415,8 @@
             <div class="se-document-card"
               data-document-type="cnic_front"
               {% if documents.cnic_front and documents.cnic_front.file %}
-              data-file-url="{{ documents.cnic_front.file.url }}"
-              data-file-name="{{ documents.cnic_front.file.name }}"
+              data-file-url="{{ documents.cnic_front.file }}"
+              data-file-name="{{ documents.cnic_front.document_type }}"
               {% endif %}>
 
               <div class="se-document-header">
@@ -453,13 +457,13 @@
 
                       {% if documents.cnic_front.is_image %}
                           <img class="se-document-image"
-                              src="{{ documents.cnic_front.file.url }}"
+                              src="{{ documents.cnic_front.file }}"
                               alt="CNIC Front">
                       {% else %}
                           <div class="se-document-pdf">
                               <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                               <span class="se-document-file-name">
-                                  {{ documents.cnic_front.file.name }}
+                                  {{ documents.cnic_front.document_type }}
                               </span>
                           </div>
                       {% endif %}
@@ -538,8 +542,8 @@
             <div class="se-document-card"
                 data-document-type="cnic_back"
                 {% if documents.cnic_back and documents.cnic_back.file %}
-                data-file-url="{{ documents.cnic_back.file.url }}"
-                data-file-name="{{ documents.cnic_back.file.name }}"
+                data-file-url="{{ documents.cnic_back.file }}"
+                data-file-name="{{ documents.cnic_back.document_type }}"
                 {% endif %}>
 
                 <div class="se-document-header">
@@ -579,13 +583,13 @@
                         {% if documents.cnic_back.is_image %}
                             <img
                                 class="se-document-image"
-                                src="{{ documents.cnic_back.file.url }}"
+                                src="{{ documents.cnic_back.file }}"
                                 alt="CNIC Back">
                         {% else %}
                             <div class="se-document-pdf">
                                 <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                                 <span class="se-document-file-name">
-                                    {{ documents.cnic_back.file.name }}
+                                    {{ documents.cnic_back.document_type }}
                                 </span>
                             </div>
                         {% endif %}
@@ -643,8 +647,8 @@
             <div class="se-document-card"
                 data-document-type="business_certificate"
                 {% if documents.business_certificate and documents.business_certificate.file %}
-                data-file-url="{{ documents.business_certificate.file.url }}"
-                data-file-name="{{ documents.business_certificate.file.name }}"
+                data-file-url="{{ documents.business_certificate.file }}"
+                data-file-name="{{ documents.business_certificate.document_type }}"
                 {% endif %}>
 
                 <div class="se-document-header">
@@ -684,13 +688,13 @@
                         {% if documents.business_certificate.is_image %}
                             <img
                                 class="se-document-image"
-                                src="{{ documents.business_certificate.file.url }}"
+                                src="{{ documents.business_certificate.file }}"
                                 alt="Business Certificate">
                         {% else %}
                             <div class="se-document-pdf">
                                 <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                                 <span class="se-document-file-name">
-                                    {{ documents.business_certificate.file.name }}
+                                    {{ documents.business_certificate.document_type }}
                                 </span>
                             </div>
                         {% endif %}
@@ -750,8 +754,8 @@
             <div class="se-document-card"
                 data-document-type="ntn"
                 {% if documents.ntn and documents.ntn.file %}
-                data-file-url="{{ documents.ntn.file.url }}"
-                data-file-name="{{ documents.ntn.file.name }}"
+                data-file-url="{{ documents.ntn.file }}"
+                data-file-name="{{ documents.ntn.document_type }}"
                 {% endif %}>
 
                 <div class="se-document-header">
@@ -791,13 +795,13 @@
                         {% if documents.ntn.is_image %}
                             <img
                                 class="se-document-image"
-                                src="{{ documents.ntn.file.url }}"
+                                src="{{ documents.ntn.file }}"
                                 alt="NTN Certificate">
                         {% else %}
                             <div class="se-document-pdf">
                                 <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                                 <span class="se-document-file-name">
-                                    {{ documents.ntn.file.name }}
+                                    {{ documents.ntn.document_type }}
                                 </span>
                             </div>
                         {% endif %}
@@ -857,8 +861,8 @@
             <div class="se-document-card"
                 data-document-type="bank_statement"
                 {% if documents.bank_statement and documents.bank_statement.file %}
-                data-file-url="{{ documents.bank_statement.file.url }}"
-                data-file-name="{{ documents.bank_statement.file.name }}"
+                data-file-url="{{ documents.bank_statement.file }}"
+                data-file-name="{{ documents.bank_statement.document_type }}"
                 {% endif %}>
 
                 <div class="se-document-header">
@@ -898,13 +902,13 @@
                         {% if documents.bank_statement.is_image %}
                             <img
                                 class="se-document-image"
-                                src="{{ documents.bank_statement.file.url }}"
+                                src="{{ documents.bank_statement.file }}"
                                 alt="Bank Statement">
                         {% else %}
                             <div class="se-document-pdf">
                                 <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                                 <span class="se-document-file-name">
-                                    {{ documents.bank_statement.file.name }}
+                                    {{ documents.bank_statement.document_type }}
                                 </span>
                             </div>
                         {% endif %}
@@ -963,8 +967,8 @@
             <div class="se-document-card"
                 data-document-type="store_photo"
                 {% if documents.store_photo and documents.store_photo.file %}
-                data-file-url="{{ documents.store_photo.file.url }}"
-                data-file-name="{{ documents.store_photo.file.name }}"
+                data-file-url="{{ documents.store_photo.file }}"
+                data-file-name="{{ documents.store_photo.document_type }}"
                 {% endif %}>
 
                 <div class="se-document-header">
@@ -1004,13 +1008,13 @@
                         {% if documents.store_photo.is_image %}
                             <img
                                 class="se-document-image"
-                                src="{{ documents.store_photo.file.url }}"
+                                src="{{ documents.store_photo.file }}"
                                 alt="Store Photo">
                         {% else %}
                             <div class="se-document-pdf">
                                 <i class="bi bi-file-earmark-pdf-fill se-doc-icon"></i>
                                 <span class="se-document-file-name">
-                                    {{ documents.store_photo.file.name }}
+                                    {{ documents.store_photo.document_type }}
                                 </span>
                             </div>
                         {% endif %}

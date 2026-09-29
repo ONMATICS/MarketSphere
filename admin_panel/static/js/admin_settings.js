@@ -145,6 +145,21 @@
             var panel = form.closest(".set-panel");
             var section = panel && panel.getAttribute("data-set-panel");
             var values = data[section] || {};
+            if (section === "notifications") {
+                ["BUYER", "SELLER", "ADMIN"].forEach(function (audience) {
+                    var field = audience.toLowerCase() + "_notifications";
+                    var matrix = values[field] || {};
+                    qsa("[data-notification-audience='" + audience + "']", form).forEach(function (row) {
+                        var event = row.getAttribute("data-notification-event");
+                        var channels = matrix[event] || matrix["*"] || { email: true, in_app: true, push: false };
+                        qsa("[data-notification-channel]", row).forEach(function (input) {
+                            var channel = input.getAttribute("data-notification-channel");
+                            var value = channels[channel];
+                            input.checked = value === true || value === "true" || value === 1 || value === "1" || (value === undefined && channel !== "push");
+                        });
+                    });
+                });
+            }
             qsa("[data-set-track][name]", form).forEach(function (field) {
                 if (!Object.prototype.hasOwnProperty.call(values, field.name)) return;
                 var value = values[field.name];
@@ -162,6 +177,19 @@
             payload.append(field.name, field.checked ? "true" : "false");
             booleanFields.push(field.name);
         });
+        if (sectionName === "notifications") {
+            ["BUYER", "SELLER", "ADMIN"].forEach(function (audience) {
+                var matrix = {};
+                qsa("[data-notification-audience='" + audience + "']", form).forEach(function (row) {
+                    var channels = {};
+                    qsa("[data-notification-channel]", row).forEach(function (input) {
+                        channels[input.getAttribute("data-notification-channel")] = input.checked;
+                    });
+                    matrix[row.getAttribute("data-notification-event")] = channels;
+                });
+                payload.append(audience.toLowerCase() + "_notifications", JSON.stringify(matrix));
+            });
+        }
         payload.append("__section", sectionName);
         payload.append("__boolean_fields", JSON.stringify(booleanFields));
         return payload;

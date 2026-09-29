@@ -276,12 +276,13 @@
     justify-content: center;
     gap: 12px;
 
-    background-color: #F7F1DE;
+    background-color: #ded7c0 !important;
     border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 26px 12px;
     text-align: center;
 
+    object-fit: cover;
     transition: transform .3s ease,
         box-shadow .3s ease,
         border-color .3s ease;

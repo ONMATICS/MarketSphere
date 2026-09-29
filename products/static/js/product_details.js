@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     btn.classList.add("pd-btn-pulse");
                     btn.innerHTML = '<i class="bi bi-check2"></i> Added';
-
+                    document.getElementById('pdBuyNowBtn').dataset.cartItemId = data.cart_item_id; // Update cart item ID for Buy Now button
                     // Update navbar cart counter
                     const counter = document.querySelector("#cartCounter");
                     if (counter) {
@@ -371,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 btn.classList.remove("pd-btn-pulse");
                 btn.disabled = false;
             }, 1500);
+
         });
     }
 
@@ -391,17 +392,88 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /* ================= BUY NOW / MOBILE BUTTON PULSE ================= */
+    /* ================= BUY NOW ================= */
+
     ['pdBuyNowBtn', 'pdMobileBuyNowBtn'].forEach(function (id) {
+
         const btn = document.getElementById(id);
         if (!btn) return;
 
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function () {
+
+            if (btn.disabled) return;
+
+            const cartItemId = btn.dataset.cartItemId;
+
+            // Product is already in the cart.
+            if (cartItemId) {
+                btn.classList.add('pd-btn-pulse');
+                window.location.href = `/order/checkout/item/${cartItemId}/`;
+                return;
+            }
+
+            // Product is not in the cart yet.
+            const addToCartBtn = document.getElementById('pdAddToCartBtn');
+
+            if (!addToCartBtn) return;
+
+            btn.disabled = true;
             btn.classList.add('pd-btn-pulse');
-            window.location.href = `/order/checkout/`;
-            window.setTimeout(function () {
-                btn.classList.remove('pd-btn-pulse');
-            }, 400);
+
+            try {
+
+                const addUrl = new URL(
+                    addToCartBtn.dataset.addUrl,
+                    window.location.origin
+                );
+
+                const quantity = document.getElementById('pdQtyInput');
+
+                if (quantity) {
+                    addUrl.searchParams.set(
+                        'quantity',
+                        quantity.value || '1'
+                    );
+                }
+
+                const response = await fetch(addUrl.toString(), {
+                    method: "GET",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert("Unable to add product to cart.");
+                    return;
+                }
+
+                // Store the newly created/found CartItem ID.
+                btn.dataset.cartItemId = data.cart_item_id;
+
+                // Update navbar cart counter.
+                const counter = document.querySelector("#cartCounter");
+
+                if (counter) {
+                    counter.textContent = data.cart_count;
+                }
+
+                // Now proceed directly to checkout for this item.
+                window.location.href =
+                    `/order/checkout/item/${data.cart_item_id}/`;
+
+            } catch (error) {
+
+                console.error("Buy Now Error:", error);
+                alert("Something went wrong. Please try again.");
+
+            } finally {
+
+                btn.disabled = false;
+            }
         });
     });
 

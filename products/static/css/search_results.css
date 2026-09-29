@@ -92,6 +92,7 @@
 /* ================= LAYOUT ================= */
 .search-results-section {
     padding: 0px 0 10px;
+    background-color: var(--background-color);
 }
 
 /* ================= MOTION ================= */

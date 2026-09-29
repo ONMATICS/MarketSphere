@@ -44,7 +44,7 @@
             <div class="hero-shape hero-shape-1"></div>
             <div class="hero-shape hero-shape-2"></div>
             <div class="hero-image-icon">
-              <img src="{{ marketplace.marketplace_logo.url }}" class="img-fluid" />
+              <img src="{% static 'images/logo.png' %}" class="img-fluid" alt="{{ marketplace.marketplace_name }}" />
             </div>
             <div class="floating-card floating-card-1">
               <i class="bi bi-truck"></i>
@@ -73,7 +73,8 @@
         <!-- Category cards will be rendered here -->
         {% for category in categories %}
           <div class="col-lg-2 col-md-4 col-6">
-            <a href="{% url 'search' %}?category={{ category.slug }}" class="category-card" style="--bg-image: url('{% if category.image %}{{ category.image.url }}{% endif %}');">
+            <!-- Removed .url -->
+            <a href="{% url 'search' %}?category={{ category.slug }}" class="category-card" style="--bg-image: url('{% if category.image %}{{ category.image }}{% endif %}');">
               <div class="category-card-icon">
                 <i class="{{ category.icon }}"></i>
               </div>
@@ -128,7 +129,8 @@
                 <span class="product-category-badge">({{ product.category.name }})</span>
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' product.slug %}'">
-                  <img src="{{ product.primary_image.image.url }}" alt="" />
+                  <!-- Removed .url -->
+                  <img src="{{ product.primary_image.image }}" alt="" />
                 </div>
               </div>
               <div class="product-card-body">
@@ -183,9 +185,11 @@
       <div class="row g-4">
         {% for seller in featured_sellers %}
           <div class="col-lg-2 col-md-4 col-6">
-            <a href="{% url 'search' %}?category={{ seller.slug }}" class="category-card" style="--bg-image: url('{% if seller.store_banner %}{{ seller.store_banner.url }}{% endif %}');">
+            <!-- Removed .url -->
+            <a href="{% url 'search' %}?category={{ seller.slug }}" class="category-card" style="--bg-image: url('{% if seller.store_banner %}{{ seller.store_banner }}{% endif %}');">
               <div class="category-card-icon">
-                <i><img class="img-fluid rounded-circle" src="{{ seller.store_logo.url }}" alt=""></i>
+                <!-- Removed .url -->
+                <i><img class="img-fluid rounded-circle" src="{{ seller.store_logo }}" alt=""></i>
               </div>
               <h6>{{ seller.store_name }}</h6>
             </a>
@@ -246,9 +250,9 @@
               <!-- Banner Image -->
               <div class="promo-banner-visual">
 
-                  {% if homepage_promotion.thumbnail %}
+                  {% if homepage_promotion.thumbnail or homepage_promotion.banner %}
                       <img
-                          src="{{ homepage_promotion.thumbnail.url }}"
+                          src="{{ homepage_promotion.thumbnail|default:homepage_promotion.banner }}"
                           alt="{{ homepage_promotion.name }}"
                           class="promo-banner-image"
                       >
@@ -301,7 +305,8 @@
                 <span class="product-category-badge">({{ product.category.name }})</span>
 
                 <div class="product-image-placeholder" onclick="window.location.href='{% url 'product' product.slug %}'">
-                  <img src="{{ product.primary_image.image.url }}" alt="" />
+                  <!-- Removed .url -->
+                  <img src="{{ product.primary_image.image }}" alt="" />
                 </div>
               </div>
               <div class="product-card-body">
@@ -360,7 +365,8 @@
             <a href="{% url 'search' %}?brand={{ brand.slug }}" ondblclick="window.location.href={{ brand.website|default:'#' }}" class="category-card brand-card">
               <div class="brand-logo-img">
                 {% if brand.logo %}
-                  <img src="{{ brand.logo.url }}" alt="{{ brand.name }} logo" />
+                  <!-- Removed .url -->
+                  <img src="{{ brand.logo }}" alt="{{ brand.name }} logo" />
                 {% else %}
                   <img src="{% static 'images/logo-icon.png' %}" alt="{{ brand.name }} logo" />
                 {% endif %}

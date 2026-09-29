@@ -12,9 +12,13 @@ from products.services import (
     toggle_product_archive,
     )
 from orders.services import get_user_order_for_seller, get_seller_orders, update_order_status
+from orders.models import Order
 from django.core.paginator import Paginator
 from products.models import Product
 from promotions.services import get_available_promotions_for_seller
+from admin_panel.settings_data import get_admin_setting
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import ActivityLog
 import json
 # Create your views here.
 
@@ -51,11 +55,14 @@ def add_product(request):
 
     if request.method == "POST":
 
-        product = create_product(
-            request.user,
-            request.POST,
-            request.FILES,
-        )
+        try:
+            product = create_product(
+                request.user,
+                request.POST,
+                request.FILES,
+            )
+        except ValueError as error:
+            return JsonResponse({"success": False, "message": str(error)}, status=400)
 
         return JsonResponse(
             {
@@ -72,13 +79,21 @@ def add_product(request):
 
 def draft_product(request):
 
+    if not get_admin_setting("catalog", "allow_seller_drafts", True):
+        if request.method == "POST":
+            return JsonResponse({"success": False, "message": "Seller drafts are currently disabled."}, status=403)
+        return JsonResponse({"success": False, "message": "Seller drafts are currently disabled."}, status=403)
+
     if request.method == "POST":
 
-        product = save_draft(
-            request.user,
-            request.POST,
-            request.FILES,
-        )
+        try:
+            product = save_draft(
+                request.user,
+                request.POST,
+                request.FILES,
+            )
+        except ValueError as error:
+            return JsonResponse({"success": False, "message": str(error)}, status=400)
 
         return JsonResponse(
             {
@@ -99,12 +114,15 @@ def edit_products(request, product_slug):
 
     if request.method == "POST":
 
-        product = edit_product(
-            request.user.seller_profile,
-            product,
-            request.POST,
-            request.FILES,
-        )
+        try:
+            product = edit_product(
+                request.user.seller_profile,
+                product,
+                request.POST,
+                request.FILES,
+            )
+        except ValueError as error:
+            return JsonResponse({"success": False, "message": str(error)}, status=400)
 
         return JsonResponse(
             {
@@ -368,7 +386,13 @@ def orders(request):
 def order_detail(request, order_no):
     order = get_user_order_for_seller(request.user.seller_profile, order_no)
 
-    return render(request, "orders/detail.html", {"order": order})
+    return render(request, "orders/detail.html", {
+        "order": order,
+        "order_activity_logs": ActivityLog.objects.select_related("actor").filter(
+            target_content_type=ContentType.objects.get_for_model(Order),
+            target_object_id=order.pk,
+        )[:20],
+    })
 
 
 def update_user_order_status(request, order_no, status):

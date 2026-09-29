@@ -25,7 +25,7 @@
     <!-- ================= 1. HEADER ================= -->
     <header class="sld-header sld-reveal">
       <div class="sld-banner" id="sldBanner">
-        <img src="{{ seller.store_banner.url }}" alt="Store banner" />
+        <img src="{{ seller.store_banner }}" alt="Store banner" />
         <div class="sld-banner-overlay"></div>
         <button type="button" class="sld-btn sld-btn-secondary sld-btn-sm sld-banner-edit-btn" id="sldEditBannerBtn" data-seller-id="{{ seller.id }}">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -40,7 +40,7 @@
       <div class="sld-profile-row">
         <div class="sld-profile-left">
           <div class="sld-logo-wrap">
-            <span class="sld-logo" id="sldLogoTrigger" role="button" data-store-name="{{ seller.store_name }}" tabindex="0" aria-label="View store logo"><img src="{{ seller.store_logo.url }}" alt="{{ seller.store_name }} logo" /></span>
+              <span class="sld-logo" id="sldLogoTrigger" role="button" data-store-name="{{ seller.store_name }}" tabindex="0" aria-label="View store logo"><img src="{{ seller.store_logo }}" alt="{{ seller.store_name }} logo" /></span>
             <span class="sld-online-dot is-online" title="Online now"></span>
           </div>
 
@@ -764,7 +764,7 @@
                         </td>
                         <td data-label="Product">
                           <div class="sld-product-cell">
-                            <span class="sld-product-thumb"><img src="{{ product.primary_image.image.url }}" alt="" /></span><div class="sld-product-name-cell">
+                            <span class="sld-product-thumb"><img src="{{ product.primary_image.image }}" alt="" /></span><div class="sld-product-name-cell">
                               <strong>{{ product.name }}</strong><small>Men's Apparel</small>
                             </div>
                           </div>
@@ -1312,6 +1312,16 @@
               </div>
 
               <ul class="sld-timeline" id="sldTimeline">
+                {% if activity_logs %}
+                  {% for activity in activity_logs %}
+                    <li class="sld-timeline-item" data-type="{{ activity.category|lower }}">
+                      <span class="sld-timeline-dot c-accent"><i class="bi bi-activity"></i></span><div class="sld-timeline-body">
+                        <div class="sld-timeline-top"><strong>{{ activity.title }}</strong><span class="sld-badge c-success">{{ activity.action|title }}</span></div>
+                        <p>{{ activity.description|default:activity.action }}</p><span class="sld-timeline-time">{{ activity.created_at|timesince }} ago</span>
+                      </div>
+                    </li>
+                  {% endfor %}
+                {% else %}
                 <li class="sld-timeline-item" data-type="order">
                   <span class="sld-timeline-dot c-accent">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1429,6 +1439,7 @@
                     <p>Kamran Sheikh submitted a seller application for "Urban Threads Co."</p><span class="sld-timeline-time">Mar 14, 2025 &middot; 10:00 AM</span>
                   </div>
                 </li>
+                {% endif %}
               </ul>
             </div>
           </section>

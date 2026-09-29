@@ -372,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const returnAddress = document.getElementById("seReturnAddress");
                 const shippingNotes = document.getElementById("seShippingNotes");
                 const autoShipped = document.getElementById("seAutoShipped");
+                const shippingFee = document.getElementById("seShippingFee");
 
                 setButtonLoading(btn, true);
 
@@ -382,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 formData.append("return_address", returnAddress.value.trim());
                 formData.append("shipping_notes", shippingNotes.value.trim());
                 formData.append("auto_mark_shipped", autoShipped.checked);
+                formData.append("shipping_fee", shippingFee.value);
 
                 fetch("/accounts/update-shipping-preferences/", {
                     method: "POST",

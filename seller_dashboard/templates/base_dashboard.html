@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       {% block title %}
-        Seller Dashboard
+        {{ marketplace.marketplace_name|default:'MarketSphere' }} Seller Dashboard
       {% endblock %}• MarketSphere
     </title>
 
     <link rel="stylesheet" href="{% static '/css/dashboard.css' %}" />
-    <link rel="shortcut icon" href="{% static 'images/logo-icon.png' %}" type="image/x-icon" />
+    {% if marketplace.marketplace_favicon %}<link rel="shortcut icon" href="{{ marketplace.marketplace_favicon.url }}" type="image/x-icon" />{% else %}<link rel="shortcut icon" href="{% static 'images/logo-icon.png' %}" type="image/x-icon" />{% endif %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     {% block css %}
@@ -33,9 +33,9 @@
       <aside class="sd-sidebar" id="sdSidebar" aria-label="Seller navigation">
         <div class="sd-sidebar-head">
           <a href="{% url 'home' %}" class="sd-brand">
-            <span class="sd-brand-mark"><img src="{% static 'images/logo-icon.png' %}" alt="" class="sd-brand-logo" /></span>
+            <span class="sd-brand-mark">{% if marketplace.marketplace_logo %}<img src="{{ marketplace.marketplace_logo.url }}" alt="{{ marketplace.marketplace_name }}" class="sd-brand-logo" />{% else %}<img src="{% static 'images/logo-icon.png' %}" alt="" class="sd-brand-logo" />{% endif %}</span>
             <span class="sd-brand-text">
-              <strong>MarketSphere</strong>
+              <strong>{{ marketplace.marketplace_name|default:'MarketSphere' }}</strong>
               <small>Seller Hub</small>
             </span>
           </a>
@@ -241,8 +241,8 @@
             <div class="sd-seller-chip" aria-haspopup="true" aria-expanded="false">
               <span class="sd-seller-avatar" aria-hidden="true">
                 <!-- Placeholder initial; a real seller avatar/photo will replace this later -->
-                {% if dashboard_seller.user.profile_picture %}
-                  <img src="{{ dashboard_seller.user.profile_picture }}" />
+                {% if dashboard_seller.store_logo %}
+                  <img style="height: 32px;" src="{{ dashboard_seller.store_logo }}" />
                 {% else %}
                   {{ dashboard_seller.user.username|slice:1 }}
                 {% endif %}
@@ -338,7 +338,7 @@
 
         <!-- ================= FOOTER ================= -->
         <footer class="sd-footer">
-          <p>&copy; 2026 MarketSphere. Seller Dashboard.</p>
+          <p>&copy; {% now "Y" %} {{ marketplace.business_name|default:marketplace.marketplace_name|default:'MarketSphere' }}. Seller Dashboard.</p>
           <p class="sd-footer-links">
             <a href="#">Help Center</a>
             <span aria-hidden="true">•</span>

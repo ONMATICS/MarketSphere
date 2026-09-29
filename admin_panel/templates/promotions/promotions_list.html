@@ -1,0 +1,297 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}
+  Promotions
+{% endblock %}
+
+{% block active_page %}
+  promotions
+{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span>
+    <span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">Promotions</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/promotions.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="apr-page" id="aprPage">
+
+    <!-- ================= 1. PAGE HEADER ================= -->
+    <header class="apr-header apr-reveal">
+      <div class="apr-header-text">
+        <span class="apr-header-eyebrow"><i class="apr-eyebrow-dot"></i> Marketing &amp; Campaigns</span>
+        <h1 class="apr-header-title">Promotions</h1>
+        <p class="apr-header-subtitle">Manage marketplace-wide promotional campaigns — sales, discounts, and homepage features.</p>
+      </div>
+
+      <div class="apr-header-actions">
+        <a href="{% url 'admin-create-promotion' %}" class="apr-btn apr-btn-primary" id="aprCreatePromotionBtn">
+           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <line x1="12" y1="5" x2="12" y2="19"></line>
+             <line x1="5" y1="12" x2="19" y2="12"></line>
+           </svg>Create Promotion
+        </a>
+      </div>
+    </header>
+
+    <!-- ================= 2. SUMMARY METRICS ================= -->
+    <section class="apr-metrics-grid apr-reveal" aria-label="Promotion summary metrics">
+      <div class="apr-metric-card">
+        <div class="apr-metric-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .58 1.41l9.58 9.59a2 2 0 0 0 2.83 0l4.36-4.36a2 2 0 0 0 0-2.82Z"></path>
+            <circle cx="7.5" cy="7.5" r="1.5"></circle>
+          </svg>
+        </div>
+        <div class="apr-metric-body">
+          <span class="apr-metric-label">Total Promotions</span>
+          <span class="apr-metric-value">{{ summary.total_promotions }}</span>
+        </div>
+      </div>
+
+      <div class="apr-metric-card">
+        <div class="apr-metric-icon c-success" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+        </div>
+        <div class="apr-metric-body">
+          <span class="apr-metric-label">Active</span>
+          <span class="apr-metric-value">{{ summary.active_promotions }}</span>
+        </div>
+      </div>
+
+      <div class="apr-metric-card">
+        <div class="apr-metric-icon c-info" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v5l3 3"></path>
+          </svg>
+        </div>
+        <div class="apr-metric-body">
+          <span class="apr-metric-label">Scheduled</span>
+          <span class="apr-metric-value">{{ summary.scheduled_promotions }}</span>
+        </div>
+      </div>
+
+      <div class="apr-metric-card">
+        <div class="apr-metric-icon c-muted" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="apr-metric-body">
+          <span class="apr-metric-label">Expired</span>
+          <span class="apr-metric-value">{{ summary.expired_promotions }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. TOOLBAR ================= -->
+    <section class="apr-toolbar-card apr-reveal" aria-label="Promotion filters">
+      <form method="get" class="apr-toolbar" id="aprToolbarForm">
+        <div class="apr-search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="search" name="q" id="aprSearchInput" class="apr-search-input" placeholder="Search promotions by name..." aria-label="Search promotions" value="{{ search_query }}" />
+        </div>
+
+        <div class="apr-toolbar-filters">
+          <div class="apr-select-wrap">
+            <select name="status" id="aprStatusFilter" class="apr-select" aria-label="Filter by status">
+              <option value="">All Statuses</option>
+              {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <button type="submit" class="apr-btn apr-btn-primary apr-btn-sm">Filter</button>
+          <a href="{% url 'admin-promotions' %}" class="apr-btn apr-btn-secondary apr-btn-sm" id="aprClearFiltersBtn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>Clear
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <!-- ================= 4. PROMOTIONS TABLE ================= -->
+    <section class="apr-table-card apr-reveal" aria-label="Promotions table">
+      <div class="apr-table-wrap">
+        <table class="apr-table" id="aprTable">
+          <thead>
+            <tr>
+              <th scope="col">Promotion</th>
+              <th scope="col">Campaign Period</th>
+              <th scope="col">Status</th>
+              <th scope="col">Max Discount</th>
+              <th scope="col">Products</th>
+              <th scope="col">Homepage</th>
+              <th scope="col" class="apr-col-actions"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for promotion in promotions %}
+              <tr class="apr-row">
+                <td data-label="Promotion">
+                  <div class="apr-identity-cell">
+                    <span class="apr-thumb">
+                      {% if promotion.banner %}
+                        <img src="{{ promotion.banner }}" alt="{{ promotion.name }}" />
+                      {% else %}
+                        <i class="bi bi-image"></i>
+                      {% endif %}
+                    </span>
+                    <div class="apr-identity-text">
+                      <strong class="apr-promo-name">{{ promotion.name }}</strong>
+                      {% if promotion.short_description %}
+                        <span class="apr-promo-desc">{{ promotion.short_description|truncatechars:70 }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+
+                <td data-label="Campaign Period">
+                  <span class="apr-period-cell">
+                    <span>{{ promotion.start_at|date:"M d, Y" }}</span>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M5 12h14"></path>
+                      <path d="M13 6l6 6-6 6"></path>
+                    </svg>
+                    <span>{{ promotion.end_at|date:"M d, Y" }}</span>
+                  </span>
+                </td>
+
+                <td data-label="Status">
+                  <span class="apr-badge apr-badge-{{ promotion.display_status_class }}">{{ promotion.display_status }}</span>
+                </td>
+
+                <td data-label="Max Discount">
+                  {% if promotion.maximum_discount_percentage %}
+                    <strong>{{ promotion.maximum_discount_percentage }}%</strong>
+                  {% else %}
+                    <span class="apr-muted-text">—</span>
+                  {% endif %}
+                </td>
+
+                <td data-label="Products">
+                  <span class="apr-count-pill">{{ promotion.products_count }}</span>
+                </td>
+
+                <td data-label="Homepage">
+                  {% if promotion.display_on_homepage %}
+                    <span class="apr-homepage-pill is-on"><i class="bi bi-check-circle-fill"></i> Enabled</span>
+                  {% else %}
+                    <span class="apr-homepage-pill is-off"><i class="bi bi-dash-circle"></i> Disabled</span>
+                  {% endif %}
+                </td>
+
+                <td data-label="" class="apr-col-actions">
+                  <div class="apr-dropdown apr-row-dropdown">
+                    <button type="button" class="apr-icon-btn apr-dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-label="More actions for {{ promotion.name }}">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="5" r="1.2"></circle>
+                        <circle cx="12" cy="12" r="1.2"></circle>
+                        <circle cx="12" cy="19" r="1.2"></circle>
+                      </svg>
+                    </button>
+
+                    <div class="apr-dropdown-menu" role="menu">
+                      <a href="{% url 'promotion_detail' promotion.slug %}" class="apr-dropdown-item" role="menuitem" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle>
+                        </svg>View Live Page
+                      </a>
+                      <a href="{% url 'admin-promotion-detail' promotion.slug %}" class="apr-dropdown-item" role="menuitem">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"></path>
+                        </svg>Manage Promotion
+                      </a>
+                      <div class="apr-dropdown-divider" role="separator"></div>
+                      <button type="button" class="apr-dropdown-item is-danger" role="menuitem" data-toast="Archiving promotions isn&#8217;t available yet.">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line>
+                        </svg>Archive
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr class="apr-empty-row">
+                <td colspan="7">
+                  <div class="apr-empty-state">
+                    <div class="apr-empty-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .58 1.41l9.58 9.59a2 2 0 0 0 2.83 0l4.36-4.36a2 2 0 0 0 0-2.82Z"></path>
+                      </svg>
+                    </div>
+
+                    {% if search_query or status_filter %}
+                      <h3 class="apr-empty-title">No promotions match your current filters</h3>
+                      <p class="apr-empty-subtitle">Try adjusting your search or clearing the filters below.</p>
+                      <a href="{% url 'admin-promotions' %}" class="apr-btn apr-btn-primary">Clear Filters</a>
+                    {% else %}
+                      <h3 class="apr-empty-title">No promotions found</h3>
+                      <p class="apr-empty-subtitle">Create your first marketplace campaign to start running sales and discounts.</p>
+                      <a href="{% url 'admin-create-promotion' %}" class="apr-btn apr-btn-primary">Create Promotion</a>                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ================= 5. PAGINATION ================= -->
+      {% if paginator.num_pages > 1 %}
+        <div class="apr-pagination-bar">
+          <span class="apr-pagination-count">
+            Showing <strong>{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong> promotions
+          </span>
+
+          <nav class="apr-pagination" aria-label="Promotions pagination">
+            <a class="apr-page-btn {% if not page_obj.has_previous %}is-disabled{% endif %}"
+               href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+               aria-label="Previous page">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+            </a>
+
+            {% for num in paginator.page_range %}
+              <a class="apr-page-btn {% if num == page_obj.number %}is-active{% endif %}"
+                 href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={{ num }}"
+                 {% if num == page_obj.number %}aria-current="page"{% endif %}>{{ num }}</a>
+            {% endfor %}
+
+            <a class="apr-page-btn {% if not page_obj.has_next %}is-disabled{% endif %}"
+               href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ paginator.num_pages }}{% endif %}"
+               aria-label="Next page">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+            </a>
+          </nav>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div class="apr-toast-container" id="aprToastContainer" aria-live="polite"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/promotions.js' %}"></script>
+{% endblock %}

@@ -6,7 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import Http404
 import json
+import logging
 from pathlib import Path
+import cloudinary.exceptions
 from allauth.account.forms import LoginForm
 from allauth.core.exceptions import ImmediateHttpResponse
 
@@ -19,6 +21,9 @@ User = get_user_model()
 from . import validator
 from . import services
 from admin_panel.marketplace import get_marketplace_settings
+from services.cloudinary_service import store_profile_image
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -711,16 +716,46 @@ from django.http import JsonResponse
 def update_my_profile_view(request):
     buyer = request.user
 
-    try:
-        data = json.loads(request.body)
-    except (json.JSONDecodeError, TypeError):
-        return JsonResponse(
-            {
-                "success": False,
-                "message": "Invalid request data.",
-            },
-            status=400,
-        )
+    if request.content_type.startswith("multipart/"):
+        data = request.POST
+    else:
+        try:
+            data = json.loads(request.body)
+        except (json.JSONDecodeError, TypeError):
+            return JsonResponse(
+                {"success": False, "message": "Invalid request data."},
+                status=400,
+            )
+
+    image_url = None
+    profile_image = request.FILES.get("profile_image")
+    if profile_image:
+        try:
+            upload_result = store_profile_image(profile_image, user_id=str(buyer.id))
+        except ValueError as error:
+            return JsonResponse({"success": False, "message": str(error)}, status=400)
+        except cloudinary.exceptions.NotAllowed:
+            logger.exception("Cloudinary rejected profile image upload permissions.")
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Cloudinary upload permission is missing. Please update the Cloudinary API key permissions.",
+                },
+                status=502,
+            )
+        except Exception:
+            logger.exception("Profile image upload failed.")
+            return JsonResponse(
+                {"success": False, "message": "Unable to upload your profile image right now."},
+                status=502,
+            )
+
+        image_url = upload_result.get("secure_url") or upload_result.get("url")
+        if not image_url:
+            return JsonResponse(
+                {"success": False, "message": "Cloudinary did not return an image URL."},
+                status=502,
+            )
 
     success, message, buyer, email_changed, errors = (
         services.update_buyer_profile(
@@ -730,6 +765,7 @@ def update_my_profile_view(request):
             username=data.get("username"),
             email=data.get("email"),
             contact=data.get("phone"),
+            profile_image=image_url,
             allow_status_change=False,
             request=request,
         )
@@ -757,6 +793,7 @@ def update_my_profile_view(request):
                 "username": buyer.username,
                 "email": buyer.email,
                 "contact": buyer.contact,
+                "profile_image_url": buyer.profile_image_url,
             },
         }
     )
@@ -784,7 +821,7 @@ def update_seller_document(request):
     }
 
     if success:
-        response["document_url"] = document.file.url
+        response["document_url"] = document.file
         response["uploaded_at"] = document.uploaded_at.strftime("%b %d, %Y")
 
     return JsonResponse(response)
