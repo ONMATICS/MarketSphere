@@ -134,8 +134,9 @@
                   {% endif %}
                   {% if order.status == 'delivered' %}
                     <a href="{% url 'reorder' order_number=order.order_number %}" class="mo-action-link"><i class="bi bi-arrow-repeat"></i> Reorder</a>
+                    <a href="" class="mo-action-link"><i class="bi bi-star-fill"></i> Review Order</a>
                   {% endif %}
-                  {% if order.status != 'canceled' %}
+                  {% if order.status not in 'canceled delivered' %}
                     <a href="#" class="mo-action-link"><i class="bi bi-truck"></i> Track Order</a>
                   {% endif %}
                   <a href="{% url 'download_invoice' order.order_number %}" target="_blank" class="mo-action-link"><i class="bi bi-download"></i> Download Invoice</a>

@@ -189,6 +189,38 @@ def place_new_order(request):
             status=400,
         )
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from support import services as support_services
+@login_required
+def submit_review_api(request):
+    if request.method == 'POST':
+        # Extract data from the FormData object sent by JavaScript
+        order_item_id = request.POST.get('order_item_id')
+        rating = request.POST.get('rating')
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Files are handled in request.FILES
+        image = request.FILES.get('image')
+
+        # Pass to service layer
+        success, message = support_services.process_product_review(
+            user=request.user,
+            order_item_id=order_item_id,
+            rating=rating,
+            title=title,
+            description=description,
+            image=image
+        )
+
+        if success:
+            return JsonResponse({'status': 'success', 'message': message})
+        else:
+            return JsonResponse({'status': 'error', 'message': message}, status=400)
+            
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
+    
 @login_required
 def order_confirmation(request, order_number):
     # 1. Check if this order number acts as a key for a multi-seller batch

@@ -77,7 +77,6 @@ from django.views.decorators.http import require_POST
 
 from orders.models import Order
 
-from .models import SupportRequest
 from .services import create_support_request
 
 

@@ -11,6 +11,7 @@ urlpatterns = [
         name="checkout_item",
     ),
     path("place-order/", views.place_new_order, name="place-order"),
+    path('submit-review/', views.submit_review_api, name='submit_review_api'),
     path(
         "confirmation/<str:order_number>/",
         views.order_confirmation,

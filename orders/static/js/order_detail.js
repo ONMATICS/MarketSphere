@@ -201,3 +201,129 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const reviewRadios = document.querySelectorAll('input[name="order_item_id"]');
+    const formBody = document.getElementById('reviewFormBody');
+    const submitBtn = document.getElementById('odSubmitReviewBtn');
+    const alreadyExistsArea = document.getElementById('reviewAlreadyExistsArea');
+    
+    // Custom Image Upload Elements
+    const imageInput = document.getElementById('reviewImage');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const previewContainer = document.getElementById('uploadPreviewContainer');
+    const previewImg = document.getElementById('uploadPreviewImg');
+    const removeImgBtn = document.getElementById('removeImgBtn');
+
+    // --- 1. IMAGE UPLOAD PREVIEW LOGIC ---
+    if (imageInput) {
+        imageInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    uploadPlaceholder.classList.add('d-none');
+                    previewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (removeImgBtn) {
+        removeImgBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            imageInput.value = '';
+            previewImg.src = '';
+            previewContainer.classList.add('d-none');
+            uploadPlaceholder.classList.remove('d-none');
+        });
+    }
+
+    // --- 2. RADIO BUTTON TOGGLE LOGIC ---
+    function handleReviewFormState() {
+        const selectedRadio = document.querySelector('input[name="order_item_id"]:checked');
+        if (selectedRadio) {
+            // CRITICAL FIX: The data-is-reviewed attribute is on the parent <label>, not the <input>
+            const parentLabel = selectedRadio.closest('.horizontal-review-selection-card');
+            const isReviewed = parentLabel.getAttribute('data-is-reviewed') === 'true';
+            
+            if (isReviewed) {
+                // Product is already reviewed: Show alert, hide form and submit button
+                alreadyExistsArea.classList.remove('d-none');
+                formBody.classList.add('d-none');
+                submitBtn.style.display = 'none';
+            } else {
+                // Product not reviewed: Hide alert, show form and submit button
+                alreadyExistsArea.classList.add('d-none');
+                formBody.classList.remove('d-none');
+                submitBtn.style.display = 'block';
+            }
+        }
+    }
+
+    // Listen for changes to the radio buttons
+    reviewRadios.forEach(radio => {
+        radio.addEventListener('change', handleReviewFormState);
+    });
+    
+    // Run once on load to set the initial UI state for the first selected item
+    handleReviewFormState();
+
+    // --- 3. AJAX FORM SUBMISSION LOGIC ---
+    if (formBody) {
+        formBody.addEventListener('submit', function (e) {
+            e.preventDefault(); 
+            
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(formBody);
+            
+            const selectedRadio = document.querySelector('input[name="order_item_id"]:checked');
+            if (selectedRadio) {
+                formData.append('order_item_id', selectedRadio.value);
+            } else {
+                alert("Please select a product to review.");
+                resetButton();
+                return;
+            }
+
+            if (!formData.get('rating')) {
+                alert("Please select a star rating.");
+                resetButton();
+                return;
+            }
+
+            fetch('/order/submit-review/', { 
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.reload(); 
+                } else {
+                    alert("Error: " + data.message);
+                    resetButton();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An unexpected error occurred. Please try again.");
+                resetButton();
+            });
+
+            function resetButton() {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});

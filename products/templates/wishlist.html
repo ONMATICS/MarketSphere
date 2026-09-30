@@ -99,14 +99,14 @@
                     <h6 class="product-name">{{ item.product.name }}</h6>
                   </a>
 
-                  <!-- Rating: will render product.average_rating / product.review_count -->
-                  <div class="product-rating">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                    <span>({{ item.product.review_count|default:"0" }})</span>
+                  <div class="product-rating text-warning">
+                      <!-- Dynamically render full, half, or empty stars -->
+                      {% for star_class in item.product.rating_stars %}
+                          <i class="bi {{ star_class }}"></i>
+                      {% endfor %}
+                      
+                      <!-- Dynamic review count -->
+                      <span class="text-muted ms-1">({{ item.product.total_reviews|default:'0' }})</span>
                   </div>
 
                   <!-- Price: current / original will be rendered here by Django -->

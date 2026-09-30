@@ -88,19 +88,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     updateCounter(0);
     setActiveThumb(0);
-    /* ================= FULLSCREEN VIEWER ================= */
+/* ================= FULLSCREEN VIEWER (Updated to handle Reviews) ================= */
 
     const fullscreenBtn = document.getElementById("pdFullscreenBtn");
     const fullscreenOverlay = document.getElementById("pdFullscreenOverlay");
     const fullscreenImage = document.getElementById("pdFullscreenImage");
     const fullscreenClose = document.getElementById("pdFullscreenClose");
+    
+    // NEW: Grab all review images
+    const reviewImages = document.querySelectorAll('.pdp-review-image img');
 
-    function openFullscreen() {
-        if (!fullscreenOverlay || !fullscreenImage || !mainImage) return;
+    // UPDATED: Now accepts image source and alt text as parameters
+    function openFullscreen(imgSrc, imgAlt) {
+        if (!fullscreenOverlay || !fullscreenImage || !imgSrc) return;
 
-        // Display the currently selected gallery image
-        fullscreenImage.src = mainImage.src;
-        fullscreenImage.alt = mainImage.alt;
+        fullscreenImage.src = imgSrc;
+        fullscreenImage.alt = imgAlt || "Fullscreen Image";
 
         fullscreenOverlay.classList.remove("d-none");
         document.body.style.overflow = "hidden";
@@ -113,18 +116,32 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = "";
     }
 
+    // 1. Existing trigger for main product image
     if (fullscreenBtn) {
-        fullscreenBtn.addEventListener("click", openFullscreen);
+        fullscreenBtn.addEventListener("click", function() {
+            // Assuming mainImage is defined earlier in your script
+            if (typeof mainImage !== 'undefined' && mainImage) {
+                openFullscreen(mainImage.src, mainImage.alt);
+            }
+        });
     }
 
+    // 2. NEW: Trigger for Review Images
+    reviewImages.forEach(img => {
+        img.addEventListener("click", function() {
+            // Pass the clicked review image's src and alt
+            openFullscreen(this.src, this.alt);
+        });
+    });
+
+    // 3. Close Triggers
     if (fullscreenClose) {
         fullscreenClose.addEventListener("click", closeFullscreen);
     }
 
     if (fullscreenOverlay) {
         fullscreenOverlay.addEventListener("click", function (e) {
-            // Close only when clicking the dark overlay,
-            // not when clicking the image itself.
+            // Close only when clicking the dark overlay, not the image itself.
             if (e.target === fullscreenOverlay) {
                 closeFullscreen();
             }
@@ -132,11 +149,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
+        // Only trigger close if the overlay is actually visible
+        if (e.key === "Escape" && fullscreenOverlay && !fullscreenOverlay.classList.contains("d-none")) {
             closeFullscreen();
         }
     });
-
     /* ================= QUANTITY SELECTOR ================= */
     const qtyInput = document.getElementById('pdQtyInput');
     const qtyMinus = document.getElementById('pdQtyMinus');

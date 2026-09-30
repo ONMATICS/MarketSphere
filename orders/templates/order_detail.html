@@ -233,9 +233,17 @@
 
           <!-- ============ ACTIONS (desktop, left column) ============ -->
           <div class="od-actions-row od-actions-row-desktop">
-            {% if checkout_settings.allow_cancellation %}<button type="button" class="btn od-action-btn od-action-cancel" id="odCancelOrderBtn" {% if order.status in 'cancelled delivered shipped' %}disabled{% endif %}>
+            {% if checkout_settings.allow_cancellation %}
+            <button type="button" class="btn od-action-btn od-action-cancel" id="odCancelOrderBtn" {% if order.status in 'cancelled delivered shipped' %}disabled{% endif %}>
               <i class="bi bi-x-circle"></i> Cancel Order
-            </button>{% endif %}
+            </button>
+            {% endif %}
+            {% if order.status == "delivered" %}
+            <button type="button" class="btn od-action-btn od-action-review" id="odReviewBtn" data-order-number="{{ order.order_number }}"
+            data-bs-toggle="modal" data-bs-target="#odReviewModal">
+              <i class="bi bi-star-fill"></i> Review Order
+            </button>
+            {% endif %}
             <button type="button" class="btn od-action-btn od-action-invoice" id="odDownloadInvoiceBtn" data-order-number="{{ order.order_number }}">
               <i class="bi bi-download"></i> Download Invoice
             </button>
@@ -303,6 +311,13 @@
               {% if checkout_settings.allow_cancellation %}<button type="button" class="btn od-action-btn od-action-cancel h-25" id="odCancelOrderBtnMobile" {% if order.status == 'cancelled' or order.status == 'completed' %}disabled{% endif %}>
                 <i class="bi bi-x-circle"></i> Cancel Order
               </button>{% endif %}
+              {% if order.status == "delivered" %}
+                  <button type="button" class="btn od-action-btn od-action-review" id="odReviewBtnMobile" 
+                          data-bs-toggle="modal" data-bs-target="#odReviewModal">
+                      <i class="bi bi-star-fill"></i> Review Order
+                  </button>
+              {% endif %}
+
             </div>
 
             <div class="od-trust-row">
@@ -361,6 +376,111 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ================= REVIEW PRODUCT MODAL ================= -->
+  <div class="modal fade od-review-modal" id="odReviewModal" tabindex="-1" aria-labelledby="odReviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-md">
+          <div class="modal-content">
+              
+              <div class="modal-header">
+                  <h5 class="modal-title" id="odReviewModalLabel">
+                      <i class="bi bi-star-fill text-warning"></i> Write a Review
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body">
+                  <!-- 1. Product Selection (Radio Cards) -->
+                  <p class="mb-2 fw-bold" style="color: var(--od-accent-dark); font-size: 0.9rem;">Select a product to review:</p>
+                  
+                  <div class="review-product-selector mb-4">
+                      <div class="product-selection-horizontal-container">
+                          {% for item in order.items.all %}
+                          <!-- The data-is-reviewed attribute is correctly placed here on the label -->
+                          <label class="horizontal-review-selection-card" data-is-reviewed="{% if item.review %}true{% else %}false{% endif %}">
+                              
+                              <!-- Visually hidden but functionally active radio input -->
+                              <input type="radio" name="order_item_id" value="{{ item.id }}" {% if forloop.first %}checked{% endif %}>
+                              
+                              <!-- Visible part of the button -->
+                              <div class="card-inner-content">
+                                  <span class="visual-radio-indicator"></span>
+                                  <div class="item-details">
+                                      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                      <span class="product-name">{{ item.product.name }}</span>
+                                  </div>
+                              </div>
+                          </label>
+                          {% endfor %}
+                      </div>
+                  </div>
+
+                  <!-- 2. Already Reviewed State (Hidden by default) -->
+                  <div id="reviewAlreadyExistsArea" class="d-none od-already-reviewed-alert">
+                      <i class="bi bi-check-circle-fill"></i> 
+                      <span>You have already reviewed this product. Thank you for your feedback!</span>
+                  </div>
+
+                  <!-- 3. Review Form -->
+                  <form id="reviewFormBody" method="POST" action="YOUR_REVIEW_SUBMIT_URL" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="d-flex align-items-center gap-4">
+                          <!-- Title Field -->
+                          <div class="mb-3" style="width: 60%;">
+                              <label for="reviewTitle" class="form-label fw-bold" style="color: var(--od-accent-dark);">Review Title</label>
+                              <input type="text" class="form-control form-control-md" id="reviewTitle" name="title" maxlength="200" placeholder="Summarize your experience" required>
+                          </div>
+                          
+                          <!-- Rating Field (Pure CSS Stars) -->
+                          <div class="mb-3">
+                              <label class="form-label fw-bold" style="color: var(--od-accent-dark);">Rating</label>
+                              <div class="star-rating">
+                                  <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" class="bi bi-star-fill"></label>
+                                  <input type="radio" id="star4" name="rating" value="4" /><label for="star4" class="bi bi-star-fill"></label>
+                                  <input type="radio" id="star3" name="rating" value="3" /><label for="star3" class="bi bi-star-fill"></label>
+                                  <input type="radio" id="star2" name="rating" value="2" /><label for="star2" class="bi bi-star-fill"></label>
+                                  <input type="radio" id="star1" name="rating" value="1" /><label for="star1" class="bi bi-star-fill"></label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Description Field -->
+                      <div class="mb-3">
+                          <label for="reviewDescription" class="form-label fw-bold" style="color: var(--od-accent-dark);">Description</label>
+                          <textarea class="form-control form-control-md" id="reviewDescription" name="description" rows="3" maxlength="2000" placeholder="What did you like or dislike?" required></textarea>
+                      </div>
+
+                      <!-- Image Field -->
+                      <div class="mb-3">
+                          <label class="form-label fw-bold" style="color: var(--od-accent-dark);">Add a Photo <span class="text-muted fw-normal" style="font-size: 12px;">(Optional)</span></label>
+                          <div class="custom-image-upload">
+                              <input type="file" class="d-none" id="reviewImage" name="image" accept="image/*">
+                              <label for="reviewImage" class="upload-drop-area" id="uploadDropArea">
+                                  <div class="upload-placeholder" id="uploadPlaceholder">
+                                      <i class="bi bi-image"></i>
+                                      <span>Upload Photo</span>
+                                  </div>
+                                  <div class="upload-preview-container d-none" id="uploadPreviewContainer">
+                                      <img id="uploadPreviewImg" src="" alt="Image Preview">
+                                      <button type="button" class="btn-remove-img" id="removeImgBtn" aria-label="Remove image">
+                                          <i class="bi bi-x-lg"></i>
+                                      </button>
+                                  </div>
+                              </label>
+                          </div>
+                      </div>
+                  </form>
+                  <p style="margin-top: 18px; opacity: 0.6; font-size: small;"><i class="bi bi-info-circle"></i> Help other to know that what is your experience with this product</p>
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn od-modal-cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn od-modal-submit-btn" id="odSubmitReviewBtn" form="reviewFormBody">Submit Review</button>
+              </div>
+              
+          </div>
+      </div>
   </div>
 
 {% endblock %}

@@ -99,14 +99,12 @@
             <!-- Rating -->
             <div class="pd-rating">
               <span class="pd-stars">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-half"></i>
+                {% for star_class in product.rating_stars %}
+                    <i class="bi {{ star_class }}"></i>
+                {% endfor %}
               </span>
               <!-- Review count will be rendered here by Django -->
-              {% if marketplace_settings.buyer_reviews %}<a href="#pdReviews" class="pd-rating-count">(214 reviews)</a>{% endif %}
+              {% if marketplace_settings.buyer_reviews %}{% with review_count=product.total_reviews|default:0 %}<a href="#pdReviews" class="pd-rating-count">({{ review_count }} review{{ review_count|pluralize }})</a>{% endwith %}{% endif %}
               {% if product.sku %}
                 <span class="pd-rating-divider">|</span>
                 <span class="pd-sku-inline"><!-- SKU will be rendered here by Django -->SKU: {{ product.sku }}</span>
@@ -424,7 +422,7 @@
             <button class="nav-link" id="pdp-tab-specs-btn" data-bs-toggle="tab" data-bs-target="#pdp-tab-specs" type="button" role="tab" aria-controls="pdp-tab-specs" aria-selected="false">Specifications</button>
           </li>
           <li class="nav-item" role="presentation">
-            {% if marketplace_settings.buyer_reviews %}<button class="nav-link" id="pdp-tab-reviews-btn" data-bs-toggle="tab" data-bs-target="#pdp-tab-reviews" type="button" role="tab" aria-controls="pdp-tab-reviews" aria-selected="false">Reviews (214)</button>{% endif %}
+            {% if marketplace_settings.buyer_reviews %}<button class="nav-link" id="pdp-tab-reviews-btn" data-bs-toggle="tab" data-bs-target="#pdp-tab-reviews" type="button" role="tab" aria-controls="pdp-tab-reviews" aria-selected="false">Reviews ({{ product.total_reviews }})</button>{% endif %}
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="pdp-tab-shipping-btn" data-bs-toggle="tab" data-bs-target="#pdp-tab-shipping" type="button" role="tab" aria-controls="pdp-tab-shipping" aria-selected="false">Shipping &amp; Returns</button>
@@ -502,155 +500,114 @@
           <!-- ============ REVIEWS ============ -->
           {% if marketplace_settings.buyer_reviews %}
           <div class="tab-pane fade" id="pdp-tab-reviews" role="tabpanel" aria-labelledby="pdp-tab-reviews-btn">
-            <div class="pdp-reviews-summary">
-              <!-- Average Rating: will render product.average_rating -->
-              <div class="pdp-reviews-score">
-                <h2>4.6</h2>
-                <div class="pdp-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                </div>
-                <p>Based on 214 reviews</p>
+              
+              <div class="pdp-reviews-summary">
+                  <!-- Average Rating -->
+                  <div class="pdp-reviews-score">
+                      <h2>{{ product.average_rating }}</h2>
+                      <div class="pdp-rating text-warning">
+                          <!-- Dynamically render full, half, or empty stars -->
+                          {% for star_class in product.rating_stars %}
+                              <i class="bi {{ star_class }}"></i>
+                          {% endfor %}
+                      </div>
+                      <p>Based on {{ product.total_reviews }} review{{ product.total_reviews|pluralize }}</p>
+                  </div>
+
+                  <!-- Rating Distribution -->
+                  <div class="pdp-reviews-distribution">
+                      {% for stars, data in review_distribution.items %}
+                      <div class="pdp-dist-row">
+                          <span>{{ stars }} ★</span>
+                          <div class="progress">
+                              <div class="progress-bar bg-warning" style="width: {{ data.percent }}%" aria-valuenow="{{ data.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <span>{{ data.count }}</span>
+                      </div>
+                      {% endfor %}
+                  </div>
               </div>
 
-              <!-- Rating Distribution: will render aggregated review counts per star -->
-              <div class="pdp-reviews-distribution">
-                <div class="pdp-dist-row">
-                  <span>5 ★</span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 72%"></div>
-                  </div>
-                  <span>154</span>
-                </div>
-                <div class="pdp-dist-row">
-                  <span>4 ★</span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 16%"></div>
-                  </div>
-                  <span>34</span>
-                </div>
-                <div class="pdp-dist-row">
-                  <span>3 ★</span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 7%"></div>
-                  </div>
-                  <span>15</span>
-                </div>
-                <div class="pdp-dist-row">
-                  <span>2 ★</span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 3%"></div>
-                  </div>
-                  <span>7</span>
-                </div>
-                <div class="pdp-dist-row">
-                  <span>1 ★</span>
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 2%"></div>
-                  </div>
-                  <span>4</span>
-                </div>
-              </div>
-            </div>
+              <!-- Review Cards: Rendered dynamically from the reviews context -->
+              <div class="pdp-reviews-list">
+                  {% for review in reviews %}
+                  <div class="pdp-review-card">
+                      <div class="pdp-review-head">
+                          <div class="pdp-review-avatar">
+                              {% if review.user.profile_image_url %}
+                                  <img src="{{ review.user.profile_image_url }}" class="img-fluid" alt="User Avatar">
+                              {% else %}
+                                  {{ review.user.username|make_list|first|upper }}
+                              {% endif %}
+                          </div>
+                          <div>
+                              <div class="pdp-review-name">
+                                  <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                                  <span class="pdp-verified-purchase"><i class="bi bi-patch-check-fill text-success"></i> Verified Purchase</span>
+                              </div>
+                              <span class="pdp-review-date">{{ review.created_at|date:"F j, Y" }}</span>
+                          </div>
+                      </div>
 
-            <!-- Review Cards: will render from product.reviews queryset -->
-            <div class="pdp-reviews-list">
-              <div class="pdp-review-card">
-                <div class="pdp-review-head">
-                  <div class="pdp-review-avatar">A</div>
-                  <div>
-                    <div class="pdp-review-name">
-                      <strong>Ayesha K.</strong>
-                      <span class="pdp-verified-purchase"><i class="bi bi-patch-check-fill"></i> Verified Purchase</span>
-                    </div>
-                    <span class="pdp-review-date">June 18, 2026</span>
+                      <!-- Individual Review Star Rating -->
+                      <div class="pdp-rating text-warning">
+                          {% for i in "12345"|make_list %}
+                              {% if forloop.counter <= review.rating %}
+                                  <i class="bi bi-star-fill"></i>
+                              {% else %}
+                                  <i class="bi bi-star"></i>
+                              {% endif %}
+                          {% endfor %}
+                      </div>
+
+                      <h6 class="pdp-review-title">{{ review.title }}</h6>
+                      <p class="pdp-review-text">{{ review.description }}</p>
+                      
+                      {% if review.image %}
+                      <div class="pdp-review-image mb-3">
+                          <img src="{{ review.image.url }}" alt="Review Image" style="max-width: 120px; border-radius: 4px; border: 1px solid var(--border-color);">
+                      </div>
+                      {% endif %}
+
+                      <div class="pdp-review-actions">
+                          <button class="pdp-review-helpful" type="button">
+                              <i class="bi bi-hand-thumbs-up"></i> Helpful (<span data-count="{{ review.helpful_count }}">{{ review.helpful_count }}</span>)
+                          </button>
+                          <button type="button"><i class="bi bi-flag"></i> Report</button>
+                      </div>
                   </div>
-                </div>
-                <div class="pdp-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                </div>
-                <h6 class="pdp-review-title">Best headphones I've owned</h6>
-                <p class="pdp-review-text">The noise cancellation is fantastic for my daily commute and the battery genuinely lasts close to a week of moderate use. Very comfortable too.</p>
-                <div class="pdp-review-actions">
-                  <button class="pdp-review-helpful" type="button"><i class="bi bi-hand-thumbs-up"></i> Helpful (<span data-count="24">24</span>)</button>
-                  <button type="button"><i class="bi bi-flag"></i> Report</button>
-                </div>
+                  
+                  {% empty %}
+                  <!-- Empty state: shown when a product has zero reviews -->
+                  <div class="pdp-empty-state text-center py-5" id="pdpNoReviews">
+                      <i class="bi bi-chat-square-text text-muted" style="font-size: 2.5rem;"></i>
+                      <h6 class="mt-3">No reviews yet</h6>
+                      <p class="text-muted">Be the first to share what you think about this product.</p>
+                  </div>
+                  {% endfor %}
               </div>
 
-              <div class="pdp-review-card">
-                <div class="pdp-review-head">
-                  <div class="pdp-review-avatar">M</div>
-                  <div>
-                    <div class="pdp-review-name">
-                      <strong>Moiz R.</strong>
-                      <span class="pdp-verified-purchase"><i class="bi bi-patch-check-fill"></i> Verified Purchase</span>
-                    </div>
-                    <span class="pdp-review-date">June 3, 2026</span>
-                  </div>
-                </div>
-                <div class="pdp-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star"></i>
-                </div>
-                <h6 class="pdp-review-title">Great sound, slightly tight fit</h6>
-                <p class="pdp-review-text">Sound quality is excellent and the case is sturdy. They feel a little snug on the first few wears but loosen up nicely after a week.</p>
-                <div class="pdp-review-actions">
-                  <button class="pdp-review-helpful" type="button"><i class="bi bi-hand-thumbs-up"></i> Helpful (<span data-count="9">9</span>)</button>
-                  <button type="button"><i class="bi bi-flag"></i> Report</button>
-                </div>
+              <!-- Pagination placeholder -->
+              {% if reviews.has_other_pages %}
+              <div class="pdp-reviews-pagination mt-4">
+                  {% if reviews.has_previous %}
+                      <a href="?page={{ reviews.previous_page_number }}" aria-label="Previous page"><i class="bi bi-chevron-left"></i></a>
+                  {% endif %}
+
+                  {% for num in reviews.paginator.page_range %}
+                      {% if reviews.number == num %}
+                          <button class="active" type="button" aria-label="Page {{ num }}">{{ num }}</button>
+                      {% elif num > reviews.number|add:'-3' and num < reviews.number|add:'3' %}
+                          <a href="?page={{ num }}" aria-label="Page {{ num }}">{{ num }}</a>
+                      {% endif %}
+                  {% endfor %}
+
+                  {% if reviews.has_next %}
+                      <a href="?page={{ reviews.next_page_number }}" aria-label="Next page"><i class="bi bi-chevron-right"></i></a>
+                  {% endif %}
               </div>
+              {% endif %}
 
-              <div class="pdp-review-card">
-                <div class="pdp-review-head">
-                  <div class="pdp-review-avatar">S</div>
-                  <div>
-                    <div class="pdp-review-name">
-                      <strong>Sara N.</strong>
-                      <span class="pdp-verified-purchase"><i class="bi bi-patch-check-fill"></i> Verified Purchase</span>
-                    </div>
-                    <span class="pdp-review-date">May 27, 2026</span>
-                  </div>
-                </div>
-                <div class="pdp-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                </div>
-                <h6 class="pdp-review-title">Worth every rupee</h6>
-                <p class="pdp-review-text">Delivery was quick and the packaging felt premium. Bass is punchy without overpowering vocals. Highly recommend for the price range.</p>
-                <div class="pdp-review-actions">
-                  <button class="pdp-review-helpful" type="button"><i class="bi bi-hand-thumbs-up"></i> Helpful (<span data-count="41">41</span>)</button>
-                  <button type="button"><i class="bi bi-flag"></i> Report</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Empty state: shown when a product has zero reviews -->
-            <div class="pdp-empty-state" id="pdpNoReviews">
-              <i class="bi bi-chat-square-text"></i>
-              <h6>No reviews yet</h6>
-              <p>Be the first to share what you think about this product.</p>
-            </div>
-
-            <!-- Pagination placeholder: will render from review queryset page_obj -->
-            <div class="pdp-reviews-pagination">
-              <button class="active" type="button" aria-label="Page 1">1</button>
-              <button type="button" aria-label="Page 2">2</button>
-              <button type="button" aria-label="Page 3">3</button>
-              <button type="button" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
-            </div>
           </div>
           {% endif %}
 
@@ -784,12 +741,10 @@
 
                 <h6 class="product-name" onclick="window.location.href='{% url 'product' product.slug %}'">{{ product.name }}</h6>
                 <div class="product-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span>({{ product.review_count|default:'0' }})</span>
+                  {% for star_class in product.rating_stars %}
+                      <i class="bi {{ star_class }}"></i>
+                  {% endfor %}
+                  <span>({{ product.total_reviews|default:'0' }})</span>
                 </div>
                 <div class="product-price">
                   {% if product.discount_price %}
@@ -877,12 +832,10 @@
 
                 <h6 class="product-name" onclick="window.location.href='{% url 'product' product.slug %}'">{{ product.name }}</h6>
                 <div class="product-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span>({{ product.review_count|default:'0' }})</span>
+                  {% for star_class in product.rating_stars %}
+                      <i class="bi {{ star_class }}"></i>
+                  {% endfor %}
+                  <span>({{ product.total_reviews|default:'0' }})</span>
                 </div>
                 <div class="product-price">
                   {% if product.discount_price %}

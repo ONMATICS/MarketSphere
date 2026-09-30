@@ -1363,6 +1363,16 @@
 }
 /* ================= FULLSCREEN VIEWER ================= */
 
+/* Make review images look clickable */
+.pdp-review-image img {
+    cursor: zoom-in;
+    transition: opacity 0.2s ease;
+}
+
+.pdp-review-image img:hover {
+    opacity: 0.85; /* Slight fade effect on hover */
+}
+
 .pd-fullscreen-overlay{
     position: fixed;
     inset: 0;

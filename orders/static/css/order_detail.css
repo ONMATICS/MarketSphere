@@ -15,6 +15,7 @@
     --od-success: #4f7d54;
     --od-warning: #b7802b;
     --od-danger: #b54b3b;
+    --od-selection-active-color: #a06e40;
 }
 
 /* ================= BREADCRUMB ================= */
@@ -748,7 +749,348 @@
     background-color: #93372a !important;
     border-color: #93372a !important;
 }
+/* ================= REVIEW MODAL ================= */
+.od-review-modal .modal-content {
+    background-color: #F7F1DE; /* Matches your cancel modal */
+    border: 1.5px solid var(--od-accent-dark, #2c3e50);
+    border-radius: 1px;
+}
 
+.od-review-modal .modal-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.od-review-modal .modal-title {
+    color: var(--od-accent-dark, #2c3e50);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+}
+
+.od-review-modal .modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Review Form Inputs */
+.od-review-modal .form-control {
+    border-radius: 1px;
+    border: 1px solid var(--border-color);
+    background-color: #fff;
+}
+.od-review-modal .form-control:focus {
+    border-color: var(--od-accent-dark, #2c3e50);
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+}
+/* ================= ALREADY REVIEWED ALERT ================= */
+.od-already-reviewed-alert {
+    background-color: rgba(160, 110, 64, 0.08); /* Very light, warm brownish tint */
+    border: 1.5px solid var(--od-selection-active-color, #a06e40);
+    border-radius: 1px; /* Matches your modal theme */
+    color: var(--od-accent-dark, #2c3e50);
+    padding: 14px 20px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    box-shadow: inset 0 0 0 1px rgba(160, 110, 64, 0.1);
+}
+
+.od-already-reviewed-alert i {
+    color: var(--od-selection-active-color, #a06e40); /* Brownish accent for the icon */
+    font-size: 1.25rem;
+    display: flex;
+}
+/* Product Selection Radio Cards */
+.review-product-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding-bottom: 8px;
+}
+
+.review-product-card {
+    cursor: pointer;
+    min-width: 0;
+}
+
+.review-product-card input[type="radio"] {
+    display: none; /* Hide the actual radio circle */
+}
+
+.review-product-card .card-content {
+    border: 1.5px solid var(--border-color);
+    background-color: #fff;
+    padding: 8px;
+    border-radius: 1px;
+    text-align: center;
+    transition: all 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+.review-product-card .card-content .product-name {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    color: var(--od-accent-dark, #2c3e50);
+    /* Truncate text to 2 lines */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Checked State for Radio Cards */
+.review-product-card input[type="radio"]:checked + .card-content {
+    border-color: var(--od-accent-dark, #2c3e50);
+    background-color: #f1ebd8; /* slight tint matching theme */
+    box-shadow: inset 0 0 0 1px var(--od-accent-dark, #2c3e50);
+}
+
+/* Pure CSS Star Rating */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse; /* Reverses so sibling selector works */
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 1rem;
+    color: var(--border-color, #ccc);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* Highlight stars on hover and checked */
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107; /* Bootstrap yellow/warning color */
+}
+
+/* Review Buttons */
+.od-modal-cancel-btn {
+    width: auto !important;
+    background-color: transparent !important;
+    color: var(--od-accent-dark, #2c3e50) !important;
+    border-color: var(--border-color) !important;
+    border-radius: 1px;
+}
+
+.od-modal-cancel-btn:hover {
+    background-color: var(--border-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.od-modal-submit-btn {
+    width: auto !important;
+    color: #F7F1DE !important; /* Matches background */
+    border-radius: 1.5px;
+}
+
+.od-modal-submit-btn:hover {
+    opacity: 0.9;
+}
+
+/* 1. Container for all selection buttons to manage spacing */
+.product-selection-horizontal-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows multiple items to wrap to the next line */
+    gap: 15px; /* Spacing between cards */
+    justify-content: center; /* Centered alignment for aesthetics */
+    padding: 10px 0;
+}
+
+/* 2. Main wrapper for the entire card-like button */
+.horizontal-review-selection-card {
+    cursor: pointer;
+    flex: 0 1 100%; /* Default width to take full space in vertical layouts, but we manage with gap/padding */
+    max-width: 480px; /* Optional cap to prevent too-wide buttons */
+}
+
+/* 3. Visually hidden radio input, functionality is kept */
+.horizontal-review-selection-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 4. Visible styling for the unselected button */
+.card-inner-content {
+    display: flex; /* Key for horizontal alignment of items within the button */
+    align-items: center; /* Centered content vertically */
+    padding: 6px 10px;
+    border-radius: 9px; /* Extremely rounded corners like in the image */
+    background-color: transparent; /* Light beige/cream background from previous context */
+    border: 1.5px solid var(--od-selection-active-color); /* Light grey border for not selected */
+    transition: all 0.3s ease; /* Smooth state transitions */
+}
+
+/* 5. Styling for text, part of the dark accent color */
+.item-details .product-name {
+    color: var(--od-accent-dark); /* Dark text color */
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* 6. Base visual for the visual radio button */
+.visual-radio-indicator {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1.5px solid var(--od-selection-active-color); 
+    margin-right: 15px; 
+    flex-shrink: 0; /* Prevents radio from being squished */
+    transition: #9d6638 0.3s ease;
+}
+
+/* 7. Inner visual circle of the radio button (hidden when not selected) */
+.visual-radio-indicator::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #9D6638; /* Selection color for inner dot */
+    transition: transform 0.3s ease;
+}
+
+/* 8. Item Details (Image and Name container) */
+.item-details {
+    display: flex; /* Horizontal alignment for image and name */
+    align-items: center; /* Centered image and name */
+    flex: 1; /* Occupy remaining space */
+}
+
+/* 9. Product Image styling */
+.item-details img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 12px;
+    border-radius: 8px; /* Slightly rounded corners for the image itself */
+    flex-shrink: 0;
+}
+
+/* ==================== STATES (ACTIVE / CHECKED) ==================== */
+
+/* 10. Selected Card: Entire background becomes tinted, border and text colors change */
+.horizontal-review-selection-card input[type="radio"]:checked + .card-inner-content {
+    background-color: rgba(160, 110, 64, 0.05); /* Very light tint of selection color */
+    border-color: var(--od-selection-active-color); /* Change border to selection brown */
+    box-shadow: 0 0 10px rgba(160, 110, 64, 0.15); /* Soft, colored shadow */
+}
+
+/* 11. Selected Card: Text color changes to selection brown */
+.horizontal-review-selection-card input[type="radio"]:checked + .card-inner-content .item-details .product-name {
+    color: var(--od-selection-active-color);
+}
+
+/* 12. Selected Card: Change the color of the visual radio button indicator and its inner dot */
+.horizontal-review-selection-card input[type="radio"]:checked + .card-inner-content .visual-radio-indicator {
+    border-color: var(--od-selection-active-color);
+}
+
+/* 13. Selected Card: Show the inner dot of the radio button with its scale transition */
+.horizontal-review-selection-card input[type="radio"]:checked + .card-inner-content .visual-radio-indicator::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+/* ================= CUSTOM IMAGE UPLOAD ================= */
+.custom-image-upload {
+    width: 100%;
+}
+
+.upload-drop-area {
+    display: block;
+    width: 100%;
+    border: 2px dashed #a3b19b; /* Muted greenish-grey dashed border[cite: 2] */
+    border-radius: 8px;
+    background-color: transparent;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.upload-drop-area:hover {
+    background-color: rgba(163, 177, 155, 0.1);
+}
+
+.upload-placeholder {
+    padding: 35px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #92a487; /* Muted greenish-grey text and icon[cite: 2] */
+}
+
+.upload-placeholder i {
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+}
+
+.upload-placeholder span {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Image Preview State */
+.upload-preview-container {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-preview-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Keeps image proportions without stretching */
+}
+
+/* Remove Image Button */
+.btn-remove-img {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 10;
+}
+
+.btn-remove-img:hover {
+    background-color: var(--od-danger, #dc3545);
+}
 /* ================= TOAST ================= */
 .od-toast-container {
     position: fixed;

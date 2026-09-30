@@ -102,6 +102,7 @@ class Brand(models.Model):
         return self.name
 
 
+from django.db.models import Avg
 class Product(TimeStampedModel):
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
@@ -193,6 +194,32 @@ class Product(TimeStampedModel):
         if self.discount_price and self.price:
             return round(((self.price - self.discount_price) / self.price) * 100)
         return 0
+
+
+    @property
+    def average_rating(self):
+        # Calculate the average rating from related reviews
+        avg = self.reviews.aggregate(average=Avg('rating'))['average']
+        return round(avg, 1) if avg is not None else 0.0
+    
+    @property
+    def total_reviews(self):
+        # Get total review count
+        return self.reviews.count()
+
+    @property
+    def rating_stars(self):
+        """Helper to generate full, half, and empty star CSS classes based on the average."""
+        avg = self.average_rating
+        stars = []
+        for i in range(1, 6):
+            if avg >= i:
+                stars.append('bi-star-fill')
+            elif avg >= i - 0.5:
+                stars.append('bi-star-half')
+            else:
+                stars.append('bi-star')
+        return stars
 
     def __str__(self):
         return self.name

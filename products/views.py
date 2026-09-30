@@ -186,7 +186,7 @@ def search_brands(request):
 
     return JsonResponse({"brands": data})
 
-
+from support import services as support_services
 def product(request, product_slug, promotion_slug=None):
     product = services.get_product_by_slug(product_slug)
     promotion_product = None
@@ -204,12 +204,21 @@ def product(request, product_slug, promotion_slug=None):
         product,
     )
 
+    # --- Fetch Product Reviews with Pagination ---
+    page_number = request.GET.get('page', 1)
+    reviews = support_services.get_product_reviews(product, page_number)
+    
+    # --- NEW: Get Review Distribution for Progress Bars ---
+    review_distribution = support_services.get_review_distribution(product)
+
     context = {
         "product": product,
         "promotion_product": promotion_product,
         "frequent_products": frequent_products,
         "related_products": related_products,
         "recently_viewed_products": recently_viewed_products,
+        "reviews": reviews, 
+        "review_distribution": review_distribution, # Passed to the template
         "is_in_wishlist": (
             services.is_in_wishlist(request.user, product.slug)
             if request.user.is_authenticated
@@ -222,7 +231,6 @@ def product(request, product_slug, promotion_slug=None):
         ),
     }
     return render(request, "product_details.html", context)
-
 
 from django.core.exceptions import PermissionDenied
 

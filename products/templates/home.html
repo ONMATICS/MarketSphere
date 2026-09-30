@@ -141,13 +141,14 @@
                 {% endif %}
 
                 <h6 class="product-name" onclick="window.location.href='{% url 'product' product.slug %}'">{{ product.name }}</h6>
-                <div class="product-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span>({{ product.review_count|default:'0' }})</span>
+                <div class="product-rating text-warning">
+                    <!-- Dynamically render full, half, or empty stars -->
+                    {% for star_class in product.rating_stars %}
+                        <i class="bi {{ star_class }}"></i>
+                    {% endfor %}
+                    
+                    <!-- Dynamic review count -->
+                    <span class="text-muted ms-1">({{ product.total_reviews|default:'0' }})</span>
                 </div>
                 <div class="product-price">
                   {% if product.discount_price %}
@@ -317,13 +318,14 @@
                 {% endif %}
 
                 <h6 class="product-name" onclick="window.location.href='{% url 'product' product.slug %}'">{{ product.name }}</h6>
-                <div class="product-rating">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span>({{ product.review_count|default:'0' }})</span>
+                <div class="product-rating text-warning">
+                    <!-- Dynamically render full, half, or empty stars -->
+                    {% for star_class in product.rating_stars %}
+                        <i class="bi {{ star_class }}"></i>
+                    {% endfor %}
+                    
+                    <!-- Dynamic review count -->
+                    <span class="text-muted ms-1">({{ product.total_reviews|default:'0' }})</span>
                 </div>
                 <div class="product-price">
                   {% if product.discount_price %}
