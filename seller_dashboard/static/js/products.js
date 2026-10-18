@@ -257,6 +257,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             );
+        } else if (action === 'live') {
+            window.location.href = `/product/${productSlug}`;
         } else if (action === 'edit' || action === 'duplicate') {
             window.location.href = `/seller/products/edit-product/${productSlug}`;
             // Placeholder — no backend routing exists yet for editing/duplicating a product.

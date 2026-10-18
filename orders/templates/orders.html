@@ -60,7 +60,7 @@
               <!-- CARD HEADER: ID, Date, & Status -->
               <div class="mo-order-card-header">
                 <div class="mo-order-header-info">
-                  <span class="mo-order-number">#MS-{{ order.order_number }}</span>
+                  <span class="mo-order-number">#{{ order.order_number }}</span>
                   <span class="mo-order-date"><i class="bi bi-calendar-event"></i> Placed on {{ order.created_at|date }}</span>
                 </div>
                 <div class="mo-order-header-status">

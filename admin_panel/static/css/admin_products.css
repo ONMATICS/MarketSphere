@@ -1,12 +1,9 @@
 /* ==========================================================================
-   MARKETSPHERE ADMIN — CATALOG: PRODUCT MANAGEMENT (list.css)
-   Page-scoped styles for admin_dashboard/catalog/products/list.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `pcl-` (Product
-   Catalog List) to avoid collisions with the shell and other admin pages,
-   matching the project's page-scoped prefix convention
-   (bu-, sld-, sad-, adu-, bd- ...).
-
+   MARKETSPHERE ADMIN — CATALOG: PRODUCT MANAGEMENT (admin_products.css)
+   Purpose:
+     Page-scoped styles for admin_dashboard/catalog/products/list.html.
+   Scope:
+     Product Catalog List. Uses the `pcl-` prefix convention.
    Sections:
      1. Variables
      2. Reset / Page Wrapper
@@ -29,6 +26,7 @@
     19. Toast
     20. Responsive
    ========================================================================== */
+
 
 /* ================= 1. VARIABLES ================= */
 .pcl-page {
@@ -78,6 +76,7 @@
     --pcl-ease: var(--ad-ease, cubic-bezier(0.22, 1, 0.36, 1));
     --pcl-transition: 0.2s var(--pcl-ease);
 }
+
 
 /* ================= 2. RESET / PAGE WRAPPER ================= */
 .pcl-page,
@@ -159,6 +158,7 @@
 .c-info { color: var(--pcl-info) !important; }
 .c-blue { color: var(--pcl-blue) !important; }
 .c-muted { color: var(--pcl-caption) !important; }
+
 
 /* ================= 3. BUTTONS ================= */
 .pcl-btn {
@@ -268,17 +268,11 @@
     pointer-events: none;
 }
 
+
 /* ================= 4. HEADER ================= */
 .pcl-header {
     position: relative;
     z-index: 100;
-}
-
-.pcl-metrics-grid {
-    position: relative;
-    z-index: 1;
-}
-.pcl-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -313,9 +307,11 @@
     flex-shrink: 0;
 }
 
-/* ================= 5. STATISTICS CARDS ================= */
 
+/* ================= 5. STATISTICS CARDS ================= */
 .pcl-metrics-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
@@ -365,6 +361,7 @@
 .pcl-metric-trend.up { color: var(--pcl-success); }
 .pcl-metric-trend.down { color: var(--pcl-danger); }
 .pcl-metric-trend.neutral { color: var(--pcl-caption); }
+
 
 /* ================= 6. TOOLBAR & FILTERS ================= */
 .pcl-toolbar-card {
@@ -513,6 +510,7 @@
 }
 .pcl-filters-more.is-open { display: grid; }
 
+
 /* ================= 7. QUICK FILTER CHIPS ================= */
 .pcl-chip-row {
     display: flex;
@@ -552,6 +550,7 @@
 }
 .pcl-chip.is-active .pcl-chip-count { background-color: rgba(255, 255, 255, .3); }
 
+
 /* ================= 8. BULK ACTIONS BAR ================= */
 .pcl-bulk-bar {
     display: flex;
@@ -570,6 +569,7 @@
 .pcl-bulk-count { font-size: 15px; font-weight: 700; }
 .pcl-bulk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 
+
 /* ================= 9. LAYOUT (TABLE + SIDEBAR) ================= */
 .pcl-layout {
     display: grid;
@@ -578,6 +578,7 @@
     align-items: start;
 }
 .pcl-main-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
 
 /* ================= 10. PRODUCTS TABLE ================= */
 .pcl-table-card {
@@ -735,6 +736,7 @@
 }
 .pcl-icon-btn:hover { background-color: var(--pcl-accent-soft); color: var(--pcl-accent-strong); }
 
+
 /* ================= 11. BADGES ================= */
 .pcl-badge {
     display: inline-flex;
@@ -763,6 +765,7 @@
 .pcl-badge.c-rejected { background-color: var(--pcl-accent-soft); color: var(--pcl-accent-strong); }
 .pcl-badge.c-hidden { background-color: var(--pcl-muted-bg); color: #6b7458; }
 .pcl-badge.c-archived { background-color: var(--pcl-blue-bg); color: var(--pcl-blue); }
+
 
 /* ================= 12. DROPDOWN ================= */
 .pcl-dropdown {
@@ -839,6 +842,7 @@
 .pcl-dropdown-divider { height: 1px; background-color: var(--pcl-border); margin: 5px 2px; }
 .pcl-dropdown-trigger[aria-expanded="true"] { background-color: var(--pcl-accent-soft); color: var(--pcl-accent-strong); }
 
+
 /* ================= 13. CHECKBOX ================= */
 .pcl-checkbox { position: relative; display: inline-flex; cursor: pointer; }
 .pcl-checkbox input { position: absolute; opacity: 0; height: 0; width: 0; }
@@ -868,6 +872,7 @@
 }
 .pcl-checkbox input:checked ~ .pcl-checkbox-box::after { display: block; }
 
+
 /* ================= 14. EMPTY STATE ================= */
 .pcl-empty-state {
     display: none;
@@ -891,6 +896,7 @@
 }
 .pcl-empty-title { font-size: 19px; font-weight: 700; color: var(--pcl-heading); margin: 0 0 6px; }
 .pcl-empty-subtitle { color: var(--pcl-caption); margin: 0 0 22px; max-width: 340px; font-size: 13.5px; }
+
 
 /* ================= 15. PAGINATION ================= */
 .pcl-pagination-bar {
@@ -940,6 +946,7 @@
     font-weight: 700;
 }
 .pcl-jump-input:focus { outline: none; border-color: var(--pcl-accent); box-shadow: 0 0 0 3px var(--pcl-accent-ring); }
+
 
 /* ================= 16. SIDEBAR WIDGETS ================= */
 .pcl-sidebar { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--ad-topbar-height, 68px) + 20px); }
@@ -1006,6 +1013,7 @@
 .pcl-tips-list li { position: relative; padding-left: 15px; font-size: 12px; color: var(--pcl-body); line-height: 1.55; }
 .pcl-tips-list li::before { content: ""; position: absolute; left: 0; top: 6px; width: 5px; height: 5px; border-radius: 50%; background-color: var(--pcl-accent-strong); }
 
+
 /* ================= 17. FOOTER PANEL ================= */
 .pcl-footer-panel {
     display: grid;
@@ -1037,6 +1045,7 @@
 .pcl-footer-text p { margin: 0; font-size: 12.5px; color: var(--pcl-caption); line-height: 1.55; }
 .pcl-footer-text a { color: var(--pcl-accent-strong); font-weight: 700; }
 .pcl-footer-text a:hover { text-decoration: underline; }
+
 
 /* ================= 18. MODALS ================= */
 .pcl-modal-overlay {
@@ -1082,6 +1091,7 @@
 .pcl-modal-actions { display: flex; gap: 10px; }
 .pcl-modal-actions .pcl-btn { flex: 1; }
 
+
 /* ================= 19. TOAST ================= */
 .pcl-toast-container {
     position: fixed;
@@ -1116,6 +1126,7 @@
 .pcl-toast.is-leaving { animation: pclToastOut .22s ease forwards; }
 @keyframes pclToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pclToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+
 
 /* ================= 20. RESPONSIVE ================= */
 @media (max-width: 1299.98px) {

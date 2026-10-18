@@ -1,12 +1,28 @@
 /* =========================================================
-   MARKETSPHERE — BUYER PROFILE / MY ACCOUNT PAGE STYLES
-   Builds on global tokens (static/css/styles.css) and reuses
-   .product-image-placeholder / .section-label from home.css.
-   All classes here are prefixed `bp-` (Buyer Profile) to avoid
-   collisions with the existing `bu-`, `sa-`, `sld-` etc. class
-   sets used elsewhere in the project.
-   ========================================================= */
+   MARKETSPHERE — BUYER PROFILE / MY ACCOUNT PAGE (profile.css)
+   Purpose:
+     Controls the layout, components, navigation, and specific 
+     views for the Buyer Profile and My Account interfaces.
+   Scope:
+     Buyer Dashboard, Profile Overview, Order History, Addresses,
+     Wishlist, Security, and Settings.
+   Sections:
+     1. Variables
+     2. Utilities & Shared Buttons
+     3. Layout & Navigation
+     4. Profile Hero & Stats
+     5. Personal Info & Completion
+     6. Orders & Wishlist
+     7. Addresses
+     8. Security & Preferences
+     9. Activity & Notifications
+     10. Support, Empty States & Danger Zone
+     11. Modals & Toasts
+     12. Responsive Styles
+========================================================= */
 
+
+/* ================= 1. VARIABLES ================= */
 :root {
     --bp-accent: #9D6638;
     --bp-accent-dark: #4E220F;
@@ -19,7 +35,9 @@
     --bp-border: var(--border-color, #D9D2C4);
 }
 
-/* ================= SHARED BUTTONS ================= */
+
+/* ================= 2. UTILITIES & SHARED BUTTONS ================= */
+/* Shared Buttons */
 .bp-btn-primary,
 .bp-btn-outline,
 .bp-btn-outline-danger,
@@ -73,7 +91,6 @@
 .bp-btn-danger-outline:hover {
     background-color: var(--bp-danger) !important;
     color: #F7F1DE !important;
-    border-color: var(--bp-danger) !important;
     border: 1.5px solid rgba(181, 75, 59, 0.4) !important;
 }
 
@@ -86,7 +103,6 @@
 .bp-btn-danger:hover {
     background-color: #8f3a2c !important;
     color: #F7F1DE !important;
-    border-color: #8f3a2c !important;
     border: 1.5px solid var(--bp-danger) !important;
 }
 
@@ -116,7 +132,155 @@
     border: 1.5px solid var(--bp-accent) !important;
 }
 
-/* ================= BREADCRUMB ================= */
+/* Toggle Switch */
+.bp-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+.bp-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.bp-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background-color: #E3DAC3;
+    border: 1px solid var(--bp-border);
+    border-radius: 20px;
+    transition: 0.2s ease;
+}
+
+.bp-toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background-color: #FFFDF8;
+    border-radius: 50%;
+    transition: 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.bp-toggle-switch input:checked + .bp-toggle-slider {
+    background-color: var(--bp-accent);
+    border-color: var(--bp-accent);
+}
+
+.bp-toggle-switch input:checked + .bp-toggle-slider::before {
+    transform: translateX(18px);
+}
+
+.bp-toggle-switch.is-locked {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+/* Loading Helpers */
+.bp-spin {
+    animation: bpSpin 0.8s linear infinite;
+}
+
+@keyframes bpSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+/* Focus visibility */
+.bp-nav-link:focus-visible,
+.bp-btn-primary:focus-visible,
+.bp-btn-outline:focus-visible,
+.bp-address-action-btn:focus-visible,
+.bp-toggle-switch:focus-within .bp-toggle-slider,
+.bp-channel-chip:focus-visible {
+    outline: 2px solid var(--bp-accent);
+    outline-offset: 2px;
+}
+
+
+/* ================= 3. LAYOUT & NAVIGATION ================= */
+/* Layout / Cards */
+.bp-section {
+    padding: 20px 0 60px;
+    background-color: var(--background-color);
+}
+
+.bp-main-col,
+.bp-side-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.bp-card {
+    background-color: var(--bp-card-bg);
+    border: 1px solid var(--bp-border);
+    border-radius: 16px;
+    padding: 24px;
+    scroll-margin-top: 170px;
+}
+
+.bp-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.bp-card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bp-card-title i {
+    color: var(--bp-accent);
+    background-color: transparent;
+    font-size: 18px;
+}
+
+.bp-view-all-link {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--bp-accent) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bp-view-all-link i {
+    background-color: transparent;
+    font-size: 12px;
+}
+
+.bp-view-all-block {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--bp-border);
+}
+
+/* Breadcrumb */
 .bp-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
@@ -140,7 +304,87 @@
     color: var(--bp-muted);
 }
 
-/* ================= PROFILE HERO ================= */
+/* Account Navigation */
+.bp-nav-section {
+    padding: 4px 0 6px;
+    position: sticky;
+    background-color: var(--background-color) !important;
+    top: var(--sticky-header-height, 96px);
+    z-index: 900;
+}
+
+.bp-account-nav {
+    background-color: #FFFDF8;
+    border: 1px solid var(--bp-border);
+    border-radius: 14px;
+    padding: 6px;
+}
+
+.bp-nav-toggle {
+    display: none;
+    width: 100% !important;
+    background-color: transparent !important;
+    color: var(--bp-accent-dark) !important;
+    border: none !important;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}
+
+.bp-nav-toggle i {
+    background-color: transparent;
+}
+
+.bp-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.bp-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #6b7458 !important;
+    transition: 0.18s ease;
+}
+
+.bp-nav-link i {
+    background-color: transparent;
+    color: var(--bp-accent);
+    font-size: 14px;
+}
+
+.bp-nav-link:hover {
+    background-color: rgba(157, 102, 56, 0.1);
+    color: var(--bp-accent-dark) !important;
+}
+
+.bp-nav-link.is-active {
+    background-color: var(--bp-accent);
+    color: #F7F1DE !important;
+}
+
+.bp-nav-link.is-active i {
+    color: #F7F1DE;
+}
+
+.bp-nav-soon {
+    opacity: 0.6;
+}
+
+
+/* ================= 4. PROFILE HERO & STATS ================= */
+/* Profile Hero */
 .bp-hero-section {
     padding: 10px 0 20px;
     background-color: var(--background-color);
@@ -347,153 +591,7 @@
     background-color: transparent;
 }
 
-/* ================= ACCOUNT NAVIGATION ================= */
-.bp-nav-section {
-    padding: 4px 0 6px;
-    position: sticky;
-    background-color: var(--background-color) !important;
-    top: var(--sticky-header-height, 96px);
-    z-index: 900;
-}
-
-.bp-account-nav {
-    background-color: #FFFDF8;
-    border: 1px solid var(--bp-border);
-    border-radius: 14px;
-    padding: 6px;
-}
-
-.bp-nav-toggle {
-    display: none;
-    width: 100% !important;
-    background-color: transparent !important;
-    color: var(--bp-accent-dark) !important;
-    border: none !important;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-}
-
-.bp-nav-toggle i {
-    background-color: transparent;
-}
-
-.bp-nav-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.bp-nav-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 14px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #6b7458 !important;
-    transition: 0.18s ease;
-}
-
-.bp-nav-link i {
-    background-color: transparent;
-    color: var(--bp-accent);
-    font-size: 14px;
-}
-
-.bp-nav-link:hover {
-    background-color: rgba(157, 102, 56, 0.1);
-    color: var(--bp-accent-dark) !important;
-}
-
-.bp-nav-link.is-active {
-    background-color: var(--bp-accent);
-    color: #F7F1DE !important;
-}
-
-.bp-nav-link.is-active i {
-    color: #F7F1DE;
-}
-
-.bp-nav-soon {
-    opacity: 0.6;
-}
-
-/* ================= LAYOUT / CARDS ================= */
-.bp-section {
-    padding: 20px 0 60px;
-    background-color: var(--background-color);
-}
-
-.bp-main-col,
-.bp-side-col {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.bp-card {
-    background-color: var(--bp-card-bg);
-    border: 1px solid var(--bp-border);
-    border-radius: 16px;
-    padding: 24px;
-    scroll-margin-top: 170px;
-}
-
-.bp-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.bp-card-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--headings);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.bp-card-title i {
-    color: var(--bp-accent);
-    background-color: transparent;
-    font-size: 18px;
-}
-
-.bp-view-all-link {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--bp-accent) !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.bp-view-all-link i {
-    background-color: transparent;
-    font-size: 12px;
-}
-
-.bp-view-all-block {
-    display: flex;
-    justify-content: center;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px solid var(--bp-border);
-}
-
-/* ================= ACCOUNT OVERVIEW STATS ================= */
+/* Account Overview Stats */
 .bp-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -504,7 +602,6 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background-color: #FFFDF8;
     background-color: var(--background-color);
     border: 1px solid var(--bp-border);
     border-radius: 12px;
@@ -548,7 +645,9 @@
     color: var(--bp-muted);
 }
 
-/* ================= PERSONAL INFORMATION ================= */
+
+/* ================= 5. PERSONAL INFO & COMPLETION ================= */
+/* Personal Information */
 .bp-info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -585,7 +684,7 @@
     font-size: 14px;
 }
 
-/* ================= PROFILE COMPLETION ================= */
+/* Profile Completion */
 .bp-completion-pct-badge {
     font-size: 13px;
     font-weight: 700;
@@ -625,7 +724,9 @@
     width: 100% !important;
 }
 
-/* ================= RECENT ORDERS ================= */
+
+/* ================= 6. ORDERS & WISHLIST ================= */
+/* Recent Orders */
 .bp-orders-list {
     display: flex;
     flex-direction: column;
@@ -717,42 +818,146 @@
     font-size: 12.5px !important;
 }
 
-/* ================= EMPTY STATES ================= */
-.bp-empty-state {
+/* Wishlist Preview */
+.bp-wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.bp-wishlist-product-card {
+    background-color: #FFFDF8;
+    border: 1px solid var(--bp-border);
+    border-radius: 14px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: 0.2s ease;
+}
+
+.bp-wishlist-product-card:hover {
+    border-color: var(--bp-accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.bp-wishlist-product-image {
+    position: relative;
+    height: 140px;
+    background-color: #F0E8D2;
+}
+
+.bp-wishlist-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bp-wishlist-product-image .product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
     align-items: center;
-    text-align: center;
-    padding: 40px 20px;
-    gap: 6px;
+    justify-content: center;
 }
 
-.bp-empty-state-full {
-    grid-column: 1 / -1;
-}
-
-.bp-empty-state i {
-    font-size: 40px;
+.bp-wishlist-product-image .product-image-placeholder i {
+    font-size: 32px;
     color: var(--bp-muted);
     background-color: transparent;
-    margin-bottom: 6px;
 }
 
-.bp-empty-state h3 {
-    font-size: 16.5px;
+.bp-discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: var(--bp-danger);
+    color: #F7F1DE;
+    font-size: 10.5px;
     font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+.bp-wishlist-remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background-color: rgba(255, 253, 248, 0.92) !important;
+    color: var(--bp-danger) !important;
+    border: none !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bp-wishlist-remove-btn i {
+    background-color: transparent;
+    font-size: 13px;
+}
+
+.bp-wishlist-remove-btn:hover {
+    background-color: var(--bp-danger) !important;
+    color: #F7F1DE !important;
+}
+
+.bp-wishlist-product-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.bp-wishlist-brand {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--bp-accent);
+}
+
+.bp-wishlist-product-name {
+    font-size: 13.5px;
+    font-weight: 600;
     color: var(--headings);
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.bp-empty-state p {
-    font-size: 13.5px;
-    color: #4f7d54;
-    max-width: 340px;
-    margin: 0 0 10px;
+.bp-wishlist-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 4px 0 10px;
 }
 
-/* ================= ADDRESSES ================= */
+.bp-wishlist-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--headings);
+}
+
+.bp-wishlist-original-price {
+    font-size: 12px;
+    color: var(--bp-muted);
+    text-decoration: line-through;
+    font-weight: 500;
+}
+
+.bp-wishlist-view-btn {
+    width: 100% !important;
+    padding: 7px !important;
+    font-size: 12px !important;
+}
+
+
+/* ================= 7. ADDRESSES ================= */
 .bp-address-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -878,9 +1083,7 @@
 }
 
 .bp-address-action-btn:hover {
-    border-radius: 4px !important;
     border-color: var(--bp-accent) !important;
-    border-width: 1.5px !important;
     background-color: rgba(157, 102, 56, 0.1) !important;
 }
 
@@ -905,228 +1108,9 @@
     color: var(--bp-accent);
 }
 
-/* ================= VIEW ADDRESS MODAL BODY ================= */
-.bp-view-address-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
 
-.bp-view-address-grid .bp-view-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.bp-view-address-grid .bp-view-item.is-wide {
-    grid-column: span 2;
-}
-
-.bp-view-address-grid .bp-view-label {
-    font-size: 11.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--bp-muted);
-}
-
-.bp-view-address-grid .bp-view-value {
-    font-size: 14px;
-    color: var(--headings);
-    font-weight: 500;
-}
-
-/* ================= WISHLIST PREVIEW ================= */
-.bp-wishlist-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-}
-
-.bp-wishlist-product-card {
-    background-color: #FFFDF8;
-    border: 1px solid var(--bp-border);
-    border-radius: 14px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: 0.2s ease;
-}
-
-.bp-wishlist-product-card:hover {
-    border-color: var(--bp-accent);
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-}
-
-.bp-wishlist-product-image {
-    position: relative;
-    height: 140px;
-    background-color: #F0E8D2;
-}
-
-.bp-wishlist-product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.bp-wishlist-product-image .product-image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bp-wishlist-product-image .product-image-placeholder i {
-    font-size: 32px;
-    color: var(--bp-muted);
-    background-color: transparent;
-}
-
-.bp-discount-badge {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background-color: var(--bp-danger);
-    color: #F7F1DE;
-    font-size: 10.5px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 20px;
-}
-
-.bp-wishlist-remove-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 28px !important;
-    height: 28px !important;
-    border-radius: 50% !important;
-    background-color: rgba(255, 253, 248, 0.92) !important;
-    color: var(--bp-danger) !important;
-    border: none !important;
-    padding: 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bp-wishlist-remove-btn i {
-    background-color: transparent;
-    font-size: 13px;
-}
-
-.bp-wishlist-remove-btn:hover {
-    background-color: var(--bp-danger) !important;
-    color: #F7F1DE !important;
-    border-radius: 50% !important;
-}
-
-.bp-wishlist-product-body {
-    padding: 12px 14px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.bp-wishlist-brand {
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: var(--bp-accent);
-}
-
-.bp-wishlist-product-name {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--headings);
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.bp-wishlist-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin: 4px 0 10px;
-}
-
-.bp-wishlist-price {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--headings);
-}
-
-.bp-wishlist-original-price {
-    font-size: 12px;
-    color: var(--bp-muted);
-    text-decoration: line-through;
-    font-weight: 500;
-}
-
-.bp-wishlist-view-btn {
-    width: 100% !important;
-    padding: 7px !important;
-    font-size: 12px !important;
-}
-
-/* ================= RECENT ACTIVITY ================= */
-.bp-activity-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.bp-activity-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 12px 4px;
-    border-bottom: 1px solid var(--bp-border);
-}
-
-.bp-activity-item:last-child {
-    border-bottom: none;
-}
-
-.bp-activity-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: rgba(157, 102, 56, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-}
-
-.bp-activity-icon i {
-    background-color: transparent;
-    color: var(--bp-accent);
-    font-size: 14px;
-}
-
-.bp-activity-desc {
-    font-size: 13.5px;
-    color: var(--headings);
-    font-weight: 500;
-    margin: 0 0 3px;
-}
-
-.bp-activity-time {
-    font-size: 11.5px;
-    color: var(--bp-muted);
-    font-weight: 500;
-}
-
-/* ================= SECURITY & ACCOUNT ================= */
+/* ================= 8. SECURITY & PREFERENCES ================= */
+/* Security & Account */
 .bp-security-list {
     list-style: none;
     margin: 0;
@@ -1191,59 +1175,7 @@
     background-color: transparent;
 }
 
-/* ================= TOGGLE SWITCH ================= */
-.bp-toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    height: 22px;
-    flex: 0 0 auto;
-    cursor: pointer;
-}
-
-.bp-toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.bp-toggle-slider {
-    position: absolute;
-    inset: 0;
-    background-color: #E3DAC3;
-    border: 1px solid var(--bp-border);
-    border-radius: 20px;
-    transition: 0.2s ease;
-}
-
-.bp-toggle-slider::before {
-    content: "";
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    left: 2px;
-    top: 2px;
-    background-color: #FFFDF8;
-    border-radius: 50%;
-    transition: 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-}
-
-.bp-toggle-switch input:checked + .bp-toggle-slider {
-    background-color: var(--bp-accent);
-    border-color: var(--bp-accent);
-}
-
-.bp-toggle-switch input:checked + .bp-toggle-slider::before {
-    transform: translateX(18px);
-}
-
-.bp-toggle-switch.is-locked {
-    opacity: 0.75;
-    cursor: not-allowed;
-}
-
-/* ================= COMMUNICATION PREFERENCES ================= */
+/* Communication Preferences */
 .bp-pref-group {
     display: flex;
     flex-direction: column;
@@ -1336,10 +1268,7 @@
 .bp-channel-chip i {
     background-color: transparent;
 }
-.bp-channel-chip:hover{
-    border-radius: 20px !important;
-    border-width: 1.5px !important;
-}
+
 .bp-channel-chip.is-active {
     background-color: var(--bp-accent) !important;
     color: #F7F1DE !important;
@@ -1350,7 +1279,61 @@
     width: 100% !important;
 }
 
-/* ================= NOTIFICATIONS PREVIEW ================= */
+
+/* ================= 9. ACTIVITY & NOTIFICATIONS ================= */
+/* Recent Activity */
+.bp-activity-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bp-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--bp-border);
+}
+
+.bp-activity-item:last-child {
+    border-bottom: none;
+}
+
+.bp-activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(157, 102, 56, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.bp-activity-icon i {
+    background-color: transparent;
+    color: var(--bp-accent);
+    font-size: 14px;
+}
+
+.bp-activity-desc {
+    font-size: 13.5px;
+    color: var(--headings);
+    font-weight: 500;
+    margin: 0 0 3px;
+}
+
+.bp-activity-time {
+    font-size: 11.5px;
+    color: var(--bp-muted);
+    font-weight: 500;
+}
+
+/* Notifications Preview */
 .bp-unread-pill {
     font-size: 11.5px;
     font-weight: 700;
@@ -1417,7 +1400,44 @@
     font-weight: 500;
 }
 
-/* ================= SUPPORT ================= */
+
+/* ================= 10. SUPPORT, EMPTY STATES & DANGER ZONE ================= */
+/* Empty States */
+.bp-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    gap: 6px;
+}
+
+.bp-empty-state-full {
+    grid-column: 1 / -1;
+}
+
+.bp-empty-state i {
+    font-size: 40px;
+    color: var(--bp-muted);
+    background-color: transparent;
+    margin-bottom: 6px;
+}
+
+.bp-empty-state h3 {
+    font-size: 16.5px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 0;
+}
+
+.bp-empty-state p {
+    font-size: 13.5px;
+    color: #4f7d54;
+    max-width: 340px;
+    margin: 0 0 10px;
+}
+
+/* Support */
 .bp-support-links {
     display: flex;
     flex-direction: column;
@@ -1451,7 +1471,7 @@
     font-size: 15px;
 }
 
-/* ================= DANGER ZONE ================= */
+/* Danger Zone */
 .bp-danger-card {
     border-color: rgba(181, 75, 59, 0.3);
     background-color: rgba(181, 75, 59, 0.03);
@@ -1497,7 +1517,9 @@
     max-width: 260px;
 }
 
-/* ================= MODALS ================= */
+
+/* ================= 11. MODALS & TOASTS ================= */
+/* Modals Base */
 .bp-modal .modal-content {
     background-color: var(--bp-card-bg);
     border: 1.5px solid var(--bp-accent);
@@ -1586,7 +1608,37 @@
     cursor: pointer;
 }
 
-/* Avatar editor inside Edit Profile modal */
+/* View Address Modal Body */
+.bp-view-address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.bp-view-address-grid .bp-view-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.bp-view-address-grid .bp-view-item.is-wide {
+    grid-column: span 2;
+}
+
+.bp-view-address-grid .bp-view-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--bp-muted);
+}
+
+.bp-view-address-grid .bp-view-value {
+    font-size: 14px;
+    color: var(--headings);
+    font-weight: 500;
+}
+
+/* Avatar Editor Modal */
 .bp-avatar-editor {
     display: flex;
     align-items: center;
@@ -1639,7 +1691,7 @@
     margin: 8px 0 0;
 }
 
-/* Password modal */
+/* Password Modal */
 .bp-password-field {
     position: relative;
 }
@@ -1728,7 +1780,7 @@
     content: "\F633";
 }
 
-/* Sessions modal */
+/* Sessions Modal */
 .bp-session-list {
     list-style: none;
     margin: 0;
@@ -1799,7 +1851,7 @@
     white-space: nowrap;
 }
 
-/* Delete account danger warning */
+/* Delete Account Warning */
 .bp-danger-warning {
     display: flex;
     align-items: flex-start;
@@ -1822,7 +1874,7 @@
     flex: 0 0 auto;
 }
 
-/* ================= TOAST ================= */
+/* Toast */
 .bp-toast-container {
     position: fixed;
     bottom: 24px;
@@ -1877,32 +1929,8 @@
     to { opacity: 0; transform: translateY(10px); }
 }
 
-/* ================= LOADING HELPERS ================= */
-.bp-spin {
-    animation: bpSpin 0.8s linear infinite;
-}
 
-@keyframes bpSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.is-loading {
-    pointer-events: none;
-    opacity: 0.85;
-}
-
-/* Focus visibility */
-.bp-nav-link:focus-visible,
-.bp-btn-primary:focus-visible,
-.bp-btn-outline:focus-visible,
-.bp-address-action-btn:focus-visible,
-.bp-toggle-switch:focus-within .bp-toggle-slider,
-.bp-channel-chip:focus-visible {
-    outline: 2px solid var(--bp-accent);
-    outline-offset: 2px;
-}
-
+/* ================= 12. RESPONSIVE STYLES ================= */
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .bp-toast,
@@ -1915,7 +1943,6 @@
     }
 }
 
-/* ================= RESPONSIVE ================= */
 @media (max-width: 1199.98px) {
     .bp-wishlist-grid {
         grid-template-columns: repeat(2, 1fr);

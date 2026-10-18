@@ -32,7 +32,7 @@
       <div class="od-header-row">
         <div class="od-header-titleblock">
           <h1 class="od-page-title">
-            <i class="bi bi-receipt"></i> Order #MS-<!-- Order number will be rendered here by Django -->{{ order.order_number|default:"—" }}
+            <i class="bi bi-receipt"></i> Order #{{ order.order_number|default:"—" }}
           </h1>
           <p class="od-page-subtitle">
             <i class="bi bi-calendar-event"></i>

@@ -37,8 +37,7 @@ class Review(models.Model):
         max_length=2000,
     )
 
-    image = models.ImageField(
-        upload_to="reviews/images/",
+    image = models.URLField(
         blank=True,
         null=True,
     )

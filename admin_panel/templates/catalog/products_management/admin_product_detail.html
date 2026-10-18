@@ -1191,21 +1191,35 @@
           <!-- ============ REVIEWS PANEL ============ -->
           <section class="apd-tab-panel" data-apd-panel="reviews" role="tabpanel" aria-label="Reviews">
             <div class="apd-card">
+              
+              <!-- Reviews Summary -->
               <div class="apd-reviews-summary">
                 <div class="apd-reviews-score">
-                  <strong>4.6</strong>
-                  <div class="apd-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                  <span>Based on 214 reviews</span>
+                  <strong>{{ average_rating }}</strong>
+                  <div class="apd-stars">
+                      <!-- Dynamically render unicode stars based on average rating -->
+                      {% for i in "12345"|make_list %}
+                          {% if forloop.counter <= average_rating|floatformat:"0" %}&#9733;{% else %}&#9734;{% endif %}
+                      {% endfor %}
+                  </div>
+                  <span>Based on {{ total_reviews }} review{{ total_reviews|pluralize }}</span>
                 </div>
+                
+                <!-- Rating Distribution (Iterates 5 to 1) -->
                 <div class="apd-reviews-dist">
-                  <div class="apd-dist-row"><span>5 &#9733;</span><div class="apd-bar"><span style="width:72%;"></span></div><span>154</span></div>
-                  <div class="apd-dist-row"><span>4 &#9733;</span><div class="apd-bar"><span style="width:16%;"></span></div><span>34</span></div>
-                  <div class="apd-dist-row"><span>3 &#9733;</span><div class="apd-bar"><span style="width:7%;"></span></div><span>15</span></div>
-                  <div class="apd-dist-row"><span>2 &#9733;</span><div class="apd-bar"><span style="width:3%;"></span></div><span>7</span></div>
-                  <div class="apd-dist-row"><span>1 &#9733;</span><div class="apd-bar"><span style="width:2%;"></span></div><span>4</span></div>
+                  {% for stars, data in review_distribution.items %}
+                  <div class="apd-dist-row">
+                    <span>{{ stars }} &#9733;</span>
+                    <div class="apd-bar">
+                      <span style="width: {{ data.percent }}%;"></span>
+                    </div>
+                    <span>{{ data.count }}</span>
+                  </div>
+                  {% endfor %}
                 </div>
               </div>
 
+              <!-- Toolbar (Search & Filter) -->
               <div class="apd-table-toolbar">
                 <div class="apd-table-search">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
@@ -1223,60 +1237,63 @@
                 </div>
               </div>
 
+              <!-- Review Cards Loop -->
               <div class="apd-reviews-list" id="apdReviewsList">
-                <div class="apd-review-card" data-rating="5" data-search="ayesha khan best headphones">
+                {% for review in reviews %}
+                <!-- data-rating and data-search are populated for your JS filters -->
+                <div class="apd-review-card" data-rating="{{ review.rating }}" data-search="{{ review.user.username|lower }} {{ review.user.get_full_name|lower }} {{ review.title|lower }} {{ review.description|lower }}">
+                  
                   <div class="apd-review-top">
-                    <div><strong class="apd-review-buyer">Ayesha K.</strong><div class="apd-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div>
-                    <span class="apd-badge c-success">Published</span>
+                    <div>
+                      <strong class="apd-review-buyer">{{ review.user.get_full_name|default:review.user.username }}</strong>
+                      <div class="apd-review-stars">
+                        {% for i in "12345"|make_list %}
+                          {% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    
+                    <!-- Basic check for flagged status (Assumes you prefetched reports, otherwise defaults to Published) -->
+                    {% if review.reports.all %}
+                      <span class="apd-badge c-warning">Flagged</span>
+                    {% else %}
+                      <span class="apd-badge c-success">Published</span>
+                    {% endif %}
                   </div>
-                  <p class="apd-review-text">The noise cancellation is fantastic for my daily commute and the battery genuinely lasts close to a week of moderate use. Very comfortable too.</p>
+                  
+                  <p class="apd-review-text">
+                      <strong>{{ review.title }}</strong><br>
+                      {{ review.description }}
+                  </p>
+
+                  <!-- Display image if the user uploaded one -->
+                  {% if review.image %}
+                  <div class="apd-review-image" style="margin: 10px 0;">
+                      <img src="{{ review.image }}" alt="Review Image" style="max-width: 80px; border-radius: 4px; border: 1px solid var(--border-color);">
+                  </div>
+                  {% endif %}
+                  
                   <div class="apd-review-foot">
-                    <span>Jun 18, 2026 &middot; Verified Purchase</span>
+                    <span>{{ review.created_at|date:"M j, Y" }} &middot; Verified Purchase</span>
                     <div class="apd-review-actions">
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="info" data-apd-toast-msg="Opening buyer profile&hellip;">View Buyer</button>
+                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="info" onclick="window.location.href='{% url "user-buyer"  userId=review.user.id %}'">View Buyer</button>
                       <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="warning" data-apd-toast-msg="Review hidden from storefront">Hide</button>
                       <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-warning" data-apd-toast="warning" data-apd-toast-msg="Review flagged for review">Flag</button>
                       <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-danger" data-apd-toast="danger" data-apd-toast-msg="Review deleted">Delete</button>
                     </div>
                   </div>
+
                 </div>
-                <div class="apd-review-card" data-rating="4" data-search="moiz r great sound">
-                  <div class="apd-review-top">
-                    <div><strong class="apd-review-buyer">Moiz R.</strong><div class="apd-review-stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div></div>
-                    <span class="apd-badge c-success">Published</span>
-                  </div>
-                  <p class="apd-review-text">Sound quality is excellent and the case is sturdy. They feel a little snug on the first few wears but loosen up nicely after a week.</p>
-                  <div class="apd-review-foot">
-                    <span>Jun 3, 2026 &middot; Verified Purchase</span>
-                    <div class="apd-review-actions">
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="info" data-apd-toast-msg="Opening buyer profile&hellip;">View Buyer</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="warning" data-apd-toast-msg="Review hidden from storefront">Hide</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-warning" data-apd-toast="warning" data-apd-toast-msg="Review flagged for review">Flag</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-danger" data-apd-toast="danger" data-apd-toast-msg="Review deleted">Delete</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="apd-review-card" data-rating="2" data-search="sara n disappointed">
-                  <div class="apd-review-top">
-                    <div><strong class="apd-review-buyer">Sara N.</strong><div class="apd-review-stars">&#9733;&#9733;&#9734;&#9734;&#9734;</div></div>
-                    <span class="apd-badge c-warning">Flagged</span>
-                  </div>
-                  <p class="apd-review-text">Received a unit with a scratched ear cup. Support was slow to respond. Sound is fine when it works but the packaging felt cheap.</p>
-                  <div class="apd-review-foot">
-                    <span>May 27, 2026 &middot; Verified Purchase</span>
-                    <div class="apd-review-actions">
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="info" data-apd-toast-msg="Opening buyer profile&hellip;">View Buyer</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm" data-apd-toast="warning" data-apd-toast-msg="Review hidden from storefront">Hide</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-warning" data-apd-toast="warning" data-apd-toast-msg="Review flagged for review">Flag</button>
-                      <button type="button" class="apd-btn apd-btn-ghost apd-btn-sm c-danger" data-apd-toast="danger" data-apd-toast-msg="Review deleted">Delete</button>
-                    </div>
-                  </div>
-                </div>
+                {% empty %}
+                <p class="apd-table-empty">No reviews have been submitted for this product yet.</p>
+                {% endfor %}
               </div>
-              <p class="apd-table-empty" id="apdReviewsEmpty">No reviews match your search.</p>
+
+              <!-- Hidden state for when JS search yields no results -->
+              <p class="apd-table-empty d-none" id="apdReviewsEmpty">No reviews match your search.</p>
+              
             </div>
           </section>
-
           <!-- ============ ANALYTICS PANEL ============ -->
           <section class="apd-tab-panel" data-apd-panel="analytics" role="tabpanel" aria-label="Analytics">
             <div class="apd-analytics-grid">

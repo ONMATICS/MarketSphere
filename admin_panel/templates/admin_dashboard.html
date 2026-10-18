@@ -1,5 +1,6 @@
 {% extends 'admin_base_dashboard.html' %}
 {% load static %}
+{% load time_tags %}
 
 {% block title %}
   Dashboard
@@ -258,151 +259,155 @@
     <!-- ================= 3 & 4. SALES OVERVIEW + ACTIVITY ================= -->
     <section class="adh-split-grid" aria-label="Sales overview and marketplace activity">
       <!-- ============ SALES OVERVIEW ============ -->
-      <div class="adh-card adh-reveal">
-        <div class="adh-card-head">
-          <div>
-            <h2 class="adh-card-title">Sales Overview</h2>
-            <p class="adh-card-subtitle">Revenue trend across the marketplace</p>
+
+<div class="adh-card adh-reveal">
+
+          <div class="adh-card-head">
+              <div>
+                  <h2 class="adh-card-title">Sales Overview</h2>
+
+                  <p class="adh-card-subtitle">
+                      Revenue trend across the marketplace
+                  </p>
+              </div>
+
+              <div class="adh-select-wrap">
+                  <select
+                      id="adhRangeSelect"
+                      class="adh-select"
+                      aria-label="Select sales chart time range"
+                  >
+                      <option value="today">Today</option>
+                      <option value="7d" selected>7 Days</option>
+                      <option value="30d">30 Days</option>
+                      <option value="12m">12 Months</option>
+                  </select>
+              </div>
           </div>
 
-          <div class="adh-select-wrap">
-            <select id="adhRangeSelect" class="adh-select" aria-label="Select time range">
-              <option value="today">Today</option>
-              <option value="7d" selected>7 Days</option>
-              <option value="30d">30 Days</option>
-              <option value="12m">12 Months</option>
-            </select>
-          </div>
-        </div>
+          <!-- Revenue summary -->
+          <div class="adh-sales-summary">
+              <span class="adh-sales-summary-label">
+                  Revenue in selected period
+              </span>
 
-        <div class="adh-chart-placeholder" id="adhChartPlaceholder" aria-hidden="true">
-          <div class="adh-chart-bars">
-            <span style="--adh-bar-h: 32%;"></span>
-            <span style="--adh-bar-h: 48%;"></span>
-            <span style="--adh-bar-h: 40%;"></span>
-            <span style="--adh-bar-h: 63%;"></span>
-            <span style="--adh-bar-h: 55%;"></span>
-            <span style="--adh-bar-h: 74%;"></span>
-            <span style="--adh-bar-h: 68%;"></span>
-            <span style="--adh-bar-h: 85%;"></span>
-            <span style="--adh-bar-h: 77%;"></span>
-            <span style="--adh-bar-h: 92%;"></span>
-            <span style="--adh-bar-h: 81%;"></span>
-            <span style="--adh-bar-h: 100%;"></span>
+              <strong id="adhChartTotal">Rs. 0.00</strong>
           </div>
-          <div class="adh-chart-caption">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 3v18h18"></path>
-              <path d="M7 15l4-5 3 3 5-7"></path>
-            </svg>
-            <span>Revenue chart — connects to live data soon</span>
+
+          <!-- Chart -->
+          <div
+              class="adh-chart-placeholder"
+              id="adhChartPlaceholder"
+              role="img"
+              aria-label="Marketplace revenue chart"
+          >
+              <div
+                  class="adh-chart-bars"
+                  id="adhChartBars"
+              >
+                  <!-- Bars generated from database data -->
+              </div>
+
+              <div
+                  class="adh-chart-labels"
+                  id="adhChartLabels"
+                  aria-hidden="true"
+              >
+                  <!-- Labels generated from database data -->
+              </div>
+
+              <div class="adh-chart-caption">
+                  <svg
+                      viewBox="0 0 24 24"
+                      width="15"
+                      height="15"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                  >
+                      <path d="M3 3v18h18"></path>
+                      <path d="M7 15l4-5 3 3 5-7"></path>
+                  </svg>
+
+                  <span id="adhChartCaption">
+                      Revenue for the last 7 days
+                  </span>
+              </div>
           </div>
-        </div>
+
+          <!-- Safely expose Django data to JavaScript -->
+          {{ admin.sales_chart_data|json_script:"adhSalesChartData" }}
+
       </div>
 
       <!-- ============ MARKETPLACE ACTIVITY ============ -->
-      <div class="adh-card adh-reveal">
-        <div class="adh-card-head">
-          <div>
-            <h2 class="adh-card-title">Marketplace Activity</h2>
-            <p class="adh-card-subtitle">Latest events across the platform</p>
-          </div>
-        </div>
 
-        <ul class="adh-activity-feed" id="adhActivityFeed">
-          {% if activity_logs %}
-            {% for activity in activity_logs %}
-              <li class="adh-activity-item">
-                <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
-                  <i class="bi bi-activity"></i>
-                </span>
-                <span class="adh-activity-body">
-                  <strong>{{ activity.title }}</strong>
-                  <span>{{ activity.description|default:activity.action }}</span>
-                  <small>{{ activity.created_at|timesince }} ago</small>
-                </span>
-              </li>
-            {% endfor %}
-          {% else %}
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
-                <circle cx="10" cy="7" r="4"></circle>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>New seller registered</strong>
-              <span>Urban Threads Co. submitted a seller application.</span>
-              <small>2 minutes ago</small>
-            </span>
-          </li>
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M20 6 9 17l-5-5"></path>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>Product approved</strong>
-              <span>"Wireless Over-Ear Headphones" is now live.</span>
-              <small>18 minutes ago</small>
-            </span>
-          </li>
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"></path>
-                <path d="M14 2v5h5"></path>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>Order completed</strong>
-              <span>Order #MS-748213 was delivered successfully.</span>
-              <small>34 minutes ago</small>
-            </span>
-          </li>
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M4 4h16v4H4z"></path>
-                <path d="M4 12h10v4H4z"></path>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>New category created</strong>
-              <span>"Smart Home" was added to the catalog.</span>
-              <small>1 hour ago</small>
-            </span>
-          </li>
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon adh-activity-icon-success" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M12 1v22"></path>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>Payment received</strong>
-              <span>Rs. 12,450 settled for order #MS-748099.</span>
-              <small>2 hours ago</small>
-            </span>
-          </li>
-          <li class="adh-activity-item">
-            <span class="adh-activity-icon adh-activity-icon-warning" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path>
-                <path d="M3 3v5h5"></path>
-              </svg>
-            </span>
-            <span class="adh-activity-body">
-              <strong>Refund requested</strong>
-              <span>Customer requested a refund for order #MS-747820.</span>
-              <small>3 hours ago</small>
-            </span>
-          </li>
-          {% endif %}
-        </ul>
+      <div class="adh-card adh-reveal">
+
+          <div class="adh-card-head">
+              <div>
+                  <h2 class="adh-card-title">
+                      Marketplace Activity
+                  </h2>
+
+                  <p class="adh-card-subtitle">
+                      Latest events across the platform
+                  </p>
+              </div>
+          </div>
+
+          <ul class="adh-activity-feed" id="adhActivityFeed">
+
+              {% for activity in activity_logs %}
+
+                  <li class="adh-activity-item">
+
+                      <span
+                          class="adh-activity-icon adh-activity-icon-success"
+                          aria-hidden="true"
+                      >
+                          <i class="bi bi-activity"></i>
+                      </span>
+
+                      <span class="adh-activity-body">
+
+                          <strong>
+                              {{ activity.title|default:activity.action }}
+                          </strong>
+
+                          <span>
+                              {{ activity.description|default:activity.action }}
+                          </span>
+
+                          <small>
+                              {{ activity.created_at|custom_timesince }}
+                          </small>
+
+                      </span>
+
+                  </li>
+
+              {% empty %}
+
+                  <li class="adh-activity-empty">
+                      <span class="adh-activity-empty-icon">
+                          <i class="bi bi-clock-history"></i>
+                      </span>
+
+                      <strong>No activity yet</strong>
+
+                      <span>
+                          Marketplace events will appear here as they occur.
+                      </span>
+                  </li>
+
+              {% endfor %}
+
+          </ul>
+
       </div>
     </section>
 
@@ -495,7 +500,7 @@
           </span>
           <span class="adh-action-text"><strong>Review Applications</strong><small>Approve or Reject Sellers</small></span>
         </button>
-        <button type="button" class="adh-action-card">
+        <button type="button" class="adh-action-card" onclick="window.location.href='{% url "admin-settings" %}'">
           <span class="adh-action-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
@@ -643,7 +648,7 @@
             {% for order in admin.latest_orders %}
             <tr>
               <td data-label="Order ID">
-                <span class="adh-order-number">#MS-{{ order.order_number|slice:":6" }}</span>
+                <span class="adh-order-number">#{{ order.order_number|slice:":10" }}</span>
               </td>
               <td data-label="Customer">{{ order.user.first_name }} {{ order.user.last_name }}</td>
               <td data-label="Seller">

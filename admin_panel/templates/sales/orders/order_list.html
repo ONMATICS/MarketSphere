@@ -356,7 +356,7 @@
 
               <tr
                 class="so-row"
-                data-order-number="MS-{{ order.order_number }}"
+                data-order-number="{{ order.order_number }}"
                 data-customer-name="{{ order.user.username }}"
               >
 
@@ -365,7 +365,7 @@
                     <input
                       type="checkbox"
                       class="so-row-checkbox"
-                      aria-label="Select order MS-{{ order.order_number }}"
+                      aria-label="Select order {{ order.order_number }}"
                     />
                     <span class="so-checkbox-box"></span>
                   </label>
@@ -377,7 +377,7 @@
                     class="so-order-number-link"
                     data-view-order="{{ order.order_number }}"
                   >
-                    #MS-{{ order.order_number|slice:":6" }}
+                    #{{ order.order_number|slice:":6" }}
 
                     <svg
                       viewBox="0 0 24 24"
@@ -490,7 +490,7 @@
                       class="so-icon-btn so-dropdown-trigger"
                       aria-haspopup="true"
                       aria-expanded="false"
-                      aria-label="More actions for order MS-{{ order.order_number }}"
+                      aria-label="More actions for order {{ order.order_number }}"
                     >
                       <svg
                         viewBox="0 0 24 24"

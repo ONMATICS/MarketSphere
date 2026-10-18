@@ -1,5 +1,6 @@
 {% extends 'admin_base_dashboard.html' %}
 {% load static %}
+{% load time_tags %}
 
 {% block title %}
   User Management
@@ -323,7 +324,7 @@
             <span class="adu-type-progress-fill" style="--adu-pct: {{ admin.buyers_progress }}%;"></span>
           </div>
           <div class="adu-type-meta">
-            <span>{{ admin.active_buyers_percentage }}% active</span><span>Updated {{ admin.last_updated|timesince }} ago</span>
+            <span>{{ admin.active_buyers_percentage }}% active</span><span>Updated {{ admin.last_updated|custom_timesince }}</span>
           </div>
           <span class="adu-btn adu-btn-primary adu-btn-sm adu-type-cta" onclick="window.location.href='{% url "user-buyers" %}'">Manage Buyers</span>
         </button>
@@ -350,7 +351,7 @@
             <span class="adu-type-progress-fill" style="--adu-pct: {{ admin.seller_progress }}%;"></span>
           </div>
           <div class="adu-type-meta">
-            <span>{{ admin.sellers_active_percentage }}% active this week</span><span>Updated {{ admin.last_updated|timesince }} ago</span>
+            <span>{{ admin.sellers_active_percentage }}% active this week</span><span>Updated {{ admin.last_updated|custom_timesince }}</span>
           </div>
           <span class="adu-btn adu-btn-primary adu-btn-sm" onclick="window.location.href='{% url "user-sellers" %}'">Manage Sellers</span>
         </button>
@@ -541,7 +542,7 @@
                     <span class="adu-status-badge adu-status-badge-active">{{ activity.actor_type|title }}</span>
                   </div>
                   <p class="adu-timeline-desc">{{ activity.description|default:activity.action }}</p>
-                  <span class="adu-timeline-time">{{ activity.created_at|timesince }} ago</span>
+                  <span class="adu-timeline-time">{{ activity.created_at|custom_timesince }}</span>
                 </div>
               </li>
             {% endfor %}
@@ -847,13 +848,19 @@
                 <tr data-search="{{ user.get_full_name|lower }} {{ user.username|lower }} {{ user.email|lower }}">
                   <td data-label="User">
                     <div class="adu-user-cell">
-                      <span class="adu-user-avatar">{{ user.first_name|default:user.username|slice:':1'|upper }}</span>
+                      <span class="adu-user-avatar">
+                        {% if user.profile_image_url %}
+                        <img src="{{ user.profile_image_url }}" style="width: 100%;">
+                        {% else %}
+                        {{ user.first_name|default:user.username|slice:':1'|upper }}
+                        {% endif %}
+                      </span>
                       <span><span class="adu-user-name">{{ user.get_full_name|default:user.username }}</span><span class="adu-user-email">{{ user.email }}</span></span>
                     </div>
                   </td>
                   <td data-label="Role"><span class="adu-role-badge{% if user.seller_profile %} r-seller{% endif %}">{% if user.seller_profile %}Seller{% else %}Buyer{% endif %}</span></td>
                   <td data-label="Status"><span class="adu-status-badge adu-status-badge-active">{{ user.get_account_status_display }}</span></td>
-                  <td data-label="Last Login">{% if user.last_login %}{{ user.last_login|timesince }} ago{% else %}Never{% endif %}</td>
+                  <td data-label="Last Login">{% if user.last_login %}{{ user.last_login|custom_timesince }}{% else %}Never{% endif %}</td>
                   <td data-label="Activity"><span class="adu-activity-mini"><i class="bi bi-clock-history"></i> Recent account activity</span></td>
                   <td data-label=""></td>
                 </tr>

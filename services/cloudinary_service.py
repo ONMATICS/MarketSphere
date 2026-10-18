@@ -240,3 +240,51 @@ def store_promotion_image(file: Any, promotion_id: str, asset_type: str) -> dict
 	if not (result.get("secure_url") or result.get("url")):
 		raise ValueError("Cloudinary did not return a URL for the promotion image.")
 	return result
+
+def store_review_image(file: Any, product_id: str) -> dict:
+    """Upload a customer review image to Cloudinary, organized by product."""
+    # 1. Size validation (5 MB limit for user review uploads)
+    if getattr(file, "size", 0) > 5 * 1024 * 1024:
+        raise ValueError("Review images must be smaller than 5 MB.")
+
+    # 2. Image integrity validation using Pillow
+    try:
+        file.seek(0)
+        with Image.open(file) as uploaded_image:
+            uploaded_image.verify()
+        file.seek(0)
+    except (OSError, ValueError):
+        raise ValueError("Please upload a valid review image.")
+
+    # 3. Cloudinary Upload Options
+    upload_options = {
+        # Group review images by product for easier management in Cloudinary
+        "folder": f"MarketSphere/reviews/{product_id}",
+        "public_id": f"review_{uuid.uuid4().hex}",
+        "resource_type": "image",
+        "overwrite": False,
+        "invalidate": True,
+        "transformation": [{
+            "width": 1600, # Large enough for zoom, but prevents massive 4K uploads
+            "height": 1600,
+            "crop": "limit",
+            "quality": "auto",
+            "fetch_format": "auto",
+        }],
+    }
+
+    # 4. Upload and Error Handling
+    try:
+        result = cloudinary.uploader.upload(file, **upload_options)
+    except cloudinary.exceptions.NotAllowed as error:
+        raise ValueError(
+            "Cloudinary upload permission is missing. Please update the Cloudinary API key permissions."
+        ) from error
+    except cloudinary.exceptions.Error as error:
+        raise ValueError("Unable to upload review image to Cloudinary right now.") from error
+
+    # 5. URL verification
+    if not (result.get("secure_url") or result.get("url")):
+        raise ValueError("Cloudinary did not return a URL for the review image.")
+        
+    return result

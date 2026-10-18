@@ -1,5 +1,6 @@
 {% extends 'admin_base_dashboard.html' %}
 {% load static %}
+{% load time_tags %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static '/css/email_composer.css' %}" />
   <link rel="stylesheet" href="{% static '/css/seller_detail.css' %}" />
@@ -86,7 +87,7 @@
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="9"></circle>
                   <path d="M12 7v5l3 3"></path>
-                </svg>Last login {{ seller.user.last_login|timesince|slice:'5' }} ago
+                </svg>Last login {{ seller.user.last_login|custom_timesince }}
               </span>
               <span class="sld-meta-chip">
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -175,7 +176,7 @@
           <strong data-count-to="{{ total_sales }}" data-prefix="Rs. ">Rs. {{ total_sales }}</strong><span>Revenue</span>
         </div>
         <div class="sld-quickstat">
-          <strong data-count-to="--" data-decimal="-">-</strong><span>Rating</span>
+          <strong data-count-to="{{ seller_average_rating }}" data-decimal="1">-</strong><span>Rating</span>
         </div>
         <div class="sld-quickstat">
           <strong data-count-to="-">-</strong><span>Followers</span>
@@ -395,8 +396,8 @@
         </div>
         <div class="sld-metric-body">
           <span class="sld-metric-label">Store Rating</span>
-          <span class="sld-metric-value" data-count-to="4.7" data-decimal="-">-</span>
-          <span class="sld-metric-trend neutral">Based on -- reviews</span>
+          <span class="sld-metric-value" data-count-to="{{ seller_average_rating }}" data-decimal="-">-</span>
+          <span class="sld-metric-trend neutral">Based on {{ total_seller_reviews }} review{{ total_seller_reviews|pluralize }}</span>
         </div>
       </div>
       <div class="sld-metric-card sld-reveal">
@@ -1169,69 +1170,92 @@
           <section class="sld-tab-panel" data-panel="reviews" aria-label="Reviews">
             <div class="sld-card">
               <div class="sld-reviews-summary">
+                
+                <!-- Overall Score -->
                 <div class="sld-reviews-score">
-                  <strong>4.7</strong><div class="sld-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><span>Based on 318 reviews</span>
+                  <strong>{{ seller_average_rating }}</strong>
+                  <div class="sld-stars">
+                    <!-- Dynamically render unicode stars based on average rating -->
+                    {% for i in "12345"|make_list %}
+                      {% if forloop.counter <= seller_average_rating|floatformat:"0" %}&#9733;{% else %}&#9734;{% endif %}
+                    {% endfor %}
+                  </div>
+                  <span>Based on {{ total_seller_reviews }} review{{ total_seller_reviews|pluralize }}</span>
                 </div>
+                
+                <!-- Rating Distribution (Iterates 5 down to 1) -->
                 <div class="sld-reviews-dist">
+                  {% for stars, data in seller_review_distribution.items %}
                   <div class="sld-dist-row">
-                    <span>5 &#9733;</span><div class="sld-bar">
-                      <span style="width:74%;"></span>
-                    </div><span>235</span>
+                    <span>{{ stars }} &#9733;</span>
+                    <div class="sld-bar">
+                      <span style="width: {{ data.percent }}%;"></span>
+                    </div>
+                    <span>{{ data.count }}</span>
                   </div>
-                  <div class="sld-dist-row">
-                    <span>4 &#9733;</span><div class="sld-bar">
-                      <span style="width:16%;"></span>
-                    </div><span>51</span>
-                  </div>
-                  <div class="sld-dist-row">
-                    <span>3 &#9733;</span><div class="sld-bar">
-                      <span style="width:6%;"></span>
-                    </div><span>19</span>
-                  </div>
-                  <div class="sld-dist-row">
-                    <span>2 &#9733;</span><div class="sld-bar">
-                      <span style="width:2%;"></span>
-                    </div><span>8</span>
-                  </div>
-                  <div class="sld-dist-row">
-                    <span>1 &#9733;</span><div class="sld-bar">
-                      <span style="width:2%;"></span>
-                    </div><span>5</span>
-                  </div>
+                  {% endfor %}
                 </div>
               </div>
 
+              <!-- Review Cards Loop -->
               <div class="sld-reviews-list">
+                
+                {% for review in recent_seller_reviews %}
                 <div class="sld-review-card">
+                  
                   <div class="sld-review-top">
                     <div>
-                      <strong class="sld-review-product">Oversized Cotton Hoodie</strong><div class="sld-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-                    </div><span class="sld-badge c-success">Published</span>
+                      <strong class="sld-review-product">{{ review.product.name }}</strong>
+                      <div class="sld-review-stars">
+                        <!-- Individual Review Stars -->
+                        {% for i in "12345"|make_list %}
+                          {% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <!-- Status Badge -->
+                    {% if review.reports.all %}
+                      <span class="sld-badge c-warning">Flagged</span>
+                    {% else %}
+                      <span class="sld-badge c-success">Published</span>
+                    {% endif %}
                   </div>
-                  <p class="sld-review-text">Incredible quality for the price. Fits true to size and the fabric feels premium. Will definitely order again.</p>
+                  
+                  <!-- Review Text -->
+                  <p class="sld-review-text">
+                    <strong>{{ review.title }}</strong><br>
+                    "{{ review.description }}"
+                  </p>
+
+                  <!-- Display image if the user uploaded one -->
+                  {% if review.image %}
+                  <div class="sld-review-image" style="margin: 10px 0;">
+                      <img src="{{ review.image }}" alt="Review Image" style="max-width: 80px; border-radius: 4px; border: 1px solid var(--border-color, #ccc);">
+                  </div>
+                  {% endif %}
+                  
+                  <!-- Footer / Actions -->
                   <div class="sld-review-foot">
-                    <span>Ayesha Khan &middot; Jul 5, 2026</span><div class="sld-review-actions">
-                      <button type="button" class="sld-btn sld-btn-ghost sld-btn-sm" data-toast="Opening product&hellip;">View Product</button><button type="button" class="sld-btn sld-btn-ghost sld-btn-sm" data-toast="Review hidden.">Hide</button><button type="button" class="sld-btn sld-btn-ghost sld-btn-sm c-danger" data-toast="Review deleted.">Delete</button>
+                    <span>{{ review.user.get_full_name|default:review.user.username }} &middot; {{ review.created_at|date:"M j, Y" }}</span>
+                    <div class="sld-review-actions">
+                      <!-- Converted to an anchor tag to actually navigate to the product -->
+                      <a href="{% url 'catalog-product' product_slug=review.product.slug %}" class="sld-btn sld-btn-ghost sld-btn-sm" style="text-decoration: none;">View Product</a>
+                      <button type="button" class="sld-btn sld-btn-ghost sld-btn-sm" data-toast="Review hidden.">Hide</button>
+                      <button type="button" class="sld-btn sld-btn-ghost sld-btn-sm c-danger" data-toast="Review deleted.">Delete</button>
                     </div>
                   </div>
+
                 </div>
-                <div class="sld-review-card">
-                  <div class="sld-review-top">
-                    <div>
-                      <strong class="sld-review-product">Canvas Tote Bag</strong><div class="sld-review-stars">&#9733;&#9733;&#9733;&#9734;&#9734;</div>
-                    </div><span class="sld-badge c-warning">Flagged</span>
-                  </div>
-                  <p class="sld-review-text">Nice design but the stitching came loose after two weeks of light use. Expected better durability.</p>
-                  <div class="sld-review-foot">
-                    <span>Bilal Ahmed &middot; Jun 30, 2026</span><div class="sld-review-actions">
-                      <button type="button" class="sld-btn sld-btn-ghost sld-btn-sm" data-toast="Opening product&hellip;">View Product</button><button type="button" class="sld-btn sld-btn-ghost sld-btn-sm" data-toast="Review hidden.">Hide</button><button type="button" class="sld-btn sld-btn-ghost sld-btn-sm c-danger" data-toast="Review deleted.">Delete</button>
-                    </div>
-                  </div>
+                
+                {% empty %}
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted, #666);">
+                    This seller's products haven't received any reviews yet.
                 </div>
+                {% endfor %}
+
               </div>
             </div>
           </section>
-
           <!-- ============ SUPPORT PANEL ============ -->
           <section class="sld-tab-panel" data-panel="support" aria-label="Support">
             <div class="sld-card">

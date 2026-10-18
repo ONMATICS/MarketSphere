@@ -1,121 +1,130 @@
 from django.urls import path
-from . import views
+from .views import (
+    admin_views,
+    auth_views,
+    mfa_views,
+    profile_views,
+    seller_views,
+)
 
 urlpatterns = [
-    path("login/", views.login_view, name="login"),
-    path("signup/", views.signup_view, name="signup"),
-    path("seller-signup/", views.seller_signup_view, name="seller-signup"),
-    path("seller-account/", views.seller_account, name="seller-account"),
-    path("profile/", views.profile_view, name="profile"),
-    path("profile/2fa/", views.profile_2fa_redirect, name="profile_2fa_redirect"),
-    # Keep allauth's named MFA endpoints on MarketSphere's custom views. These
-    # paths must appear before allauth.urls in config.urls.
+    # Auth
+    path("login/", auth_views.login_view, name="login"),
+    path("logout", auth_views.logout_user, name="logout"),
+    path("signup/", auth_views.signup_view, name="signup"),
+    path("change-password/", auth_views.change_password, name="change_password"),
+    path(
+        "email/resend/",
+        auth_views.resend_verification_email_view,
+        name="resend_verification_email",
+    ),
+
+    # MFA
     path(
         "2fa/authenticate/",
-        views.MarketSphereMFAAuthenticateView.as_view(),
+        mfa_views.MarketSphereMFAAuthenticateView.as_view(),
         name="mfa_authenticate",
     ),
     path(
         "2fa/reauthenticate/",
-        views.MarketSphereMFAReauthenticateView.as_view(),
+        mfa_views.MarketSphereMFAReauthenticateView.as_view(),
         name="mfa_reauthenticate",
     ),
+    path("profile/2fa/", mfa_views.profile_2fa_redirect, name="profile_2fa_redirect"),
     path(
         "profile/2fa/activate/",
-        views.ProfileActivateTOTPView.as_view(),
+        mfa_views.ProfileActivateTOTPView.as_view(),
         name="profile_activate_totp",
     ),
     path(
         "profile/2fa/deactivate/",
-        views.ProfileDeactivateTOTPView.as_view(),
+        mfa_views.ProfileDeactivateTOTPView.as_view(),
         name="profile_deactivate_totp",
     ),
     path(
         "profile/2fa/recovery/",
-        views.ProfileViewRecoveryCodesView.as_view(),
+        mfa_views.ProfileViewRecoveryCodesView.as_view(),
         name="profile_2fa_recovery",
     ),
+
+    # Buyer Profile
+    path("profile/", profile_views.profile_view, name="profile"),
+    path("profile/update/", profile_views.update_my_profile_view, name="update_my_profile"),
     path(
-        "profile/update/",
-        views.update_my_profile_view,
-        name="update_my_profile",
+        "preferences/update/",
+        profile_views.update_user_preferences,
+        name="update_user_preferences",
     ),
-    path("update-seller-info/", views.update_seller_info, name="update_seller_info"),
-    path(
-        "update-seller-address/",
-        views.update_seller_address,
-        name="update_seller_address",
-    ),
+    path("save-address/", profile_views.save_user_address, name="save-address"),
     path(
         "buyer/address/update/",
-        views.update_user_address,
+        profile_views.update_user_address,
         name="update_user_address",
     ),
     path(
         "buyer/address/delete/",
-        views.delete_user_address_view,
+        profile_views.delete_user_address_view,
         name="delete_user_address",
     ),
-    path(
-        "change-password/",
-        views.change_password,
-        name="change_password",
-    ),
-    path("logout", views.logout_user, name="logout"),
-    path(
-        "email/resend/",
-        views.resend_verification_email_view,
-        name="resend_verification_email",
-    ),
-    path("save-address/", views.save_user_address, name="save-address"),
-    path(
-        "update-shipping-preferences/",
-        views.update_shipping_preferences_view,
-        name="update_shipping_preferences",
-    ),
+
+    # Seller
     path(
         "update-notification-preferences/",
-        views.update_notification_preferences_view,
+        seller_views.update_notification_preferences_view,
         name="update_notification_preferences",
     ),
     path(
+        "update-shipping-preferences/",
+        seller_views.update_shipping_preferences_view,
+        name="update_shipping_preferences",
+    ),
+    path("seller-signup/", seller_views.seller_signup_view, name="seller-signup"),
+    path("seller-account/", seller_views.seller_account, name="seller-account"),
+    path(
+        "update-seller-profile/",
+        seller_views.update_seller_profile,
+        name="update_seller_profile",
+    ),
+    path(
+        "update-seller-info/",
+        seller_views.update_seller_info,
+        name="update_seller_info",
+    ),
+    path(
+        "update-seller-address/",
+        seller_views.update_seller_address,
+        name="update_seller_address",
+    ),
+    path(
+        "update-seller-document/",
+        seller_views.update_seller_document,
+        name="update_seller_document",
+    ),
+    path(
         "deactivate-seller-account",
-        views.deactivate_seller_account,
+        seller_views.deactivate_seller_account,
         name="deactivate_seller_account",
     ),
     path(
         "reactivate-seller-account",
-        views.reactivate_seller_account,
+        seller_views.reactivate_seller_account,
         name="reactivate_seller_account",
     ),
-    path(
-        "change-store-banner/",
-        views.change_store_banner,
-        name="change-store-banner",
-    ),
+
+    # Admin
     path(
         "change-seller-status/",
-        views.change_seller_status,
+        admin_views.change_seller_status,
         name="change-seller-status",
     ),
     path(
-        "update-seller-profile/",
-        views.update_seller_profile,
-        name="update_seller_profile",
-    ),
-    path(
-        "preferences/update/",
-        views.update_user_preferences,
-        name="update_user_preferences",
-    ),
-    path(
         "<int:seller_id>/update-store/",
-        views.update_store_information,
+        admin_views.update_store_information,
         name="update_store_information",
     ),
     path(
-        "update-seller-document/",
-        views.update_seller_document,
-        name="update_seller_document",
+        "change-store-banner/",
+        admin_views.change_store_banner,
+        name="change-store-banner",
     ),
 ]

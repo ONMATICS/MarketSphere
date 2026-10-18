@@ -10,5 +10,4 @@ urlpatterns = [
     path("api/requests/create/", views.create_support_request_view, name="create_request"),
     path("api/requests/", views.support_requests_view, name="support_requests"),
     path("api/requests/<int:request_id>/", views.support_request_detail_view, name="support_request_detail"),
-    
 ]

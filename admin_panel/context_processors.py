@@ -1,3 +1,10 @@
+from calendar import month_abbr
+from datetime import timedelta
+from decimal import Decimal
+
+from django.db.models import Avg, DurationField, ExpressionWrapper, F, Q, Sum
+from django.db.models.functions import TruncDate, TruncHour, TruncMonth
+from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
 
@@ -18,6 +25,208 @@ def _calculate_change(current, previous, is_decimal=False):
         return Decimal("100.00") if current > 0 else Decimal("0.00")
     return 100 if current > 0 else 0
 
+def get_sales_chart_data():
+    """
+    Prepare marketplace revenue data for Today, 7 Days, 30 Days,
+    and 12 Months.
+
+    Revenue is calculated from paid orders using Order.created_at.
+    All periods include zero-revenue intervals.
+    """
+
+    now = timezone.localtime(timezone.now())
+    today_start = now.replace(
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+
+    paid_orders = Order.objects.filter(
+        payment_status=Order.PaymentStatus.PAID,
+    )
+
+    # ------------------------------------------
+    # TODAY: Hourly revenue
+    # ------------------------------------------
+    hourly_start = today_start
+
+    hourly_revenue = (
+        paid_orders.filter(
+            created_at__gte=hourly_start,
+            created_at__lte=now,
+        )
+        .annotate(bucket=TruncHour("created_at"))
+        .values("bucket")
+        .annotate(revenue=Sum("total"))
+        .order_by("bucket")
+    )
+
+    hourly_lookup = {
+        row["bucket"].replace(
+            minute=0,
+            second=0,
+            microsecond=0,
+        ): row["revenue"] or Decimal("0.00")
+        for row in hourly_revenue
+    }
+
+    today_data = []
+
+    for hour in range(24):
+        bucket = today_start + timedelta(hours=hour)
+
+        # Do not display future hours as if they have occurred.
+        if bucket > now:
+            break
+
+        today_data.append({
+            "label": bucket.strftime("%I %p").lstrip("0"),
+            "revenue": float(
+                hourly_lookup.get(bucket, Decimal("0.00"))
+            ),
+        })
+
+    # ------------------------------------------
+    # 7 DAYS: Daily revenue
+    # ------------------------------------------
+    seven_days_start = today_start - timedelta(days=6)
+
+    seven_day_revenue = (
+        paid_orders.filter(
+            created_at__gte=seven_days_start,
+            created_at__lte=now,
+        )
+        .annotate(bucket=TruncDate("created_at"))
+        .values("bucket")
+        .annotate(revenue=Sum("total"))
+        .order_by("bucket")
+    )
+
+    seven_day_lookup = {
+        row["bucket"]: row["revenue"] or Decimal("0.00")
+        for row in seven_day_revenue
+    }
+
+    seven_days_data = []
+
+    for offset in range(7):
+        day = seven_days_start.date() + timedelta(days=offset)
+
+        seven_days_data.append({
+            "label": day.strftime("%a"),
+            "revenue": float(
+                seven_day_lookup.get(day, Decimal("0.00"))
+            ),
+        })
+
+    # ------------------------------------------
+    # 30 DAYS: Daily revenue
+    # ------------------------------------------
+    thirty_days_start = today_start - timedelta(days=29)
+
+    thirty_day_revenue = (
+        paid_orders.filter(
+            created_at__gte=thirty_days_start,
+            created_at__lte=now,
+        )
+        .annotate(bucket=TruncDate("created_at"))
+        .values("bucket")
+        .annotate(revenue=Sum("total"))
+        .order_by("bucket")
+    )
+
+    thirty_day_lookup = {
+        row["bucket"]: row["revenue"] or Decimal("0.00")
+        for row in thirty_day_revenue
+    }
+
+    thirty_days_data = []
+
+    for offset in range(30):
+        day = thirty_days_start.date() + timedelta(days=offset)
+
+        thirty_days_data.append({
+            "label": day.strftime("%d %b"),
+            "revenue": float(
+                thirty_day_lookup.get(day, Decimal("0.00"))
+            ),
+        })
+
+    # ------------------------------------------
+    # 12 MONTHS: Monthly revenue
+    # ------------------------------------------
+    current_month_start = today_start.replace(day=1)
+
+    twelve_months_start = current_month_start
+
+    for _ in range(11):
+        if twelve_months_start.month == 1:
+            twelve_months_start = twelve_months_start.replace(
+                year=twelve_months_start.year - 1,
+                month=12,
+            )
+        else:
+            twelve_months_start = twelve_months_start.replace(
+                month=twelve_months_start.month - 1,
+            )
+
+    monthly_revenue = (
+        paid_orders.filter(
+            created_at__gte=twelve_months_start,
+            created_at__lte=now,
+        )
+        .annotate(bucket=TruncMonth("created_at"))
+        .values("bucket")
+        .annotate(revenue=Sum("total"))
+        .order_by("bucket")
+    )
+
+    monthly_lookup = {
+        row["bucket"].replace(
+            day=1,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        ): row["revenue"] or Decimal("0.00")
+        for row in monthly_revenue
+    }
+
+    twelve_months_data = []
+
+    month_cursor = twelve_months_start
+
+    for _ in range(12):
+        twelve_months_data.append({
+            "label": month_cursor.strftime("%b"),
+            "revenue": float(
+                monthly_lookup.get(
+                    month_cursor,
+                    Decimal("0.00"),
+                )
+            ),
+        })
+
+        if month_cursor.month == 12:
+            month_cursor = month_cursor.replace(
+                year=month_cursor.year + 1,
+                month=1,
+            )
+        else:
+            month_cursor = month_cursor.replace(
+                month=month_cursor.month + 1,
+            )
+
+    # ------------------------------------------
+    # Return all chart datasets
+    # ------------------------------------------
+    return {
+        "today": today_data,
+        "7d": seven_days_data,
+        "30d": thirty_days_data,
+        "12m": twelve_months_data,
+    }
 
 def admin_context(request):
     # ==========================================
@@ -654,6 +863,8 @@ def admin_context(request):
     else:
         security_caption = "No security recommendations at this time."
 
+    sales_chart_data = get_sales_chart_data()
+
     return {
         "admin": {
             "total_revenue": total_revenue,
@@ -745,6 +956,7 @@ def admin_context(request):
             "security_status": security_status,
             "security_bars": security_bars,
             "security_caption": security_caption,
+            "sales_chart_data": sales_chart_data,
         },
         "activity_logs": ActivityLog.objects.select_related("actor")[:6],
         "user_activity_logs": ActivityLog.objects.select_related("actor")[:50],

@@ -1,6 +1,6 @@
 {% extends 'admin_base_dashboard.html' %}
 {% load static %}
-
+{% load time_tags %}
 {% block title %}
   Buyer Details
 {% endblock %}
@@ -53,7 +53,7 @@
           <div class="bd-avatar-wrap">
             <span class="bd-avatar" id="bdAvatarTrigger" role="button" tabindex="0" aria-label="View profile photo">
               {% if buyer.profile_image_url %}
-                <img src="{{ buyer.profile_image_url }}" />
+                <img src="{{ buyer.profile_image_url }}" style="width: 100%;" />
               {% else %}
                 {{ buyer.first_name|slice:1 }}{{ buyer.last_name|slice:1 }}
               {% endif %}
@@ -305,8 +305,8 @@
         </div>
         <div class="bd-stat-body">
           <span class="bd-stat-label">Reviews Written</span>
-          <span class="bd-stat-value" data-count-to="-">-</span>
-          <span class="bd-stat-trend up">-.- avg rating given</span>
+          <span class="bd-stat-value" data-count-to="{{ total_reviews }}">{{ total_reviews }}</span>
+          <span class="bd-stat-trend up">{{ average_rating }} avg rating given</span>
         </div>
       </div>
       <div class="bd-stat-card bd-reveal">
@@ -673,8 +673,7 @@
                   </div>
                   <div class="bd-mini-kv">
                     <span>Last Purchase</span><strong>
-                      {{ last_order.created_at|timesince }}
-                      ago
+                      {{ last_order.created_at|custom_timesince }}
                     </strong>
                   </div>
                   <div class="bd-mini-kv">
@@ -730,7 +729,7 @@
                     {% for order in recent_orders|slice:3 %}
                       <tr>
                         <td data-label="Order">
-                          <span class="bd-order-link">#MS-{{ order.order_number|slice:6 }}</span>
+                          <span class="bd-order-link">#{{ order.order_number|slice:9 }}</span>
                         </td>
                         <td data-label="Date">{{ order.created_at|date }}</td>
                         <td data-label="Items">{{ order.items_count }} item{{ order.items_count|pluralize }}</td>
@@ -801,7 +800,7 @@
                     {% for order in recent_orders %}
                       <tr data-search="ms-748213 urban threads co">
                         <td data-label="Order">
-                          <span class="bd-order-link">#MS-{{ order.order_number }}</span>
+                          <span class="bd-order-link">#{{ order.order_number }}</span>
                         </td>
                         <td data-label="Date">{{ order.created_at|date }}</td>
                         <td data-label="Items">{{ order.items_count }} item{{ order.items_count|pluralize }}</td>
@@ -1194,45 +1193,63 @@
           <!-- ============ REVIEWS PANEL ============ -->
           <section class="bd-tab-panel" data-panel="reviews" aria-label="Reviews">
             <div class="bd-reviews-list">
+              
+              {% for review in recent_reviews %}
               <div class="bd-review-card">
                 <div class="bd-review-top">
                   <div>
-                    <strong class="bd-review-product">Wireless Over-Ear Headphones</strong>
-                    <div class="bd-review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <!-- Product Name -->
+                    <strong class="bd-review-product">{{ review.product.name }}</strong>
+                    
+                    <!-- Dynamic Star Rating -->
+                    <div class="bd-review-stars">
+                      {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}
+                      {% endfor %}
+                    </div>
                   </div>
-                  <span class="bd-badge c-success">Published</span>
+                  
+                  <!-- Status Badge -->
+                  {% if review.reports.all %}
+                    <span class="bd-badge c-warning">Flagged</span>
+                  {% else %}
+                    <span class="bd-badge c-success">Published</span>
+                  {% endif %}
                 </div>
-                <p class="bd-review-text">"Excellent sound quality and the battery genuinely lasts close to a week. Very comfortable for long calls."</p>
+                
+                <!-- Review Content -->
+                <p class="bd-review-text">
+                  <strong>{{ review.title }}</strong><br>
+                  "{{ review.description }}"
+                </p>
+
+                <!-- Display image if the user uploaded one -->
+                {% if review.image %}
+                <div class="bd-review-image" style="margin: 10px 0;">
+                    <img src="{{ review.image }}" alt="Review Image" style="max-width: 80px; border-radius: 4px; border: 1px solid var(--border-color, #ccc);">
+                </div>
+                {% endif %}
+                
                 <div class="bd-review-foot">
-                  <span>Jul 5, 2026</span>
+                  <!-- Date -->
+                  <span>{{ review.created_at|date:"M j, Y" }}</span>
+                  
                   <div class="bd-review-actions">
-                    <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm" data-toast="Opening product&#8230;">View Product</button>
+                    <a href="{% url 'catalog-product' review.product.slug %}" class="bd-btn bd-btn-ghost bd-btn-sm" style="text-decoration: none;">View Product</a>
                     <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm" data-toast="Review hidden from storefront.">Hide Review</button>
                     <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm c-danger" data-toast="Deleting review isn&#8217;t available yet.">Delete</button>
                   </div>
                 </div>
               </div>
-              <div class="bd-review-card">
-                <div class="bd-review-top">
-                  <div>
-                    <strong class="bd-review-product">Smart Watch Series 4</strong>
-                    <div class="bd-review-stars">&#9733;&#9733;&#9733;&#9734;&#9734;</div>
-                  </div>
-                  <span class="bd-badge c-warning">Flagged</span>
-                </div>
-                <p class="bd-review-text">"Good screen but battery drains faster than advertised. Support was slow to respond to my query."</p>
-                <div class="bd-review-foot">
-                  <span>Jun 30, 2026</span>
-                  <div class="bd-review-actions">
-                    <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm" data-toast="Opening product&#8230;">View Product</button>
-                    <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm" data-toast="Review hidden from storefront.">Hide Review</button>
-                    <button type="button" class="bd-btn bd-btn-ghost bd-btn-sm c-danger" data-toast="Deleting review isn&#8217;t available yet.">Delete</button>
-                  </div>
-                </div>
+              
+              {% empty %}
+              <div style="padding: 2rem; text-align: center; color: var(--text-muted, #666);">
+                  This buyer hasn't submitted any reviews yet.
               </div>
+              {% endfor %}
+
             </div>
           </section>
-
           <!-- ============ SUPPORT PANEL ============ -->
           <section class="bd-tab-panel" data-panel="support" aria-label="Support Tickets">
             <div class="bd-card">
@@ -1473,7 +1490,12 @@
                   </svg>
                 </div>
                 <div class="bd-sec-text">
-                  <strong>Two-Factor Authentication</strong><span class="bd-badge c-muted">Not Enabled</span>
+                  <strong>Two-Factor Authentication</strong>
+                  {% if is_2fa_enabled %}
+                    <span class="bd-badge c-success">Enabled</span>
+                  {% else %}
+                    <span class="bd-badge c-muted">Not Enabled</span>
+                  {% endif %}
                 </div>
               </div>
               <div class="bd-sec-card">
@@ -1871,7 +1893,7 @@
               <span>Preferred Seller</span><strong>{{ preferred_seller.seller__store_name }}</strong>
             </div>
             <div class="bd-sidebar-kv">
-              <span>Average Spending</span><strong>Rs. {{ average_order_value }} / order</strong>
+              <span>Average Spending</span><strong>Rs. {{ average_order_value|floatformat:2 }} / order</strong>
             </div>
           </div>
         </div>

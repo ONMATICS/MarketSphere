@@ -1,15 +1,25 @@
 /* =========================================================
-   MARKETSPHERE — TWO-FACTOR AUTHENTICATION (Activate / Recovery
-   Codes / Deactivate) PAGE STYLES
+   MARKETSPHERE — TWO-FACTOR AUTHENTICATION (profile_2fa.css)
+   Purpose:
+     Controls the layout and styling for the Two-Factor 
+     Authentication flow (Activate, Recovery Codes, Deactivate).
+   Scope:
+     Buyer Profile / Account Security.
+   Sections:
+     1. Variables
+     2. Base Layout & Card
+     3. Typography
+     4. Alerts
+     5. Activation Steps
+     6. QR Code & Manual Entry
+     7. Code Input & Recovery
+     8. Actions & Buttons
+     9. Animations & Loading
+     10. Responsive Styles
+========================================================= */
 
-   Shared by profile_2fa_activate.html, profile_2fa_recovery.html
-   and profile_2fa_deactivate.html — one flow, one page-scoped
-   prefix (`bp2fa-`) per project convention. Reuses the same
-   design tokens as seller_account.css / login.css (accent
-   #9D6638, headings #4E220F, background #F7F1DE) so the flow
-   feels like part of the Buyer Profile, not a separate system.
-   ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --bp2fa-accent: #9D6638;
     --bp2fa-accent-dark: #4E220F;
@@ -20,23 +30,11 @@
     --bp2fa-border: #D9D2C4;
 }
 
+
+/* ================= 2. BASE LAYOUT & CARD ================= */
 .bp2fa-section {
     padding: 32px 0 64px;
     background-color: var(--background-color);
-}
-
-.bp2fa-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 18px;
-    font-size: 13.5px;
-    font-weight: 600 !important;
-    color: var(--bp2fa-accent) !important;
-}
-
-.bp2fa-back-link i {
-    background-color: transparent;
 }
 
 .bp2fa-wrap {
@@ -86,6 +84,22 @@
     color: var(--bp2fa-danger);
 }
 
+
+/* ================= 3. TYPOGRAPHY ================= */
+.bp2fa-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 18px;
+    font-size: 13.5px;
+    font-weight: 600 !important;
+    color: var(--bp2fa-accent) !important;
+}
+
+.bp2fa-back-link i {
+    background-color: transparent;
+}
+
 .bp2fa-title {
     font-size: 26px;
     font-weight: 700;
@@ -100,7 +114,8 @@
     margin-bottom: 22px;
 }
 
-/* ================= ALERTS ================= */
+
+/* ================= 4. ALERTS ================= */
 .bp2fa-alert {
     display: flex;
     align-items: flex-start;
@@ -154,7 +169,8 @@
     font-weight: 600;
 }
 
-/* ================= ACTIVATION STEPS ================= */
+
+/* ================= 5. ACTIVATION STEPS ================= */
 .bp2fa-steps {
     display: flex;
     flex-direction: column;
@@ -205,7 +221,8 @@
     margin: 0 0 16px 34px;
 }
 
-/* ================= QR CODE ================= */
+
+/* ================= 6. QR CODE & MANUAL ENTRY ================= */
 .bp2fa-qr-wrap {
     display: flex;
     justify-content: center;
@@ -292,7 +309,8 @@
     margin: 0 0 0 34px;
 }
 
-/* ================= CODE INPUT ================= */
+
+/* ================= 7. CODE INPUT & RECOVERY ================= */
 .bp2fa-form {
     margin: 0 0 0 34px;
 }
@@ -334,7 +352,6 @@
     color: var(--bp2fa-danger);
 }
 
-/* ================= RECOVERY CODES ================= */
 .bp2fa-codes-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -382,7 +399,8 @@
     height: 16px;
 }
 
-/* ================= ACTIONS ================= */
+
+/* ================= 8. ACTIONS & BUTTONS ================= */
 .bp2fa-actions {
     display: flex;
     gap: 12px;
@@ -443,6 +461,8 @@
     color: var(--bp2fa-danger) !important;
 }
 
+
+/* ================= 9. ANIMATIONS & LOADING ================= */
 .bp2fa-btn-primary.is-loading,
 .bp2fa-btn-secondary.is-loading,
 .bp2fa-btn-danger.is-loading {
@@ -459,7 +479,8 @@
     to { transform: rotate(360deg); }
 }
 
-/* ================= RESPONSIVE ================= */
+
+/* ================= 10. RESPONSIVE STYLES ================= */
 @media (max-width: 767.98px) {
     .bp2fa-card {
         padding: 26px 20px;

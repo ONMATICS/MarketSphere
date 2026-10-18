@@ -1,35 +1,32 @@
-/* ==========================================================================
-   MARKETSPHERE ADMIN — PAYMENT MANAGEMENT (payments.css)
-   Page-scoped styles for admin_panel/templates/sales/payments/payments.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `pmt-` (Payment
-   Management) to avoid collisions with the shell and other admin pages,
-   matching the project's page-scoped prefix convention
-   (bd-, sld-, sad-, bu-, adu-, od-, cm-, pcl- ...).
-
+/* =========================================================
+   MARKETSPHERE — PAYMENT MANAGEMENT (payments.css)
+   Purpose: Page-scoped styles for payment tracking, transaction
+            tables, filtering tools, drawers, and export actions.
+   Scope: Admin Panel (Sales & Payment Management)
+   
    Sections:
-     1. Variables
-     2. Reset / Page Wrapper
-     3. Buttons
-     4. Header
-     5. Metrics
-     6. Status Navigation
-     7. Toolbar
-     8. Filters / Advanced Panel
-     9. Payment Table
-    10. Status Badges
-    11. Bulk Actions
+     1. Variables & Root Design Tokens
+     2. Reset / Page Wrapper & Animations
+     3. Buttons & Loading States
+     4. Header & Action Groups
+     5. Metrics & Submetrics Grids
+     6. Status Navigation Pills
+     7. Toolbar & Search Inputs
+     8. Filters & Advanced Panels
+     9. Payment Table & Transaction Rows
+    10. Status Badges & Indicators
+    11. Bulk Action Toolbar & Checkboxes
     12. Quick View Drawer
-    13. Export Modal
-    14. Toasts
-    15. Empty States
-    16. Pagination
-    17. Activity Strip
-    18. Dropdown
-    19. Responsive
-   ========================================================================== */
+    13. Export & Shared Modals
+    14. Toasts & Notifications
+    15. Empty States & Shimmer Skeletons
+    16. Pagination Controls
+    17. Activity Strip Cards
+    18. Dropdown Menus & Triggers
+    19. Responsive Media Queries
+========================================================= */
 
-/* ================= 1. VARIABLES ================= */
+/* ================= 1. VARIABLES & ROOT DESIGN TOKENS ================= */
 .pmt-page {
     --pmt-bg: var(--ad-bg, #F7F1DE);
     --pmt-surface: var(--ad-surface-raised, #F7F1DE);
@@ -37,8 +34,8 @@
 
     --pmt-accent: var(--ad-accent, #C08A4E);
     --pmt-accent-strong: var(--ad-accent-strong, #A56B34);
-    --pmt-accent-soft: var(--ad-accent-soft, rgba(192, 138, 78, 0.14));
-    --pmt-accent-ring: var(--ad-accent-ring, rgba(192, 138, 78, 0.28));
+    --pmt-accent-soft: var(--pmt-accent-soft, rgba(192, 138, 78, 0.14));
+    --pmt-accent-ring: var(--pmt-accent-ring, rgba(192, 138, 78, 0.28));
 
     --pmt-success: var(--ad-success, #4f7d54);
     --pmt-success-bg: rgba(79, 125, 84, 0.13);
@@ -78,7 +75,7 @@
     --pmt-transition: 0.2s var(--pmt-ease);
 }
 
-/* ================= 2. RESET / PAGE WRAPPER ================= */
+/* ================= 2. RESET / PAGE WRAPPER & ANIMATIONS ================= */
 .pmt-page,
 .pmt-page *,
 .pmt-page *::before,
@@ -150,7 +147,9 @@
 .c-blue { color: var(--pmt-blue) !important; }
 .c-muted { color: var(--pmt-caption) !important; }
 
-/* ================= 3. BUTTONS ================= */
+/* ================= 3. BUTTONS & LOADING STATES ================= */
+@keyframes pmtSpin { to { transform: rotate(360deg); } }
+
 .pmt-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-weight: 600; font-size: 13.5px; border-radius: var(--pmt-radius-sm);
@@ -192,9 +191,8 @@
     border-radius: 50%; border: 2px solid rgba(0, 0, 0, 0.15); border-top-color: currentColor;
     vertical-align: -2px; animation: pmtSpin 0.7s linear infinite;
 }
-@keyframes pmtSpin { to { transform: rotate(360deg); } }
 
-/* ================= 4. HEADER ================= */
+/* ================= 4. HEADER & ACTION GROUPS ================= */
 .pmt-header {
     position: relative; z-index: 100;
     display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 18px;
@@ -213,7 +211,7 @@
 
 .pmt-header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
 
-/* ================= 5. METRICS ================= */
+/* ================= 5. METRICS & SUBMETRICS GRIDS ================= */
 .pmt-metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; position: relative; z-index: 1; }
 
 .pmt-metric-card {
@@ -251,7 +249,7 @@
 .pmt-submetric-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--pmt-caption); }
 .pmt-submetric-value { font-size: 17px; color: var(--pmt-heading); }
 
-/* ================= 6. STATUS NAVIGATION ================= */
+/* ================= 6. STATUS NAVIGATION PILLS ================= */
 .pmt-status-nav {
     display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     background-color: var(--pmt-surface-raised); border: 1px solid var(--pmt-border);
@@ -281,7 +279,7 @@
     padding: 1px 7px; border-radius: var(--pmt-radius-pill);
 }
 
-/* ================= 7. TOOLBAR ================= */
+/* ================= 7. TOOLBAR & SEARCH INPUTS ================= */
 .pmt-toolbar-card {
     background-color: var(--pmt-surface-raised); border: 1px solid var(--pmt-border);
     border-radius: var(--pmt-radius-md); padding: 16px 18px; box-shadow: var(--pmt-shadow-sm);
@@ -325,12 +323,13 @@
 .pmt-chip:hover { border-color: var(--pmt-accent); color: var(--pmt-accent-strong); }
 .pmt-chip.is-active { background-color: var(--pmt-accent); border-color: var(--pmt-accent); color: #241A17; }
 
-/* ================= 8. FILTERS / ADVANCED PANEL ================= */
+/* ================= 8. FILTERS & ADVANCED PANELS ================= */
+@keyframes pmtSlideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
 .pmt-advanced-panel {
     border-top: 1px solid var(--pmt-border); padding-top: 16px; margin-top: 4px;
     animation: pmtSlideDown 0.2s var(--pmt-ease);
 }
-@keyframes pmtSlideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
 .pmt-advanced-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 
@@ -348,7 +347,6 @@
 }
 
 .pmt-form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-
 .pmt-advanced-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
 
 .pmt-radio-row { display: flex; flex-wrap: wrap; gap: 14px; }
@@ -358,7 +356,7 @@
 .pmt-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--pmt-body); cursor: pointer; margin-bottom: 8px; }
 .pmt-checkbox-row input { accent-color: var(--pmt-accent); width: 15px; height: 15px; }
 
-/* ================= 9. PAYMENT TABLE ================= */
+/* ================= 9. PAYMENT TABLE & TRANSACTION ROWS ================= */
 .pmt-table-card {
     background-color: var(--pmt-surface-raised); border: 1px solid var(--pmt-border);
     border-radius: var(--pmt-radius-md); box-shadow: var(--pmt-shadow-sm); overflow: hidden;
@@ -388,7 +386,6 @@
 .pmt-col-checkbox { width: 42px; }
 .pmt-col-actions { width: 50px; text-align: right; }
 
-/* Transaction cell */
 .pmt-txn-cell { display: flex; flex-direction: column; gap: 3px; min-width: 150px; }
 .pmt-txn-id {
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -403,12 +400,10 @@
 .pmt-copy-btn:hover { background-color: var(--pmt-accent-soft); color: var(--pmt-accent-strong); }
 .pmt-copy-btn.is-copied { color: var(--pmt-success); }
 
-/* Order cell */
 .pmt-order-cell { display: flex; align-items: center; gap: 6px; }
 .pmt-order-link { font-weight: 700; color: var(--pmt-accent-strong); white-space: nowrap; }
 .pmt-order-link:hover { text-decoration: underline; }
 
-/* User / seller cell */
 .pmt-user-cell { display: flex; align-items: center; gap: 9px; min-width: 170px; }
 .pmt-user-avatar {
     flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background-color: #A56B34;
@@ -424,13 +419,11 @@
 .pmt-seller-cell small { font-size: 11px; color: var(--pmt-caption); }
 .pmt-multi-seller { font-size: 12px; font-style: italic; color: var(--pmt-caption); }
 
-/* Method / provider */
 .pmt-method-cell { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--pmt-body); white-space: nowrap; }
 .pmt-method-cell i { color: var(--pmt-accent); }
 .pmt-card-mask { font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; color: var(--pmt-caption); }
 .pmt-provider-cell { font-size: 12.5px; font-weight: 600; color: var(--pmt-body); }
 
-/* Amounts */
 .pmt-amount-cell { font-weight: 700; color: var(--pmt-heading); white-space: nowrap; }
 .pmt-fee-cell { color: var(--pmt-caption); white-space: nowrap; }
 .pmt-net-cell { font-weight: 700; color: var(--pmt-accent-strong); white-space: nowrap; }
@@ -438,7 +431,7 @@
 .pmt-date-cell { display: flex; flex-direction: column; gap: 1px; white-space: nowrap; }
 .pmt-date-cell small { font-size: 11px; color: var(--pmt-caption); }
 
-/* ================= 10. STATUS BADGES ================= */
+/* ================= 10. STATUS BADGES & INDICATORS ================= */
 .pmt-badge {
     display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; font-size: 11px; font-weight: 700;
     border-radius: var(--pmt-radius-pill); line-height: 1; white-space: nowrap;
@@ -455,13 +448,14 @@
 .pmt-badge-refund-partial { background-color: var(--pmt-blue-bg); color: var(--pmt-blue); }
 .pmt-badge-refund-full { background-color: var(--pmt-danger-bg); color: var(--pmt-danger); }
 
-/* ================= 11. BULK ACTIONS ================= */
+/* ================= 11. BULK ACTION TOOLBAR & CHECKBOXES ================= */
+@keyframes pmtFadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
 .pmt-bulk-bar {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     background-color: var(--pmt-accent-soft); border: 1px solid var(--pmt-accent-ring);
     border-radius: var(--pmt-radius-sm); padding: 12px 16px; animation: pmtFadeInUp 0.2s var(--pmt-ease);
 }
-@keyframes pmtFadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .pmt-bulk-info { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--pmt-accent-strong); }
 .pmt-bulk-count { font-size: 15px; font-weight: 700; }
@@ -517,7 +511,9 @@
 .pmt-drawer-foot { display: flex; gap: 10px; padding: 18px 24px; border-top: 1px solid var(--pmt-border); flex-wrap: wrap; }
 .pmt-drawer-foot .pmt-btn { flex: 1; min-width: 120px; }
 
-/* ================= 13. EXPORT MODAL / SHARED MODAL ================= */
+/* ================= 13. EXPORT & SHARED MODALS ================= */
+@keyframes pmtScaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+
 .pmt-modal-overlay {
     position: fixed; inset: 0; background-color: rgba(33, 27, 34, 0.5); backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
@@ -530,7 +526,6 @@
     box-shadow: var(--pmt-shadow-lg); position: relative; animation: pmtScaleIn 0.25s var(--pmt-ease);
 }
 .pmt-modal-lg { max-width: 560px; }
-@keyframes pmtScaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
 
 .pmt-modal-icon {
     display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%;
@@ -547,10 +542,12 @@
     transition: background-color var(--pmt-transition);
 }
 .pmt-modal-close:hover { background-color: var(--pmt-bg); color: var(--pmt-heading); }
-
 .pmt-modal-checklist { display: flex; flex-direction: column; }
 
-/* ================= 14. TOASTS ================= */
+/* ================= 14. TOASTS & NOTIFICATIONS ================= */
+@keyframes pmtToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pmtToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+
 .pmt-toast-container {
     position: fixed; bottom: 24px; right: 24px; z-index: 1200; display: flex; flex-direction: column;
     gap: 10px; max-width: 340px;
@@ -566,10 +563,8 @@
 .pmt-toast.pmt-toast-danger { border-left-color: var(--pmt-danger); }
 .pmt-toast.pmt-toast-danger svg { color: var(--pmt-danger); }
 .pmt-toast.is-leaving { animation: pmtToastOut 0.22s ease forwards; }
-@keyframes pmtToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pmtToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-/* ================= 15. EMPTY STATES ================= */
+/* ================= 15. EMPTY STATES & SHIMMER SKELETONS ================= */
 .pmt-empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 70px 24px; text-align: center;
@@ -581,16 +576,16 @@
 .pmt-empty-title { font-size: 18px; font-weight: 700; color: var(--pmt-heading); margin: 0 0 6px; }
 .pmt-empty-subtitle { color: var(--pmt-caption); margin: 0 0 20px; max-width: 380px; font-size: 13.5px; }
 
-/* Skeleton loading */
+@keyframes pmtShimmer { 100% { transform: translateX(100%); } }
+
 .pmt-skeleton { position: relative; overflow: hidden; background-color: var(--pmt-bg); border-radius: 6px; }
 .pmt-skeleton::after {
     content: ""; position: absolute; inset: 0; transform: translateX(-100%);
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
     animation: pmtShimmer 1.4s infinite;
 }
-@keyframes pmtShimmer { 100% { transform: translateX(100%); } }
 
-/* ================= 16. PAGINATION ================= */
+/* ================= 16. PAGINATION CONTROLS ================= */
 .pmt-pagination-bar {
     display: flex; justify-content: space-between; align-items: center; padding: 16px 18px;
     border-top: 1px solid var(--pmt-border); flex-wrap: wrap; gap: 12px;
@@ -608,7 +603,7 @@
 .pmt-page-btn.is-active { background-color: var(--pmt-accent); color: #241A17; border-color: var(--pmt-accent); }
 .pmt-page-btn.is-disabled { opacity: 0.45; pointer-events: none; }
 
-/* ================= 17. ACTIVITY STRIP ================= */
+/* ================= 17. ACTIVITY STRIP CARDS ================= */
 .pmt-activity-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .pmt-activity-card {
     background-color: var(--pmt-surface-raised); border: 1px solid var(--pmt-border);
@@ -619,7 +614,7 @@
 .pmt-activity-card strong { font-size: 16px; color: var(--pmt-heading); }
 .pmt-activity-card small { font-size: 11.5px; color: var(--pmt-caption); }
 
-/* ================= 18. DROPDOWN ================= */
+/* ================= 18. DROPDOWN MENUS & TRIGGERS ================= */
 .pmt-dropdown { position: relative; }
 .pmt-dropdown-menu {
     position: fixed; display: flex; flex-direction: column; min-width: 220px; overflow: hidden;
@@ -645,7 +640,7 @@
 .pmt-icon-btn:hover { background-color: var(--pmt-accent-soft); color: var(--pmt-accent-strong); }
 .pmt-dropdown-trigger[aria-expanded="true"] { background-color: var(--pmt-accent-soft); color: var(--pmt-accent-strong); }
 
-/* ================= 19. RESPONSIVE ================= */
+/* ================= 19. RESPONSIVE MEDIA QUERIES ================= */
 @media (max-width: 1299.98px) {
     .pmt-metrics-grid { grid-template-columns: repeat(3, 1fr); }
     .pmt-submetrics-grid, .pmt-activity-strip { grid-template-columns: repeat(2, 1fr); }

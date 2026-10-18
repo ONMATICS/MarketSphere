@@ -1,5 +1,6 @@
 {% extends 'base_dashboard.html' %}
 {% load static %}
+{% load time_tags %}
 
 {% block title %}
   Dashboard
@@ -216,7 +217,7 @@
               {% for order in dashboard_recent_orders %}
                 <tr>
                   <td data-label="Order">
-                    <span class="dh-order-number">#MS-{{ order.order_number|slice:5 }}</span>
+                    <span class="dh-order-number">#{{ order.order_number|slice:5 }}</span>
                   </td>
                   <td data-label="Customer">{{ order.user.first_name }}</td>
                   <td data-label="Date">{{ order.created_at|date:'F j, Y' }}</td>
@@ -239,7 +240,7 @@
                     {% endif %}
                   </td>
                   <td data-label="" class="dh-table-action">
-                    <a href="{% url 'order-detail' order_no=order.order_number %}" class="dh-icon-link" aria-label="View order #MS-{{ order.order_number }}">
+                    <a href="{% url 'order-detail' order_no=order.order_number %}" class="dh-icon-link" aria-label="View order #{{ order.order_number }}">
                       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
@@ -329,7 +330,7 @@
               <span>
                 <strong>{{ activity.title }}</strong><br />
                 {{ activity.description|default:activity.action }}
-                <small class="d-block text-muted">{{ activity.created_at|timesince }} ago</small>
+                <small class="d-block text-muted">{{ activity.created_at|custom_timesince }}</small>
               </span>
             </li>
           {% endfor %}
@@ -345,54 +346,109 @@
     <!-- ================= 7 & 8. STORE PERFORMANCE + SELLER TIPS ================= -->
     <section class="dh-split-grid dh-split-grid-wide" aria-label="Store performance and seller tips">
       <!-- ============ STORE PERFORMANCE ============ -->
+
       <div class="dh-card dh-reveal">
-        <div class="dh-card-head">
-          <div>
-            <h2 class="dh-card-title">Store Performance</h2>
-            <p class="dh-card-subtitle">Sales overview for the current month</p>
-          </div>
-        </div>
 
-        <div class="dh-perf-stats">
-          <div class="dh-perf-stat">
-            <span class="dh-perf-label">Orders This Month</span>
-            <span class="dh-perf-value">{{ dashboard_month_orders }}</span>
+          <div class="dh-card-head">
+              <div>
+                  <h2 class="dh-card-title">Store Performance</h2>
+                  <p class="dh-card-subtitle">
+                      Sales overview for
+                      {{ request.user|date:"F" }}
+                  </p>
+              </div>
           </div>
-          <div class="dh-perf-stat">
-            <span class="dh-perf-label">Revenue This Month</span>
-            <span class="dh-perf-value">Rs. {{ dashboard_month_revenue|default:"-" }}</span>
-          </div>
-          <div class="dh-perf-stat">
-            <span class="dh-perf-label">Visitors</span>
-            <span class="dh-perf-value">{{ dashboard_visitors|default:"-" }}</span>
-          </div>
-        </div>
 
-        <div class="dh-chart-placeholder" aria-hidden="true">
-          <div class="dh-chart-bars">
-            <span style="--dh-bar-h: 34%;"></span>
-            <span style="--dh-bar-h: 52%;"></span>
-            <span style="--dh-bar-h: 41%;"></span>
-            <span style="--dh-bar-h: 68%;"></span>
-            <span style="--dh-bar-h: 59%;"></span>
-            <span style="--dh-bar-h: 77%;"></span>
-            <span style="--dh-bar-h: 63%;"></span>
-            <span style="--dh-bar-h: 88%;"></span>
-            <span style="--dh-bar-h: 71%;"></span>
-            <span style="--dh-bar-h: 95%;"></span>
-            <span style="--dh-bar-h: 80%;"></span>
-            <span style="--dh-bar-h: 100%;"></span>
+          <div class="dh-perf-stats">
+
+              <div class="dh-perf-stat">
+                  <span class="dh-perf-label">
+                      Orders This Month
+                  </span>
+
+                  <span class="dh-perf-value">
+                      {{ dashboard_month_orders|default:0 }}
+                  </span>
+              </div>
+
+              <div class="dh-perf-stat">
+                  <span class="dh-perf-label">
+                      Revenue This Month
+                  </span>
+
+                  <span class="dh-perf-value">
+                      Rs. {{ dashboard_month_revenue|floatformat:2 }}
+                  </span>
+              </div>
+
+              <div class="dh-perf-stat">
+                  <span class="dh-perf-label">
+                      Visitors
+                  </span>
+
+                  <span class="dh-perf-value">
+                      {% if dashboard_visitors != None %}
+                          {{ dashboard_visitors }}
+                      {% else %}
+                          —
+                      {% endif %}
+                  </span>
+              </div>
+
           </div>
-          <div class="dh-chart-caption">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 3v18h18"></path>
-              <path d="M7 15l4-5 3 3 5-7"></path>
-            </svg>
-            <span>Sales Overview — Analytics Coming Soon</span>
+
+          <div class="dh-chart-placeholder">
+
+              {% if dashboard_sales_chart %}
+
+                  <div class="dh-chart-bars">
+
+                      {% for day in dashboard_sales_chart %}
+
+                          <span
+                              style="--dh-bar-h: {{ day.bar_height }}%;"
+                              title="{{ day.date|date:'M d' }} — Rs. {{ day.revenue|floatformat:2 }}"
+                              aria-label="{{ day.date|date:'M d' }}: Rs. {{ day.revenue|floatformat:2 }}"
+                          ></span>
+
+                      {% endfor %}
+
+                  </div>
+
+                  <div class="dh-chart-caption">
+
+                      <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                      >
+                          <path d="M3 3v18h18"></path>
+                          <path d="M7 15l4-5 3 3 5-7"></path>
+                      </svg>
+
+                      <span>
+                          Daily Revenue — Current Month
+                      </span>
+
+                  </div>
+
+              {% else %}
+
+                  <div class="dh-chart-caption">
+                      No sales data available for this month yet.
+                  </div>
+
+              {% endif %}
+
           </div>
-        </div>
+
       </div>
-
       <!-- ============ SELLER TIPS ============ -->
       <div class="dh-card dh-reveal">
         <div class="dh-card-head">

@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const action = actionItem.dataset.rowAction;
         const row = actionItem.closest('.so-row');
         let orderNumber = actionItem.dataset.orderNumber || (row ? row.dataset.orderNumber : '');
-        orderNumber = orderNumber.split('-')[1];
+        // orderNumber = orderNumber.split('-')[1];
         if (action === 'view') {
             window.location.href = "/seller/orders/"+orderNumber;
         } else if (action === 'print') {

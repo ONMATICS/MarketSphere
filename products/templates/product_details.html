@@ -565,15 +565,17 @@
                       
                       {% if review.image %}
                       <div class="pdp-review-image mb-3">
-                          <img src="{{ review.image.url }}" alt="Review Image" style="max-width: 120px; border-radius: 4px; border: 1px solid var(--border-color);">
+                          <img src="{{ review.image }}" alt="Review Image" style="max-width: 120px; border-radius: 4px; border: 1px solid var(--border-color);">
                       </div>
                       {% endif %}
 
                       <div class="pdp-review-actions">
-                          <button class="pdp-review-helpful" type="button">
+                          <button class="pdp-review-helpful" type="button" data-review-id="{{ review.id }}">
                               <i class="bi bi-hand-thumbs-up"></i> Helpful (<span data-count="{{ review.helpful_count }}">{{ review.helpful_count }}</span>)
                           </button>
-                          <button type="button"><i class="bi bi-flag"></i> Report</button>
+                          <button type="button" data-review-id="{{ review.id }}">
+                              <i class="bi bi-flag"></i> Report
+                          </button>
                       </div>
                   </div>
                   

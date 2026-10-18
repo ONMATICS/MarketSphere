@@ -1,29 +1,27 @@
-/* ==========================================================================
-   MARKETSPHERE ADMIN — USER MANAGEMENT OVERVIEW (overview.css)
-   Page-scoped styles for admin_panel/templates/users/overview.html.
-   Builds on the admin shell's tokens (static/css/admin_base_dashboard.css
-   — --ad-* variables) rather than redefining the palette, and prefixes
-   every class `adu-` (Admin Dashboard Users) to avoid collisions with the
-   shell and other admin pages, matching the project's page-scoped prefix
-   convention (adh-, dh-, pm-, so-, sod-, sa-, pf- ...).
-
+/* =========================================================
+   MARKETSPHERE — USER MANAGEMENT OVERVIEW (overview.css)
+   Purpose: Page-scoped styles for admin user overview dashboard,
+            metrics grids, analytics charts, and data tables.
+   Scope: Admin Panel (User Management Overview)
+   
    Sections:
-     1. Page Wrapper / Reveal
-     2. Header
-     3. Buttons
+     1. Page Wrapper / Reveal & Reset
+     2. Page Header
+     3. Buttons & Actions
      4. Metrics Grid
      5. User Type Cards
      6. Quick Actions
-     7. Activity Timeline
-     8. Status Distribution
-     9. Growth Analytics
-    10. Recently Active Table
+     7. Activity Timeline & Status Badges
+     8. Status Distribution Bars
+     9. Growth Analytics & Charts
+    10. Recently Active Table & Toolbar
     11. System Insights
     12. Footer Tips
-    13. Dropdown / Toast / Misc
-    14. Responsive
-   ========================================================================== */
+    13. Toast Notifications & Animations
+    14. Responsive Media Queries
+========================================================= */
 
+/* ================= 1. PAGE WRAPPER / REVEAL & RESET ================= */
 .adu-header {
     position: relative;
     z-index: 100;
@@ -38,7 +36,6 @@
     z-index: 102;
 }
 
-/* ================= 1. PAGE WRAPPER / REVEAL ================= */
 .adu-page {
     display: flex;
     flex-direction: column;
@@ -72,7 +69,7 @@
     border: 0;
 }
 
-/* ================= 2. HEADER ================= */
+/* ================= 2. PAGE HEADER ================= */
 .adu-header {
     display: flex;
     align-items: flex-start;
@@ -128,7 +125,7 @@
     flex-wrap: wrap;
 }
 
-/* ================= 3. BUTTONS ================= */
+/* ================= 3. BUTTONS & ACTIONS ================= */
 .adu-btn {
     position: relative;
     display: inline-flex;
@@ -148,7 +145,6 @@
 }
 
 .adu-btn svg { flex-shrink: 0; }
-
 .adu-btn:active { transform: scale(0.97); }
 
 .adu-btn-secondary {
@@ -169,7 +165,6 @@
     color: var(--ad-heading-color);
     border: 1.5px solid var(--ad-accent) !important;
     border-radius: 2px;
-    
 }
 
 .adu-btn-primary:hover {
@@ -197,7 +192,7 @@
     border-radius: 50%;
 }
 
-/* ---- Dropdown wrapper (More menu) ---- */
+/* ---- Dropdown Wrapper ---- */
 .adu-dropdown { position: relative; }
 
 .adu-dropdown-menu {
@@ -242,9 +237,7 @@
 }
 
 .adu-dropdown-item svg { color: var(--ad-caption-color); }
-
 .adu-dropdown-item:hover { background-color: #b0ba99; }
-
 .adu-dropdown-item.is-danger { color: var(--ad-danger); }
 .adu-dropdown-item.is-danger svg { color: var(--ad-danger); }
 .adu-dropdown-item.is-danger:hover { background-color: rgba(181, 75, 59, 0.1); }
@@ -568,7 +561,7 @@
     pointer-events: none;
 }
 
-/* ================= 7. ACTIVITY TIMELINE ================= */
+/* ================= 7. ACTIVITY TIMELINE & STATUS BADGES ================= */
 .adu-split-grid {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
@@ -732,7 +725,7 @@
 .adu-status-badge-suspended,
 .adu-status-badge-blocked { background-color: rgba(181, 75, 59, 0.13); color: var(--ad-danger); }
 
-/* ================= 8. STATUS DISTRIBUTION ================= */
+/* ================= 8. STATUS DISTRIBUTION BARS ================= */
 .adu-status-list {
     display: flex;
     flex-direction: column;
@@ -777,11 +770,9 @@
 .adu-status-bar-fill.c-Unverified { background-color: var(--ad-warning); }
 .adu-status-bar-fill.c-Suspended { background-color: #b58a3b; }
 .adu-status-bar-fill.c-Blocked { background-color: var(--ad-danger); }
-/* .adu-status-bar-fill.c-rejected { background-color: #8f5a4a; } */
-/* .adu-status-bar-fill.c-active { background-color: var(--ad-accent); } */
 .adu-status-bar-fill.c-Deactivated { background-color: #b0ba99; }
 
-/* ================= 9. GROWTH ANALYTICS ================= */
+/* ================= 9. GROWTH ANALYTICS & CHARTS ================= */
 .adu-analytics-grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
@@ -789,7 +780,6 @@
 }
 
 .adu-line-chart-wrap { position: relative; height: 200px; }
-
 .adu-line-chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
 
 .adu-line-chart-path {
@@ -861,7 +851,6 @@
 }
 
 .adu-donut svg { transform: rotate(-90deg); }
-
 .adu-donut-ring-bg { fill: none; stroke: var(--ad-bg); stroke-width: 14; }
 
 .adu-donut-ring {
@@ -950,9 +939,7 @@
     margin-top: 6px;
 }
 
-/* ================= 10. RECENTLY ACTIVE TABLE ================= */
-
-
+/* ================= 10. RECENTLY ACTIVE TABLE & TOOLBAR ================= */
 .adu-link {
     display: inline-flex;
     align-items: center;
@@ -1014,7 +1001,6 @@
 }
 
 .adu-table-wrap { width: 100%; overflow-x: auto; }
-
 .adu-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 
 .adu-table thead th {
@@ -1109,7 +1095,6 @@
 }
 
 .adu-table-empty.is-visible { display: block; }
-
 .adu-table-empty svg { color: var(--ad-accent); margin-bottom: 10px; }
 
 /* ================= 11. SYSTEM INSIGHTS ================= */
@@ -1147,9 +1132,7 @@
 .adu-insight-dot.d-danger { background-color: var(--ad-danger); box-shadow: 0 0 0 4px rgba(181, 75, 59, 0.16); }
 
 .adu-insight-title { font-size: 13px; font-weight: 700; color: var(--ad-heading-color); }
-
 .adu-insight-value { font-size: 22px; font-weight: 700; color: var(--ad-heading-color); }
-
 .adu-insight-caption { font-size: 12px; color: var(--ad-caption-color); line-height: 1.5; }
 
 .adu-insight-spark {
@@ -1204,7 +1187,17 @@
 .adu-tip-text p { margin: 0; font-size: 12.5px; color: var(--ad-caption-color); line-height: 1.55; }
 .adu-tip-text a { color: var(--ad-accent-strong); font-weight: 700; }
 
-/* ================= 13. TOAST ================= */
+/* ================= 13. TOAST NOTIFICATIONS & ANIMATIONS ================= */
+@keyframes aduToastIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aduToastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
+}
+
 .adu-toast-container {
     position: fixed;
     bottom: 24px;
@@ -1234,20 +1227,9 @@
 .adu-toast svg { color: var(--ad-accent); flex-shrink: 0; }
 .adu-toast.adu-toast-success { border-left-color: var(--ad-success); }
 .adu-toast.adu-toast-success svg { color: var(--ad-success); }
-
 .adu-toast.is-leaving { animation: aduToastOut 0.22s ease forwards; }
 
-@keyframes aduToastIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes aduToastOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(10px); }
-}
-
-/* ================= 14. RESPONSIVE ================= */
+/* ================= 14. RESPONSIVE MEDIA QUERIES ================= */
 @media (max-width: 1299.98px) {
     .adu-metrics-grid { grid-template-columns: repeat(3, 1fr); }
     .adu-type-grid { grid-template-columns: repeat(2, 1fr); }

@@ -1,0 +1,1 @@
+{% if d %}<span class="spd-trend spd-trend-{{ d.dir }}">{% if d.dir == 'up' %}&#9650;{% elif d.dir == 'down' %}&#9660;{% endif %} {{ d.pct }}% vs last month</span>{% else %}<span class="spd-trend spd-trend-flat">No prior-month data</span>{% endif %}

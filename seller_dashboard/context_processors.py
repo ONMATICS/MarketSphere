@@ -1,20 +1,17 @@
 from datetime import timedelta
+from decimal import Decimal
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import F, Q, Sum
+from django.db.models import Q, Sum
 from django.utils import timezone
 
 from accounts.models import Seller
 from orders.models import Order
+from orders.services import get_seller_orders
 from products.models import Product
 from admin_panel.catalog import get_catalog_settings
 from admin_panel.settings_data import get_admin_setting
 from notifications.models import ActivityLog
-
-from orders.services import get_seller_orders
-
-today = timezone.now()
-week_ago = today - timedelta(days=7)
 
 
 def seller_dashboard(request):
@@ -26,23 +23,47 @@ def seller_dashboard(request):
     except Seller.DoesNotExist:
         return {}
 
+    today = timezone.localdate()
+    now = timezone.now()
+
+    month_start = today.replace(day=1)
+
+    next_month_start = (
+        month_start.replace(
+            year=month_start.year + 1,
+            month=1,
+        )
+        if month_start.month == 12
+        else month_start.replace(
+            month=month_start.month + 1,
+        )
+    )
+
+    week_ago = now - timedelta(days=7)
+
     seller_products = Product.objects.filter(seller=seller)
     seller_orders = Order.objects.filter(seller=seller)
+
     order_content_type = ContentType.objects.get_for_model(Order)
-    activity_logs = ActivityLog.objects.select_related("actor").filter(
-        Q(actor=request.user)
-        | Q(
-            target_content_type=order_content_type,
-            target_object_id__in=seller_orders.values("pk"),
+
+    activity_logs = (
+        ActivityLog.objects.select_related("actor")
+        .filter(
+            Q(actor=request.user)
+            | Q(
+                target_content_type=order_content_type,
+                target_object_id__in=seller_orders.values("pk"),
+            )
         )
-    )[:8]
+        .order_by("-created_at")[:8]
+    )
 
     total_products = seller_products.count()
 
     drafted_products = seller_products.filter(
         status=Product.Status.DRAFT
     )
-    
+
     published_products = seller_products.filter(
         status=Product.Status.PUBLISHED
     ).count()
@@ -50,7 +71,7 @@ def seller_dashboard(request):
     pending_orders = seller_orders.filter(
         status=Order.Status.PENDING
     ).count()
-    
+
     processing_orders = seller_orders.filter(
         status=Order.Status.PROCESSING
     ).count()
@@ -66,7 +87,7 @@ def seller_dashboard(request):
         ).aggregate(
             revenue=Sum("total")
         )["revenue"]
-        or 0
+        or Decimal("0.00")
     )
 
     new_orders_this_week = seller_orders.filter(
@@ -74,9 +95,88 @@ def seller_dashboard(request):
     ).count()
 
     month_orders = seller_orders.filter(
-        created_at__year=today.year,
-        created_at__month=today.month,
+        created_at__gte=timezone.make_aware(
+            timezone.datetime.combine(
+                month_start,
+                timezone.datetime.min.time(),
+            )
+        ),
+        created_at__lt=timezone.make_aware(
+            timezone.datetime.combine(
+                next_month_start,
+                timezone.datetime.min.time(),
+            )
+        ),
     ).count()
+
+    month_completed_orders = seller_orders.filter(
+        created_at__gte=timezone.make_aware(
+            timezone.datetime.combine(
+                month_start,
+                timezone.datetime.min.time(),
+            )
+        ),
+        created_at__lt=timezone.make_aware(
+            timezone.datetime.combine(
+                next_month_start,
+                timezone.datetime.min.time(),
+            )
+        ),
+        status=Order.Status.DELIVERED,
+        payment_status=Order.PaymentStatus.PAID,
+    )
+
+    month_revenue = (
+        month_completed_orders.aggregate(
+            revenue=Sum("total")
+        )["revenue"]
+        or Decimal("0.00")
+    )
+
+    # Daily revenue for the current calendar month.
+    daily_revenue = {
+        (month_start + timedelta(days=day_offset)): Decimal("0.00")
+        for day_offset in range(
+            (today - month_start).days + 1
+        )
+    }
+
+    monthly_paid_orders = month_completed_orders.filter(
+        delivered_at__isnull=False
+    ).values(
+        "delivered_at",
+        "total",
+    )
+
+    for order in monthly_paid_orders:
+        delivery_date = timezone.localtime(
+            order["delivered_at"]
+        ).date()
+
+        if delivery_date in daily_revenue:
+            daily_revenue[delivery_date] += order["total"]
+
+    max_daily_revenue = max(
+        daily_revenue.values(),
+        default=Decimal("0.00"),
+    )
+
+    sales_chart = []
+
+    for date, revenue in daily_revenue.items():
+        if max_daily_revenue > 0:
+            bar_height = float(
+                revenue / max_daily_revenue * 100
+            )
+        else:
+            bar_height = 0
+
+        sales_chart.append({
+            "date": date,
+            "label": date.strftime("%d"),
+            "revenue": revenue,
+            "bar_height": round(bar_height, 2),
+        })
 
     recent_orders = (
         seller_orders.select_related("user")
@@ -104,10 +204,20 @@ def seller_dashboard(request):
         "dashboard_out_of_stock_products": out_of_stock_products,
         "dashboard_completed_revenue": completed_revenue,
         "dashboard_month_orders": month_orders,
+        "dashboard_month_revenue": month_revenue,
+        "dashboard_month_completed_orders": month_completed_orders.count(),
+        "dashboard_visitors": None,
+        "dashboard_sales_chart": sales_chart,
         "dashboard_new_orders_this_week": new_orders_this_week,
         "dashboard_recent_orders": recent_orders,
         "dashboard_drafted_products": drafted_products,
         "dashboard_seller_orders": get_seller_orders(seller),
-        "allow_seller_drafts": str(get_admin_setting("catalog", "allow_seller_drafts", True)).lower() in {"1", "true", "yes", "on"},
+        "allow_seller_drafts": str(
+            get_admin_setting(
+                "catalog",
+                "allow_seller_drafts",
+                True,
+            )
+        ).lower() in {"1", "true", "yes", "on"},
         "dashboard_activity_logs": activity_logs,
     }

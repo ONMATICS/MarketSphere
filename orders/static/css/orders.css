@@ -191,7 +191,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    border-radius: 4px;
+    border-radius: 1.5px !important;
     white-space: nowrap;
 }
 

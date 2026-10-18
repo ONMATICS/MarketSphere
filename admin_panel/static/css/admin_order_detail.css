@@ -1,11 +1,9 @@
 /* ==========================================================================
-   MARKETSPHERE ADMIN — ORDER DETAIL (order_detail.css)
-   Page-scoped styles for admin_panel/templates/sales/orders/detail.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `od-` (Order Detail)
-   to avoid collisions with the shell and other admin pages, matching the
-   project's page-scoped prefix convention (bd-, sld-, sad-, bu-, adu- ...).
-
+   MARKETSPHERE ADMIN — ORDER DETAIL (admin_order_detail.css)
+   Purpose:
+     Page-scoped styles for the Admin Order Detail view.
+   Scope:
+     admin_panel/templates/sales/orders/detail.html.
    Sections:
      1. Variables
      2. Base / Reset
@@ -24,7 +22,7 @@
     15. Action Center
     16. Modals
     17. Toasts
-    18. Responsive
+    18. Responsive & Print Styles
    ========================================================================== */
 
 /* ================= 1. VARIABLES ================= */
@@ -72,6 +70,7 @@
     --od-ease: var(--ad-ease, cubic-bezier(0.22, 1, 0.36, 1));
     --od-transition: 0.2s var(--od-ease);
 }
+
 
 /* ================= 2. BASE / RESET ================= */
 .od-page,
@@ -182,6 +181,7 @@
 .od-btn-sm { padding: 7px 13px; font-size: 12.5px; }
 .od-btn-icon-only { padding: 9px !important; width: 38px; height: 38px; border: 1.5px solid var(--od-border); }
 
+
 /* ================= 3. LAYOUT ================= */
 .od-layout { display: grid; grid-template-columns: 1fr 340px; gap: 22px; align-items: start; }
 .od-main-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
@@ -205,6 +205,7 @@
 .od-empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 20px; text-align: center; color: var(--od-caption); }
 .od-empty-inline { font-size: 13px; color: var(--od-caption); margin: 0; }
 .od-empty-inline-wrap { padding: 6px 0 2px; }
+
 
 /* ================= 4. HEADER ================= */
 .od-header {
@@ -265,6 +266,7 @@
 .od-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; color: var(--od-caption); transition: background-color var(--od-transition), color var(--od-transition); }
 .od-icon-btn:hover { background-color: var(--od-accent-soft); color: var(--od-accent-strong); }
 
+
 /* ================= 5. STATUS SUMMARY ================= */
 .od-status-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; position: relative; z-index: 1; }
 .od-status-card {
@@ -277,6 +279,7 @@
 .od-status-value.od-status-delivered, .od-status-value.od-status-paid, .od-status-value.od-status-completed { color: var(--od-success); }
 .od-status-value.od-status-pending, .od-status-value.od-status-unpaid, .od-status-value.od-status-on_hold, .od-status-value.od-status-not_shipped { color: var(--od-warning); }
 .od-status-value.od-status-none { color: var(--od-caption); font-weight: 600; }
+
 
 /* ================= 6. TIMELINE ================= */
 .od-timeline { list-style: none; display: flex; flex-direction: column; gap: 0; margin: 0; padding: 0; }
@@ -302,6 +305,7 @@
 .od-timeline-body p { font-size: 12.5px; color: var(--od-body); margin: 3px 0 0; line-height: 1.5; }
 .od-timeline-time { font-size: 11.5px; color: var(--od-caption); font-weight: 500; }
 
+
 /* ================= 7. BUYER ================= */
 .od-buyer-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .od-buyer-avatar {
@@ -322,6 +326,7 @@
 
 .od-sidebar-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--od-border); }
 .od-sidebar-actions .od-btn { flex: 1; min-width: 0; }
+
 
 /* ================= 8. SELLER ORDERS ================= */
 .od-seller-orders-list { display: flex; flex-direction: column; gap: 16px; }
@@ -352,6 +357,7 @@
 .od-seller-order-items { display: none; margin-top: 14px; }
 .od-seller-order-items.is-open { display: block; }
 
+
 /* ================= 9. ORDER ITEMS ================= */
 .od-table-wrap { width: 100%; overflow-x: auto; }
 .od-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -374,10 +380,14 @@
 .od-item-name-cell strong { font-size: 13px; color: var(--od-heading); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
 .od-item-status-badge { width: fit-content; }
 
-/* ================= 10. SHIPPING / BILLING (uses sidebar-kv-list) ================= */
+
+/* ================= 10. SHIPPING / BILLING ================= */
+/* Uses sidebar-kv-list */
+
 
 /* ================= 11. PAYMENT ================= */
-/* (uses sidebar-kv-list) */
+/* Uses sidebar-kv-list */
+
 
 /* ================= 12. FINANCIAL SUMMARY ================= */
 .od-financial-list { display: flex; flex-direction: column; gap: 10px; }
@@ -388,6 +398,7 @@
 .od-financial-total strong { color: var(--od-accent-strong); font-weight: 700; font-size: 17px; }
 .od-financial-net span { font-weight: 600; color: var(--od-heading); }
 .od-financial-net strong { color: var(--od-success); font-size: 15px; }
+
 
 /* ================= 13. NOTES ================= */
 .od-notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -414,7 +425,6 @@
 
 .od-notes-list { display: flex; flex-direction: column; gap: 14px; }
 .od-note-card { background-color: var(--od-bg); border: 1px solid var(--od-border); border-radius: var(--od-radius-sm); padding: 16px; animation: odNoteIn .3s var(--od-ease); }
-@keyframes odNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 .od-note-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .od-note-avatar { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background-color: var(--od-accent-strong); color: #F4EEE3; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .od-note-meta { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
@@ -422,6 +432,7 @@
 .od-note-meta span { font-size: 11px; color: var(--od-caption); }
 .od-note-content { font-size: 13.5px; color: var(--od-body); line-height: 1.6; margin-bottom: 10px; }
 .od-note-actions { display: flex; gap: 6px; }
+
 
 /* ================= 14. ACTIVITY ================= */
 .od-activity-feed { list-style: none; display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; }
@@ -438,6 +449,7 @@
 .od-activity-body strong { font-size: 13.5px; font-weight: 700; color: var(--od-heading); }
 .od-activity-body span { font-size: 12.5px; color: var(--od-body); }
 .od-activity-body small { font-size: 11.5px; color: var(--od-caption); margin-top: 2px; }
+
 
 /* ================= 15. ACTION CENTER ================= */
 .od-actions-groups { display: flex; flex-direction: column; gap: 22px; }
@@ -466,13 +478,6 @@
 .od-danger-text strong { display: block; font-size: 13.5px; color: var(--od-heading); }
 .od-danger-text small { font-size: 12px; color: var(--od-caption); }
 
-/* ================= FOOTER ================= */
-.od-footer { text-align: center; padding: 18px 10px 6px; border-top: 1px solid var(--od-border); }
-.od-footer p { font-size: 12.5px; color: var(--od-caption); max-width: 640px; margin: 0 auto 10px; line-height: 1.6; }
-.od-footer-links { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12.5px; font-weight: 600; }
-.od-footer-links a { color: var(--od-accent-strong); }
-.od-footer-links a:hover { text-decoration: underline; }
-.od-footer-links span { color: var(--od-border); }
 
 /* ================= 16. MODALS ================= */
 .od-modal-overlay {
@@ -486,7 +491,6 @@
     box-shadow: var(--od-shadow-lg); text-align: center; animation: odScaleIn .25s var(--od-ease); position: relative; margin: auto;
 }
 .od-modal-lg { max-width: 560px; text-align: left; }
-@keyframes odScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
 .od-modal-icon { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--od-accent-soft); color: var(--od-accent-strong); margin-bottom: 18px; }
 .od-modal-icon.c-danger { background-color: var(--od-danger-bg); color: var(--od-danger); }
 .od-modal-icon.c-success { background-color: var(--od-success-bg); color: var(--od-success); }
@@ -561,6 +565,7 @@
 .od-export-option svg { color: var(--od-accent); }
 .od-export-option:hover { border-color: var(--od-accent); background-color: var(--od-accent-soft); }
 
+
 /* ================= 17. TOASTS ================= */
 .od-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1600; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
 .od-toast {
@@ -574,21 +579,29 @@
 .od-toast.od-toast-danger { border-left-color: var(--od-danger); }
 .od-toast.od-toast-danger svg { color: var(--od-danger); }
 .od-toast.is-leaving { animation: odToastOut .22s ease forwards; }
+
+
+/* ================= ANIMATIONS ================= */
+@keyframes odScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+@keyframes odNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes odToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes odToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-/* ================= 18. RESPONSIVE ================= */
+
+/* ================= 18. RESPONSIVE & PRINT STYLES ================= */
 @media (max-width: 1299.98px) {
     .od-status-grid { grid-template-columns: repeat(3, 1fr); }
     .od-seller-order-totals { grid-template-columns: repeat(3, 1fr); }
     .od-actions-row { grid-template-columns: repeat(2, 1fr); }
     .od-notes-grid { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 1099.98px) {
     .od-layout { grid-template-columns: 1fr; }
     .od-sidebar { position: static; flex-direction: row; flex-wrap: wrap; }
     .od-sidebar-card { flex: 1 1 280px; }
 }
+
 @media (max-width: 767.98px) {
     .od-header { flex-direction: column; align-items: stretch; padding: 20px; }
     .od-header-actions { width: 100%; }
@@ -607,6 +620,7 @@
     .od-table td { display: flex; align-items: center; justify-content: space-between; padding: 5px 4px; border-bottom: none; white-space: normal; text-align: right; gap: 10px; }
     .od-table td[data-label]::before { content: attr(data-label); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--od-caption); margin-right: 12px; text-align: left; }
 }
+
 @media (max-width: 560px) {
     .od-status-grid { grid-template-columns: 1fr; }
     .od-toast-container { left: 16px; right: 16px; bottom: 16px; max-width: none; }

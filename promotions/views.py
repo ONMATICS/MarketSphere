@@ -1,39 +1,33 @@
-# =============================================================================
-# REPLACES the previous placeholder version -- ADD/UPDATE this in
-# products/views.py now that promotions.models.Promotion exists.
-#
-# Requires: the `promotions` app added to INSTALLED_APPS and migrated.
-#
-# Still reuses services.filter_products / sort_products / paginate_products
-# / get_search_brands / get_wishlist_ids exactly as the main search page
-# does -- only the base queryset (which products count as "in this
-# promotion") and the price shown per card change.
-# =============================================================================
-
 from django.db.models import OuterRef, Subquery
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from accounts.models import Seller
+from products import services as product_services
 from products.models import Product
 from promotions.models import Promotion, PromotionProduct
 
-from products import services as product_services
 
-
-def promotion_detail(request, promotion_slug):
+def promotion_detail(request: HttpRequest, promotion_slug: str) -> HttpResponse:
+    """
+    Render a public promotion landing page.
+    
+    Displays the promotion details, featured items, and a filtered/paginated grid 
+    of all participating products annotated with their specific promotional pricing.
+    """
     promotion = get_object_or_404(Promotion, slug=promotion_slug)
 
     is_upcoming = promotion.is_upcoming
     is_ended = promotion.is_ended
     is_active = promotion.is_running
 
-    # Products attached to this promotion, still published/sellable.
-    # Annotated with promo_price so the product-card price block can
+    # Annotate products with promo_price so the product-card price block can
     # prefer the promotion price over the product's own discount_price
-    # without a second query per card.
+    # without requiring a second query per card during template rendering.
     promo_price_subquery = PromotionProduct.objects.filter(
         promotion=promotion, product=OuterRef("pk")
     ).values("promotion_price")[:1]
+    
     promo_id_subquery = PromotionProduct.objects.filter(
         promotion=promotion, product=OuterRef("pk")
     ).values("id")[:1]
@@ -56,6 +50,7 @@ def promotion_detail(request, promotion_slug):
     product_count = promotion.product_count
     has_any_products = product_count > 0
 
+    # Extract user filters from the GET request
     category_slugs = request.GET.getlist("category")
     brand_slugs = request.GET.getlist("brand")
     max_price = request.GET.get("max_price")
@@ -67,6 +62,7 @@ def promotion_detail(request, promotion_slug):
     categories = promotion.get_display_categories()
     brands = product_services.get_search_brands(base_products)
 
+    # Apply user filters
     filtered_products = product_services.filter_products(
         base_products,
         category_slugs=category_slugs,
@@ -75,10 +71,13 @@ def promotion_detail(request, promotion_slug):
         availability=availability,
         discount_only=discount_only,
     )
+    
+    # Sort annotated promotional pricing
     filtered_products = product_services.sort_products_by_price(
         filtered_products, sort_value, price_field="promo_price"
     )
 
+    # Pagination handling
     paginator, page_obj = product_services.paginate_products(filtered_products, page_number)
     pagination_query = request.GET.copy()
     pagination_query.pop("page", None)

@@ -713,3 +713,67 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', function () {
+    // Helper function to get the CSRF token from Django's cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const helpfulButtons = document.querySelectorAll('.pdp-review-helpful');
+
+    helpfulButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const reviewId = this.getAttribute('data-review-id');
+            const buttonElement = this;
+            const countSpan = this.querySelector('span[data-count]');
+            const icon = this.querySelector('i');
+
+            // Prevent double clicking while processing
+            if (buttonElement.disabled) return;
+            buttonElement.disabled = true;
+
+            fetch(`/reviews/${reviewId}/helpful/`, { // Ensure this matches your urls.py path
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the count number
+                    countSpan.innerText = data.new_count;
+                    countSpan.setAttribute('data-count', data.new_count);
+                    
+                    // Change the icon from outline to filled
+                    icon.classList.remove('bi-hand-thumbs-up');
+                    icon.classList.add('bi-hand-thumbs-up-fill');
+                    icon.style.color = 'var(--od-selection-active-color, #a06e40)'; // Optional: highlight color
+                    
+                } else {
+                    // Show error message (e.g., "Cannot mark your own review" or "Not logged in")
+                    alert(data.message);
+                    buttonElement.disabled = false; // Re-enable if it failed
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An unexpected error occurred.");
+                buttonElement.disabled = false;
+            });
+        });
+    });
+});

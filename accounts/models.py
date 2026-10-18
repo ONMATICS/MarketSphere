@@ -58,7 +58,7 @@ class Address(models.Model):
             self.user.addresses.exclude(pk=self.pk).update(is_default=False)
 
         super().save(*args, **kwargs)
-
+        
     class Meta:
         ordering = ["-is_default", "-created_at"]
 

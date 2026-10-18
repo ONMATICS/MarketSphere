@@ -1,9 +1,29 @@
-/* ==========================================================================
-   MARKETSPHERE ADMIN — EMAIL COMPOSER MODULE (email_composer.css)
-   Standalone namespaced stylesheet for email_composer_modal.html.
-   ========================================================================== */
+/* =========================================================
+   MARKETSPHERE — EMAIL COMPOSER MODULE (email_composer.css)
+   Purpose: Standalone namespaced stylesheet controlling the 
+            email composer modal, preview panes, and file attachments.
+   Scope: Admin Panel (Email Management Component)
+   
+   Sections:
+     1. Variables & Root Settings
+     2. Reset & Typography Base
+     3. Namespaced Modal Shell & Positioning
+     4. Buttons & Action States
+     5. Header & Subtitles
+     6. Body Sections & Form Elements
+     7. Recipient Card & Status Badges
+     8. Template Select Dropdown
+     9. Subject Line Inputs
+    10. Message Textareas & Validation
+    11. File Upload Zone & Attachments
+    12. Modal Footers & Controls
+    13. Preview Email Layout & Chips
+    14. Toasts & Notifications
+    15. Loading Spinners & Disabled States
+    16. Responsive Media Queries
+========================================================= */
 
-/* ================= 1. VARIABLES ================= */
+/* ================= 1. VARIABLES & ROOT SETTINGS ================= */
 .ms-ec-backdrop {
     --ec-bg: var(--ad-bg, #F7F1DE);
     --ec-surface: var(--ad-surface-raised, #FFFDF9);
@@ -33,6 +53,7 @@
     --ec-shadow-lg: var(--ad-shadow-lg, 0 24px 60px rgba(36, 26, 23, 0.22));
 }
 
+/* ================= 2. RESET & TYPOGRAPHY BASE ================= */
 .ms-ec-backdrop,
 .ms-ec-backdrop *,
 .ms-ec-backdrop *::before,
@@ -61,7 +82,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
     .ms-ec-backdrop,
     .ms-ec-backdrop * {
         animation-duration: 0.001ms !important;
@@ -81,7 +101,7 @@
     border: 0;
 }
 
-/* ================= 2. NAMESPACED MODAL SHELL ================= */
+/* ================= 3. NAMESPACED MODAL SHELL & POSITIONING ================= */
 .ms-ec-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -109,7 +129,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 980px;
+    max-width: 40%;
     max-height: min(88vh, 860px);
     background-color: var(--ec-surface);
     border-radius: 4px;
@@ -162,7 +183,11 @@
     flex-shrink: 0;
 }
 
-/* ================= 3. NAMESPACED BUTTONS ================= */
+.ms-ec-preview-modal[hidden] {
+    display: none;
+}
+
+/* ================= 4. BUTTONS & ACTION STATES ================= */
 .ms-ec-btn {
     display: inline-flex;
     align-items: center;
@@ -230,17 +255,7 @@
     transform: none !important;
 }
 
-/* ================= 4. BACKDROP / MODAL POSITIONING ================= */
-.ms-ec-modal {
-    width: 980px;
-    max-width: 40%;
-}
-
-.ms-ec-preview-modal[hidden] {
-    display: none;
-}
-
-/* ================= 5. HEADER ================= */
+/* ================= 5. HEADER & SUBTITLES ================= */
 .ms-ec-header-text {
     min-width: 0;
 }
@@ -255,7 +270,7 @@
     flex-shrink: 0;
 }
 
-/* ================= 6. BODY / SECTIONS ================= */
+/* ================= 6. BODY SECTIONS & FORM ELEMENTS ================= */
 .ms-ec-body {
     display: flex;
     flex-direction: column;
@@ -328,7 +343,7 @@
     display: block;
 }
 
-/* ================= 7. RECIPIENT CARD ================= */
+/* ================= 7. RECIPIENT CARD & STATUS BADGES ================= */
 .ms-ec-recipient-card {
     display: flex;
     align-items: center;
@@ -418,7 +433,7 @@
     color: var(--ec-warning);
 }
 
-/* ================= 8. TEMPLATE SELECT ================= */
+/* ================= 8. TEMPLATE SELECT DROPDOWN ================= */
 .ms-ec-select-wrap {
     position: relative;
 }
@@ -455,7 +470,7 @@
     pointer-events: none;
 }
 
-/* ================= 9. SUBJECT / INPUTS ================= */
+/* ================= 9. SUBJECT LINE INPUTS ================= */
 .ms-ec-input {
     width: 100%;
     background-color: var(--ec-bg);
@@ -489,7 +504,7 @@
     box-shadow: 0 0 0 3px var(--ec-danger-bg);
 }
 
-/* ================= 10. MESSAGE TEXTAREA ================= */
+/* ================= 10. MESSAGE TEXTAREAS & VALIDATION ================= */
 .ms-ec-textarea {
     width: 100%;
     min-height: 320px;
@@ -516,7 +531,7 @@
     box-shadow: 0 0 0 3px var(--ec-accent-ring);
 }
 
-/* ================= 11. ATTACHMENTS ================= */
+/* ================= 11. FILE UPLOAD ZONE & ATTACHMENTS ================= */
 .ms-ec-upload-zone {
     border: 2px dashed var(--ec-border);
     border-radius: var(--ec-radius-control);
@@ -580,6 +595,17 @@
     padding: 0;
 }
 
+@keyframes msEcItemIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .ms-ec-attachment-item {
     display: flex;
     align-items: center;
@@ -589,18 +615,6 @@
     border-radius: var(--ec-radius-control);
     padding: 10px 12px;
     animation: msEcItemIn 0.2s var(--ec-ease);
-}
-
-@keyframes msEcItemIn {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .ms-ec-attachment-item.is-removing {
@@ -693,7 +707,7 @@
     display: none;
 }
 
-/* ================= 12. FOOTER ================= */
+/* ================= 12. MODAL FOOTERS & CONTROLS ================= */
 .ms-ec-footer-right {
     display: flex;
     align-items: center;
@@ -706,7 +720,7 @@
     gap: 8px;
 }
 
-/* ================= 13. PREVIEW MODAL ================= */
+/* ================= 13. PREVIEW EMAIL LAYOUT & CHIPS ================= */
 .ms-ec-preview-email {
     background-color: var(--ec-bg);
     border: 1px solid var(--ec-border);
@@ -802,7 +816,29 @@
     border-radius: var(--ec-radius-pill);
 }
 
-/* ================= 14. TOAST ================= */
+/* ================= 14. TOASTS & NOTIFICATIONS ================= */
+@keyframes msEcToastIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes msEcToastOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
 .ms-ec-toast-container {
     position: fixed;
     bottom: 24px;
@@ -857,31 +893,13 @@
     animation: msEcToastOut 0.2s ease forwards;
 }
 
-@keyframes msEcToastIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
+/* ================= 15. LOADING SPINNERS & DISABLED STATES ================= */
+@keyframes msEcSpin {
     to {
-        opacity: 1;
-        transform: translateY(0);
+        transform: rotate(360deg);
     }
 }
 
-@keyframes msEcToastOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-}
-
-/* ================= 15. LOADING / DISABLED STATES ================= */
 #ecSendBtn.is-loading .ms-ec-btn-label,
 #ecPreviewSendBtn.is-loading .ms-ec-btn-label {
     visibility: hidden;
@@ -908,18 +926,12 @@
     animation: msEcSpin 0.7s linear infinite;
 }
 
-@keyframes msEcSpin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .ms-ec-upload-zone.is-disabled {
     opacity: 0.55;
     pointer-events: none;
 }
 
-/* ================= 16. RESPONSIVE ================= */
+/* ================= 16. RESPONSIVE MEDIA QUERIES ================= */
 @media (max-width: 1040px) {
     .ms-ec-modal {
         width: 90%;

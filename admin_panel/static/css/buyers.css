@@ -1,77 +1,78 @@
-/* ==========================================================================
-   MARKETSPHERE ADMIN — BUYER MANAGEMENT (buyers.css)
-   Page-scoped styles for admin_panel/templates/users/buyers.html.
-   Builds on the admin shell's tokens (static/css/admin_base_dashboard.css
-   — --ad-* variables) and prefixes every class `bu-` (Buyers) to avoid
-   collisions with the shell and other admin pages, matching the project's
-   page-scoped prefix convention (dh-, pm-, so-, sod-, adh- ...).
-
+/* =========================================================
+   MARKETSPHERE — BUYERS MANAGEMENT (buyers.css)
+   Purpose: Controls the admin buyer management list view, including
+            tables, filters, statistics, and bulk actions.
+   Scope: Admin Panel (User Management)
+   
    Sections:
-     1. Variables
-     2. Reset / Page Wrapper
-     3. Buttons
-     4. Header
-     5. Statistics Cards
-     6. Toolbar & Filters
-     7. Bulk Actions Bar
-     8. Dropdown (row actions)
-     9. Checkbox
-    10. Buyers Table
-    11. Badges
-    12. Empty State
-    13. Pagination
-    14. Delete Confirmation Modal
-    15. Toast
-    16. Responsive
-   ========================================================================== */
+   1. Variables
+   2. Base & Page Wrapper
+   3. Utilities & Animations
+   4. Buttons & Actions
+   5. Header & Breadcrumbs
+   6. Statistics Cards
+   7. Toolbar & Filters
+   8. Bulk Actions
+   9. Dropdowns & Menus
+   10. Forms & Checkboxes
+   11. Buyers Table
+   12. Badges & Indicators
+   13. Empty State
+   14. Pagination
+   15. Modals & Overlays
+   16. Toasts & Notifications
+   17. Responsive Styles
+========================================================= */
 
 /* ================= 1. VARIABLES ================= */
 .bu-page {
+    /* Backgrounds & Surfaces */
     --bu-bg: var(--ad-bg, #F7F1DE);
     --bu-surface: var(--ad-surface-raised, #F7F1DE);
     --bu-surface-raised: var(--ad-surface-raised, #F7F1DE);
 
+    /* Brand Accents */
     --bu-accent: var(--ad-accent, #C08A4E);
     --bu-accent-strong: var(--ad-accent-strong, #A56B34);
     --bu-accent-soft: var(--ad-accent-soft, rgba(192, 138, 78, 0.14));
     --bu-accent-ring: var(--ad-accent-ring, rgba(192, 138, 78, 0.28));
 
+    /* Status Colors */
     --bu-success: var(--ad-success, #4f7d54);
     --bu-success-bg: rgba(79, 125, 84, 0.13);
-
     --bu-danger: var(--ad-danger, #b54b3b);
     --bu-danger-bg: rgba(181, 75, 59, 0.13);
-
     --bu-warning: var(--ad-warning, #b7802b);
     --bu-warning-bg: rgba(183, 128, 43, 0.16);
-
     --bu-info: #6b7458;
     --bu-info-bg: rgba(107, 116, 88, 0.16);
-
     --bu-muted: var(--ad-muted, #B0BA99);
     --bu-muted-bg: rgba(176, 186, 153, 0.22);
 
+    /* Typography & Borders */
     --bu-heading: var(--ad-heading-color, #241A17);
     --bu-body: var(--ad-body-color, #5B5142);
     --bu-caption: var(--ad-caption-color, #948B79);
     --bu-border: var(--ad-border, #E4DCC8);
-
     --bu-font: var(--ad-font, "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif);
 
+    /* Shadows */
     --bu-shadow-sm: var(--ad-shadow-sm, 0 1px 2px rgba(36, 26, 23, 0.07));
     --bu-shadow-md: var(--ad-shadow-md, 0 10px 26px rgba(36, 26, 23, 0.10));
     --bu-shadow-lg: var(--ad-shadow-lg, 0 20px 50px rgba(36, 26, 23, 0.18));
 
+    /* Border Radii */
     --bu-radius-sm: 4px;
     --bu-radius-md: var(--ad-radius-card, 12px);
     --bu-radius-lg: 20px;
     --bu-radius-pill: 999px;
 
+    /* Animations */
     --bu-ease: var(--ad-ease, cubic-bezier(0.22, 1, 0.36, 1));
     --bu-transition: 0.2s var(--bu-ease);
 }
 
-/* ================= 2. RESET / PAGE WRAPPER ================= */
+/* ================= 2. BASE & PAGE WRAPPER ================= */
 .bu-page,
 .bu-page *,
 .bu-page *::before,
@@ -113,18 +114,18 @@
         transition-duration: 0.001ms !important;
     }
 }
+
+/* ================= 3. UTILITIES & ANIMATIONS ================= */
 .bu-reveal {
-    /* opacity: 0; */
     margin-top: 20px;
-    transition:
-        opacity .35s ease,
-        margin-top .35s ease;
+    transition: opacity .35s ease, margin-top .35s ease;
 }
 
 .bu-reveal.is-visible {
     opacity: 1;
     margin-top: 0;
 }
+
 .bu-hidden {
     display: none !important;
 }
@@ -141,7 +142,7 @@
     border: 0;
 }
 
-/* ================= 3. BUTTONS ================= */
+/* ================= 4. BUTTONS & ACTIONS ================= */
 .bu-btn {
     display: inline-flex;
     align-items: center;
@@ -166,7 +167,7 @@
     border-color: var(--bu-accent) !important;
     border: 1.5px solid var(--bu-accent) !important;
     color: #F7F1DE !important;
-    border-radius: 2px ;
+    border-radius: 2px;
 }
 
 .bu-btn-primary:hover {
@@ -219,7 +220,23 @@
     height: 36px;
 }
 
-/* ================= 4. HEADER ================= */
+.bu-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--bu-caption);
+    transition: background-color var(--bu-transition), color var(--bu-transition);
+}
+
+.bu-icon-btn:hover {
+    background-color: var(--bu-accent-soft);
+    color: var(--bu-accent-strong);
+}
+
+/* ================= 5. HEADER & BREADCRUMBS ================= */
 .bu-header {
     display: flex;
     align-items: flex-start;
@@ -283,7 +300,7 @@
     flex-shrink: 0;
 }
 
-/* ================= 5. STATISTICS CARDS ================= */
+/* ================= 6. STATISTICS CARDS ================= */
 .bu-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -318,25 +335,10 @@
     justify-content: center;
 }
 
-.bu-stat-icon-accent {
-    background-color: var(--bu-accent-soft);
-    color: var(--bu-accent-strong);
-}
-
-.bu-stat-icon-success {
-    background-color: var(--bu-success-bg);
-    color: var(--bu-success);
-}
-
-.bu-stat-icon-info {
-    background-color: var(--bu-info-bg);
-    color: var(--bu-info);
-}
-
-.bu-stat-icon-danger {
-    background-color: var(--bu-danger-bg);
-    color: var(--bu-danger);
-}
+.bu-stat-icon-accent { background-color: var(--bu-accent-soft); color: var(--bu-accent-strong); }
+.bu-stat-icon-success { background-color: var(--bu-success-bg); color: var(--bu-success); }
+.bu-stat-icon-info { background-color: var(--bu-info-bg); color: var(--bu-info); }
+.bu-stat-icon-danger { background-color: var(--bu-danger-bg); color: var(--bu-danger); }
 
 .bu-stat-body {
     display: flex;
@@ -368,15 +370,10 @@
     font-weight: 600;
 }
 
-.bu-trend-up {
-    color: var(--bu-success);
-}
+.bu-trend-up { color: var(--bu-success); }
+.bu-trend-down { color: var(--bu-danger); }
 
-.bu-trend-down {
-    color: var(--bu-danger);
-}
-
-/* ================= 6. TOOLBAR & FILTERS ================= */
+/* ================= 7. TOOLBAR & FILTERS ================= */
 .bu-toolbar-card {
     background-color: var(--bu-surface-raised);
     border: 1px solid var(--bu-border);
@@ -420,9 +417,7 @@
     transition: border-color var(--bu-transition), box-shadow var(--bu-transition), background-color var(--bu-transition);
 }
 
-.bu-search-input::placeholder {
-    color: var(--bu-caption);
-}
+.bu-search-input::placeholder { color: var(--bu-caption); }
 
 .bu-search-input:focus {
     outline: none;
@@ -438,9 +433,7 @@
     gap: 10px;
 }
 
-.bu-select-wrap {
-    position: relative;
-}
+.bu-select-wrap { position: relative; }
 
 .bu-select-wrap::after {
     content: "";
@@ -485,7 +478,12 @@
     font-size: 12.5px;
 }
 
-/* ================= 7. BULK ACTIONS BAR ================= */
+/* ================= 8. BULK ACTIONS ================= */
+@keyframes buFadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .bu-bulk-bar {
     display: flex;
     align-items: center;
@@ -500,11 +498,6 @@
     animation: buFadeInUp 0.2s var(--bu-ease);
 }
 
-@keyframes buFadeInUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .bu-bulk-info {
     display: flex;
     align-items: center;
@@ -514,10 +507,7 @@
     color: var(--bu-accent-strong);
 }
 
-.bu-bulk-count {
-    font-size: 15px;
-    font-weight: 700;
-}
+.bu-bulk-count { font-size: 15px; font-weight: 700; }
 
 .bu-bulk-actions {
     display: flex;
@@ -526,7 +516,7 @@
     gap: 8px;
 }
 
-/* ================= 8. DROPDOWN (row actions) ================= */
+/* ================= 9. DROPDOWNS & MENUS ================= */
 .bu-dropdown {
     position: relative;
     display: inline-block;
@@ -538,22 +528,17 @@
     flex-direction: column;
     min-width: 200px;
     overflow: hidden;
-    /* width: 200px; */
     background: #F7F1DE;
     border: 1px solid #93372A;
     border-radius: var(--bu-radius-sm);
     box-shadow: var(--bu-shadow-lg);
     padding: 6px;
     z-index: 100000;
-
     opacity: 0;
     transform: scale(.96);
     pointer-events: none;
-    transition:
-        opacity .15s var(--bu-ease),
-        transform .15s var(--bu-ease);
-    /* transform-origin: top right; */
-      box-sizing: border-box;
+    transition: opacity .15s var(--bu-ease), transform .15s var(--bu-ease);
+    box-sizing: border-box;
 }
 
 .bu-dropdown-menu.bu-open {
@@ -561,46 +546,29 @@
     transform: scale(1);
     pointer-events: auto;
 }
-/* .bu-dropdown.bu-active .bu-dropdown-menu {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-} */
 
 .bu-dropdown-item {
     appearance: none;
     -webkit-appearance: none;
-
     display: flex;
     align-items: center;
     gap: 9px;
-
     width: 100%;
     border: none;
     background: transparent;
     cursor: pointer;
-
     padding: 9px 10px;
-
     font: inherit;
     color: var(--bu-heading);
     text-align: left;
     transition: background-color var(--bu-transition);
 }
-.bu-dropdown-item:hover {
-    background-color: var(--bu-bg);
-}
-.bu-dropdown-item svg {
-    flex-shrink: 0;
-}
 
-.bu-dropdown-item-danger {
-    color: var(--bu-danger);
-}
+.bu-dropdown-item:hover { background-color: var(--bu-bg); }
+.bu-dropdown-item svg { flex-shrink: 0; }
 
-.bu-dropdown-item-danger:hover {
-    background-color: var(--bu-danger-bg);
-}
+.bu-dropdown-item-danger { color: var(--bu-danger); }
+.bu-dropdown-item-danger:hover { background-color: var(--bu-danger-bg); }
 
 .bu-dropdown-divider {
     height: 1px;
@@ -613,8 +581,7 @@
     color: var(--bu-accent-strong);
 }
 
-
-/* ================= 9. CHECKBOX ================= */
+/* ================= 10. FORMS & CHECKBOXES ================= */
 .bu-checkbox {
     position: relative;
     display: inline-flex;
@@ -639,9 +606,7 @@
     transition: background-color var(--bu-transition), border-color var(--bu-transition);
 }
 
-.bu-checkbox:hover input ~ .bu-checkbox-box {
-    border-color: var(--bu-accent);
-}
+.bu-checkbox:hover input ~ .bu-checkbox-box { border-color: var(--bu-accent); }
 
 .bu-checkbox input:checked ~ .bu-checkbox-box {
     background-color: var(--bu-accent);
@@ -661,11 +626,9 @@
     transform: rotate(45deg);
 }
 
-.bu-checkbox input:checked ~ .bu-checkbox-box::after {
-    display: block;
-}
+.bu-checkbox input:checked ~ .bu-checkbox-box::after { display: block; }
 
-/* ================= 10. BUYERS TABLE ================= */
+/* ================= 11. BUYERS TABLE ================= */
 .bu-table-card {
     background-color: var(--bu-surface-raised);
     border: 1px solid var(--bu-border);
@@ -682,18 +645,9 @@
     scrollbar-color: var(--bu-accent) var(--bu-surface);
 }
 
-.bu-table-wrap::-webkit-scrollbar {
-    height: 6px;
-}
-
-.bu-table-wrap::-webkit-scrollbar-track {
-    background: var(--bu-surface);
-}
-
-.bu-table-wrap::-webkit-scrollbar-thumb {
-    background: var(--bu-accent);
-    border-radius: 8px;
-}
+.bu-table-wrap::-webkit-scrollbar { height: 6px; }
+.bu-table-wrap::-webkit-scrollbar-track { background: var(--bu-surface); }
+.bu-table-wrap::-webkit-scrollbar-thumb { background: var(--bu-accent); border-radius: 8px; }
 
 .bu-table {
     width: 100%;
@@ -721,21 +675,10 @@
     transition: background-color var(--bu-transition);
 }
 
-.bu-table tbody tr:nth-child(even) {
-    background-color: rgba(192, 138, 78, 0.025);
-}
-
-.bu-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-.bu-table tbody tr:hover {
-    background-color: var(--bu-accent-soft);
-}
-
-.bu-table tbody tr.is-selected {
-    background-color: var(--bu-accent-soft);
-}
+.bu-table tbody tr:nth-child(even) { background-color: rgba(192, 138, 78, 0.025); }
+.bu-table tbody tr:last-child { border-bottom: none; }
+.bu-table tbody tr:hover,
+.bu-table tbody tr.is-selected { background-color: var(--bu-accent-soft); }
 
 .bu-table td {
     padding: 12px 16px;
@@ -744,18 +687,9 @@
     color: var(--bu-body);
 }
 
-.bu-col-checkbox {
-    width: 42px;
-}
-
-.bu-col-avatar {
-    width: 54px;
-}
-
-.bu-col-actions {
-    width: 50px;
-    text-align: right;
-}
+.bu-col-checkbox { width: 42px; }
+.bu-col-avatar { width: 54px; }
+.bu-col-actions { width: 50px; text-align: right; }
 
 .bu-avatar {
     display: flex;
@@ -770,7 +704,7 @@
     font-weight: 700;
 }
 
-.bu-avatar img{
+.bu-avatar img {
     height: 100% !important;
     width: 100% !important;
 }
@@ -793,6 +727,7 @@
     color: var(--bu-success);
     margin-top: 2px;
 }
+
 .bu-buyer-Unverified {
     display: inline-flex;
     align-items: center;
@@ -816,49 +751,14 @@
     white-space: nowrap;
 }
 
-.bu-email-link:hover {
-    text-decoration: underline;
-}
+.bu-email-link:hover { text-decoration: underline; }
 
-.bu-contact {
-    color: var(--bu-body);
-    white-space: nowrap;
-}
+.bu-contact { color: var(--bu-body); white-space: nowrap; }
+.bu-orders-count { font-weight: 700; color: var(--bu-heading); }
+.bu-total-spent { font-weight: 700; color: var(--bu-accent-strong); white-space: nowrap; }
+.bu-date { color: var(--bu-caption); font-weight: 500; white-space: nowrap; }
 
-.bu-orders-count {
-    font-weight: 700;
-    color: var(--bu-heading);
-}
-
-.bu-total-spent {
-    font-weight: 700;
-    color: var(--bu-accent-strong);
-    white-space: nowrap;
-}
-
-.bu-date {
-    color: var(--bu-caption);
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.bu-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    color: var(--bu-caption);
-    transition: background-color var(--bu-transition), color var(--bu-transition);
-}
-
-.bu-icon-btn:hover {
-    background-color: var(--bu-accent-soft);
-    color: var(--bu-accent-strong);
-}
-
-/* ================= 11. BADGES ================= */
+/* ================= 12. BADGES & INDICATORS ================= */
 .bu-badge {
     display: inline-flex;
     align-items: center;
@@ -880,31 +780,19 @@
     flex-shrink: 0;
 }
 
-.bu-badge-active {
-    background-color: var(--bu-success-bg);
-    color: var(--bu-success);
-}
+.bu-badge-active { background-color: var(--bu-success-bg); color: var(--bu-success); }
 .bu-badge-active::before { background-color: var(--bu-success); }
 
-.bu-badge-suspended {
-    background-color: var(--bu-warning-bg);
-    color: var(--bu-warning);
-}
+.bu-badge-suspended { background-color: var(--bu-warning-bg); color: var(--bu-warning); }
 .bu-badge-suspended::before { background-color: var(--bu-warning); }
 
-.bu-badge-blocked {
-    background-color: var(--bu-danger-bg);
-    color: var(--bu-danger);
-}
+.bu-badge-blocked { background-color: var(--bu-danger-bg); color: var(--bu-danger); }
 .bu-badge-blocked::before { background-color: var(--bu-danger); }
 
-.bu-badge-pending {
-    background-color: var(--bu-muted-bg);
-    color: #6b7458;
-}
+.bu-badge-pending { background-color: var(--bu-muted-bg); color: #6b7458; }
 .bu-badge-pending::before { background-color: #6b7458; }
 
-/* ================= 12. EMPTY STATE ================= */
+/* ================= 13. EMPTY STATE ================= */
 .bu-empty-state {
     display: flex;
     flex-direction: column;
@@ -940,7 +828,7 @@
     font-size: 13.5px;
 }
 
-/* ================= 13. PAGINATION ================= */
+/* ================= 14. PAGINATION ================= */
 .bu-pagination-bar {
     display: flex;
     justify-content: space-between;
@@ -964,9 +852,7 @@
     font-weight: 500;
 }
 
-.bu-pagination-count strong {
-    color: var(--bu-heading);
-}
+.bu-pagination-count strong { color: var(--bu-heading); }
 
 .bu-pagination {
     display: flex;
@@ -1007,12 +893,14 @@
     cursor: not-allowed;
 }
 
-.bu-page-ellipsis {
-    color: var(--bu-caption);
-    padding: 0 4px;
+.bu-page-ellipsis { color: var(--bu-caption); padding: 0 4px; }
+
+/* ================= 15. MODALS & OVERLAYS ================= */
+@keyframes buScaleIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-/* ================= 14. DELETE CONFIRMATION MODAL ================= */
 .bu-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1035,11 +923,6 @@
     box-shadow: var(--bu-shadow-lg);
     text-align: center;
     animation: buScaleIn 0.25s var(--bu-ease);
-}
-
-@keyframes buScaleIn {
-    from { opacity: 0; transform: scale(0.94); }
-    to { opacity: 1; transform: scale(1); }
 }
 
 .bu-modal-icon {
@@ -1068,16 +951,20 @@
     margin: 0 0 22px;
 }
 
-.bu-modal-actions {
-    display: flex;
-    gap: 10px;
+.bu-modal-actions { display: flex; gap: 10px; }
+.bu-modal-actions .bu-btn { flex: 1; }
+
+/* ================= 16. TOASTS & NOTIFICATIONS ================= */
+@keyframes buToastIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.bu-modal-actions .bu-btn {
-    flex: 1;
+@keyframes buToastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
 }
 
-/* ================= 15. TOAST ================= */
 .bu-toast-container {
     position: fixed;
     bottom: 24px;
@@ -1107,76 +994,27 @@
 .bu-toast.bu-toast-success { border-left-color: var(--bu-success); }
 .bu-toast.bu-toast-error { border-left-color: var(--bu-danger); }
 .bu-toast.bu-toast-info { border-left-color: var(--bu-accent); }
+.bu-toast.is-leaving { animation: buToastOut 0.22s ease forwards; }
 
-.bu-toast.is-leaving {
-    animation: buToastOut 0.22s ease forwards;
-}
-
-@keyframes buToastIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes buToastOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(10px); }
-}
-
-/* ================= 16. RESPONSIVE ================= */
+/* ================= 17. RESPONSIVE STYLES ================= */
 @media (max-width: 1199.98px) {
-    .bu-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .bu-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 991.98px) {
-    .bu-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .bu-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .bu-toolbar-filters {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    .bu-select-wrap,
-    .bu-select {
-        width: 100%;
-    }
-
-    .bu-toolbar-filters .bu-btn {
-        grid-column: span 1;
-        width: 100%;
-    }
-
-    .bu-icon-only {
-        width: 100%;
-    }
+    .bu-header { flex-direction: column; align-items: flex-start; }
+    .bu-toolbar { flex-direction: column; align-items: stretch; }
+    .bu-toolbar-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bu-select-wrap, .bu-select { width: 100%; }
+    .bu-toolbar-filters .bu-btn { grid-column: span 1; width: 100%; }
+    .bu-icon-only { width: 100%; }
 }
 
 @media (max-width: 767.98px) {
-    .bu-stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .bu-toolbar-filters {
-        grid-template-columns: 1fr;
-    }
-
-    .bu-header-actions {
-        width: 100%;
-    }
-
-    .bu-header-actions .bu-btn {
-        flex: 1;
-    }
+    .bu-stats-grid { grid-template-columns: 1fr; }
+    .bu-toolbar-filters { grid-template-columns: 1fr; }
+    .bu-header-actions { width: 100%; }
+    .bu-header-actions .bu-btn { flex: 1; }
 
     /* Buyer rows become management cards on mobile */
     .bu-table thead {
@@ -1223,27 +1061,11 @@
         text-align: left;
     }
 
-    .bu-table td[data-label=""]::before {
-        content: none;
-    }
+    .bu-table td[data-label=""]::before { content: none; }
 
-    .bu-col-checkbox {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-    }
-
-    .bu-col-avatar {
-        position: absolute;
-        top: 8px;
-        left: 40px;
-    }
-
-    .bu-col-actions {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-    }
+    .bu-col-checkbox { position: absolute; top: 10px; left: 10px; }
+    .bu-col-avatar { position: absolute; top: 8px; left: 40px; }
+    .bu-col-actions { position: absolute; top: 6px; right: 6px; }
 
     .bu-pagination-bar {
         flex-direction: column;
@@ -1251,12 +1073,6 @@
         text-align: center;
     }
 
-    .bu-pagination-left {
-        justify-content: space-between;
-    }
-
-    .bu-pagination {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+    .bu-pagination-left { justify-content: space-between; }
+    .bu-pagination { justify-content: center; flex-wrap: wrap; }
 }

@@ -1,0 +1,608 @@
+{% extends 'base_dashboard.html' %}
+{% load static %}
+{% load time_tags %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block active_page %}products{% endblock %}
+
+{% block breadcrumb %}
+  <span class="sd-breadcrumb-sep">/</span>
+  <a href="{% url 'products-list' %}" class="sd-breadcrumb-current" style="color:var(--sd-caption-color); font-weight:600;">Products</a>
+  <span class="sd-breadcrumb-sep">/</span>
+  <span class="sd-breadcrumb-current">{{ product.name }}</span>
+{% endblock %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/product_detail.css' %}" />
+{% endblock %}
+
+{% block seller_content %}
+<div class="spd-page" id="spdPage"
+     data-stock="{{ product.stock_quantity }}"
+     data-url-pricing="{% url 'seller-product-pricing' product_slug=product.slug %}"
+     data-url-remove-discount="{% url 'seller-product-remove-discount' product_slug=product.slug %}"
+     data-url-stock="{% url 'seller-product-adjust-stock' product_slug=product.slug %}"
+     data-url-out-of-stock="{% url 'seller-product-out-of-stock' product_slug=product.slug %}"
+     data-url-restore="{% url 'seller-product-restore-stock' product_slug=product.slug %}"
+     data-url-visibility="{% url 'seller-product-visibility' product_slug=product.slug %}"
+     data-url-archive="{% url 'toggle-product-archive' %}"
+     data-product-slug="{{ product.slug }}">
+
+  <!-- ================= 1. HEADER ================= -->
+  <header class="spd-header">
+    <div class="spd-header-row">
+      <div class="spd-header-main">
+        <button type="button" class="spd-thumb" data-spd-zoom aria-label="View product photo">
+          {% if primary_image %}<img src="{{ primary_image.image }}" alt="{{ primary_image.alt_text|default:product.name }}">{% else %}<i class="bi bi-image"></i>{% endif %}
+        </button>
+        <div class="spd-header-text">
+          <div class="spd-title-row">
+            <h1 class="spd-title">{{ product.name }}</h1>
+            <span class="spd-badge spd-badge-{{ product.status }}">{{ product.get_status_display }}</span>
+            {% if product.is_approved %}<span class="spd-badge spd-badge-approved">Approved</span>{% else %}<span class="spd-badge spd-badge-unapproved">Not approved</span>{% endif %}
+            {% if product.is_featured %}<span class="spd-badge spd-badge-featured"><i class="bi bi-star-fill"></i> Featured</span>{% endif %}
+          </div>
+          <p class="spd-meta">
+            {% if product.sku %}<span>SKU: <strong>{{ product.sku }}</strong></span>{% endif %}
+            <span>Product ID: <strong>MS-PRD-{{ product.id|stringformat:"04d" }}</strong></span>
+            <span>Listed {{ product.created_at|date:"M d, Y" }}</span>
+            <span>Updated {{ product.updated_at|custom_timesince }}</span>
+          </p>
+          <p class="spd-chips">
+            {% if product.category %}<span class="spd-chip"><i class="bi bi-grid"></i>{% if product.category.parent %}{{ product.category.parent.name }} &rsaquo; {% endif %}{{ product.category.name }}</span>{% endif %}
+            <span class="spd-chip"><i class="bi bi-tag"></i>{{ product.brand.name|default:"No brand" }}</span>
+            {% if product.weight %}<span class="spd-chip"><i class="bi bi-box-seam"></i>{{ product.weight }} kg</span>{% endif %}
+          </p>
+        </div>
+      </div>
+
+      <div class="spd-actions">
+        <a class="spd-btn spd-btn-secondary" href="{% url 'products-list' %}"><i class="bi bi-arrow-left"></i> Products</a>
+        <a class="spd-btn spd-btn-secondary" href="/product/{{ product.slug }}/" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> View in Store</a>
+        <a class="spd-btn spd-btn-primary" href="{% url 'seller-edit-product' product_slug=product.slug %}"><i class="bi bi-pencil-square"></i> Edit Product</a>
+
+        <div class="spd-dropdown" id="spdMore">
+          <button type="button" class="spd-btn spd-btn-icon" id="spdMoreTrigger" aria-haspopup="true" aria-expanded="false" aria-label="More actions"><i class="bi bi-three-dots-vertical"></i></button>
+          <div class="spd-dropdown-menu" role="menu">
+            <button type="button" class="spd-dropdown-item" data-spd-open="spdPriceModal"><i class="bi bi-currency-dollar"></i> Edit Pricing</button>
+            <button type="button" class="spd-dropdown-item" data-spd-open="spdStockModal"><i class="bi bi-boxes"></i> Adjust Stock</button>
+            {% if product.status == 'published' %}
+              <button type="button" class="spd-dropdown-item" data-spd-open="spdHideModal"><i class="bi bi-eye-slash"></i> Hide Product</button>
+            {% elif product.status == 'hidden' %}
+              <button type="button" class="spd-dropdown-item" data-spd-visibility="unhide"><i class="bi bi-eye"></i> Unhide Product</button>
+            {% endif %}
+            <div class="spd-dropdown-divider"></div>
+            {% if product.status == 'archived' %}
+              <button type="button" class="spd-dropdown-item" data-spd-archive="unarchive"><i class="bi bi-arrow-counterclockwise"></i> Unarchive</button>
+            {% else %}
+              <button type="button" class="spd-dropdown-item spd-danger" data-spd-open="spdArchiveModal"><i class="bi bi-archive"></i> Archive Product</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spd-status-strip">
+      <div class="spd-status-cell"><span>Approval</span><strong>{% if product.is_approved %}<span class="spd-badge spd-badge-approved">Approved</span>{% else %}<span class="spd-badge spd-badge-unapproved">Not approved</span>{% endif %}</strong></div>
+      <div class="spd-status-cell"><span>Publication</span><strong><span class="spd-badge spd-badge-{{ product.status }}">{{ product.get_status_display }}</span></strong></div>
+      <div class="spd-status-cell"><span>Inventory</span><strong><span class="spd-badge spd-badge-stock-{{ inventory.state }}">{{ inventory.label }}</span></strong></div>
+      <div class="spd-status-cell"><span>Promotions</span><strong>{% if active_promotions %}<span class="spd-badge spd-badge-promo-active">{{ active_promotions }} active</span>{% else %}<span class="spd-badge">None active</span>{% endif %}</strong></div>
+    </div>
+  </header>
+
+  {% if product.status == 'rejected' %}
+    <div class="spd-notice spd-notice-out"><i class="bi bi-x-octagon"></i> This product was rejected by the marketplace. <a href="{% url 'seller-edit-product' product_slug=product.slug %}">Edit and resubmit</a></div>
+  {% elif not product.is_approved %}
+    <div class="spd-notice spd-notice-low"><i class="bi bi-hourglass-split"></i> This product is waiting for marketplace approval and is not live yet.</div>
+  {% endif %}
+  {% if inventory.state == 'out' %}
+    <div class="spd-notice spd-notice-out"><i class="bi bi-exclamation-octagon"></i> Out of stock, so shoppers cannot buy this product. <button type="button" class="spd-link-btn" data-spd-open="spdStockModal">Restock now</button></div>
+  {% elif inventory.state == 'low' %}
+    <div class="spd-notice spd-notice-low"><i class="bi bi-exclamation-triangle"></i> Only {{ inventory.stock }} left, at or below your minimum of {{ inventory.min_level }}. <button type="button" class="spd-link-btn" data-spd-open="spdStockModal">Adjust stock</button></div>
+  {% endif %}
+
+  <!-- ================= 2. METRICS ================= -->
+  <section class="spd-metrics" aria-label="Product performance metrics">
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-cash-stack"></i></span>
+      <div><span class="spd-metric-label">Revenue</span><span class="spd-metric-value">Rs. {{ performance.revenue|floatformat:0 }}</span>
+      {% include 'products/_spd_delta.html' with d=performance.revenue_delta %}</div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-bag-check"></i></span>
+      <div><span class="spd-metric-label">Units Sold</span><span class="spd-metric-value">{{ performance.units }}</span>
+      {% include 'products/_spd_delta.html' with d=performance.units_delta %}</div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-receipt"></i></span>
+      <div><span class="spd-metric-label">Orders</span><span class="spd-metric-value">{{ performance.orders }}</span>
+      {% include 'products/_spd_delta.html' with d=performance.orders_delta %}</div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-graph-up-arrow"></i></span>
+      <div><span class="spd-metric-label">Avg. Order Value</span><span class="spd-metric-value">{% if performance.orders %}Rs. {{ performance.aov|floatformat:0 }}{% else %}&mdash;{% endif %}</span>
+      {% include 'products/_spd_delta.html' with d=performance.aov_delta %}</div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-box-seam"></i></span>
+      <div><span class="spd-metric-label">Current Stock</span><span class="spd-metric-value">{{ inventory.stock }}</span><span class="spd-trend spd-trend-flat">Units on hand</span></div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-check2-circle"></i></span>
+      <div><span class="spd-metric-label">Available Stock</span><span class="spd-metric-value">{{ inventory.available }}</span><span class="spd-trend spd-trend-flat">{{ inventory.reserved }} reserved</span></div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-heart"></i></span>
+      <div><span class="spd-metric-label">Wishlist Adds</span><span class="spd-metric-value">{{ kpis.wishlist_total }}</span>
+      {% include 'products/_spd_delta.html' with d=kpis.wishlist_delta %}</div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-star"></i></span>
+      <div><span class="spd-metric-label">Avg. Rating</span><span class="spd-metric-value">{{ product.average_rating }}</span><span class="spd-trend spd-trend-flat">Out of 5.0</span></div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-chat-square-text"></i></span>
+      <div><span class="spd-metric-label">Reviews</span><span class="spd-metric-value">{{ product.total_reviews }}</span><span class="spd-trend spd-trend-flat">Total submitted</span></div>
+    </div>
+    <div class="spd-metric">
+      <span class="spd-metric-icon"><i class="bi bi-clock-history"></i></span>
+      <div><span class="spd-metric-label">Last Sold</span><span class="spd-metric-value spd-metric-small">{% if performance.last_sold %}{{ performance.last_sold|date:"M d, Y" }}{% else %}Never{% endif %}</span><span class="spd-trend spd-trend-flat">Delivered orders</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 3. GALLERY ================= -->
+  <section class="spd-card" aria-label="Product media">
+    <div class="spd-card-head">
+      <h2 class="spd-card-title"><i class="bi bi-images"></i> Product Media <span class="spd-count">{{ product_images|length }}</span></h2>
+      <a class="spd-btn spd-btn-secondary spd-btn-sm" href="{% url 'seller-edit-product' product_slug=product.slug %}"><i class="bi bi-upload"></i> Manage Images</a>
+    </div>
+    {% if primary_image %}
+      <div class="spd-gallery">
+        <div class="spd-gallery-main" data-spd-zoom>
+          {% if primary_image.is_primary %}<span class="spd-gallery-badge" id="spdPrimaryTag">Primary</span>{% endif %}
+          <img id="spdMainImage" src="{{ primary_image.image }}" alt="{{ product.name }}">
+          <span class="spd-gallery-counter" id="spdImageCounter">1 / {{ product_images|length }}</span>
+        </div>
+        <div class="spd-thumb-strip">
+          {% for img in product_images %}
+            <button type="button" class="spd-thumb-item{% if img.id == primary_image.id %} is-active{% endif %}"
+                    data-spd-image="{{ img.image }}" data-index="{{ forloop.counter }}" data-primary="{% if img.is_primary %}1{% else %}0{% endif %}">
+              <img src="{{ img.image }}" alt="{{ img.alt_text|default:product.name }}">
+              <span class="spd-thumb-meta"><strong>{% if img.is_primary %}Primary image{% else %}Image {{ forloop.counter }}{% endif %}</strong><small>Click to preview</small></span>
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div class="spd-empty"><p>No product images</p><span>Listings with photos sell far better. Add some from the edit page.</span></div>
+    {% endif %}
+  </section>
+
+  <!-- ================= 4. TABS ================= -->
+  <nav class="spd-tabs" id="spdTabs" role="tablist" aria-label="Product detail sections">
+    <button type="button" class="spd-tab is-active" data-spd-tab="overview" role="tab" aria-selected="true">Overview</button>
+    <button type="button" class="spd-tab" data-spd-tab="information" role="tab" aria-selected="false">Information</button>
+    <button type="button" class="spd-tab" data-spd-tab="inventory" role="tab" aria-selected="false">Inventory</button>
+    <button type="button" class="spd-tab" data-spd-tab="orders" role="tab" aria-selected="false">Orders</button>
+    <button type="button" class="spd-tab" data-spd-tab="analytics" role="tab" aria-selected="false">Analytics</button>
+    <button type="button" class="spd-tab" data-spd-tab="promotions" role="tab" aria-selected="false">Promotions</button>
+    <button type="button" class="spd-tab" data-spd-tab="health" role="tab" aria-selected="false">Listing Health</button>
+    <button type="button" class="spd-tab" data-spd-tab="activity" role="tab" aria-selected="false">Activity</button>
+  </nav>
+
+  <div class="spd-layout">
+    <div class="spd-main-col">
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="spd-panel is-active" data-spd-panel="overview" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-currency-exchange"></i> Pricing &amp; Commercial Information</h2>
+            <div class="spd-inline-actions">
+              {% if product.discount_price %}<button type="button" class="spd-btn spd-btn-ghost spd-btn-sm" id="spdRemoveDiscountBtn">Remove Discount</button>{% endif %}
+              <button type="button" class="spd-btn spd-btn-secondary spd-btn-sm" data-spd-open="spdPriceModal"><i class="bi bi-pencil"></i> Edit Pricing</button>
+            </div>
+          </div>
+          <div class="spd-pricing">
+            {% if product.discount_price %}
+              <span class="spd-price-now">Rs. {{ product.discount_price|floatformat:0 }}</span>
+              <span class="spd-price-old">Rs. {{ product.price|floatformat:0 }}</span>
+              <span class="spd-badge spd-badge-published">{{ product.discount_percentage }}% OFF</span>
+            {% elif product.price %}
+              <span class="spd-price-now">Rs. {{ product.price|floatformat:0 }}</span>
+            {% else %}
+              <span class="spd-price-old">Price not set</span>
+            {% endif %}
+          </div>
+          <div class="spd-info-grid">
+            <div class="spd-info-item"><span class="spd-info-label">Currency</span><span class="spd-info-value">PKR (Rs.)</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Regular price</span><span class="spd-info-value">{% if product.price %}Rs. {{ product.price|floatformat:0 }}{% else %}&mdash;{% endif %}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Active promotions</span><span class="spd-info-value">{{ active_promotions }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Avg. selling price</span><span class="spd-info-value">{% if performance.avg_price %}Rs. {{ performance.avg_price|floatformat:0 }}{% else %}&mdash;{% endif %}</span></div>
+          </div>
+        </div>
+
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-boxes"></i> Inventory Snapshot</h2>
+            <button type="button" class="spd-btn spd-btn-secondary spd-btn-sm" data-spd-open="spdStockModal"><i class="bi bi-sliders"></i> Adjust Stock</button>
+          </div>
+          <div class="spd-kv-grid">
+            <div class="spd-kv"><span>Current stock</span><strong>{{ inventory.stock }} units</strong></div>
+            <div class="spd-kv"><span>Available</span><strong>{{ inventory.available }} units</strong></div>
+            <div class="spd-kv"><span>Reserved</span><strong>{{ inventory.reserved }} units</strong></div>
+            <div class="spd-kv"><span>Sold</span><strong>{{ performance.units }} units</strong></div>
+            <div class="spd-kv"><span>Minimum level</span><strong>{{ inventory.min_level }} units</strong></div>
+            <div class="spd-kv"><span>Warehouse</span><strong>{{ inventory.warehouse|default:"&mdash;" }}</strong></div>
+            <div class="spd-kv"><span>Inventory status</span><strong><span class="spd-badge spd-badge-stock-{{ inventory.state }}">{{ inventory.label }}</span></strong></div>
+          </div>
+        </div>
+
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-receipt-cutoff"></i> Recent Orders</h2>
+            <button type="button" class="spd-link-btn" data-spd-goto="orders">View all orders &rsaquo;</button>
+          </div>
+          {% if recent_orders %}
+            <div class="spd-table-wrap">
+              <table class="spd-table">
+                <thead><tr><th>Order</th><th>Customer</th><th>Qty</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody>
+                  {% for order in recent_orders|slice:":5" %}
+                    {% with item=order.product_items.0 %}
+                    <tr>
+                      <td data-label="Order"><a class="spd-link" href="{% url 'order-detail' order_no=order.order_number %}">#{{ order.order_number|slice:":8" }}</a></td>
+                      <td data-label="Customer">{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                      <td data-label="Qty">{{ item.quantity }}</td>
+                      <td data-label="Total">Rs. {{ item.total|floatformat:0 }}</td>
+                      <td data-label="Status"><span class="spd-badge spd-badge-order-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                    </tr>
+                    {% endwith %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="spd-empty"><p>No orders yet</p><span>Orders containing this product will appear here.</span></div>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- ============ INFORMATION ============ -->
+      <section class="spd-panel" data-spd-panel="information" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-file-earmark-text"></i> Product Information</h2>
+            <a class="spd-btn spd-btn-secondary spd-btn-sm" href="{% url 'seller-edit-product' product_slug=product.slug %}"><i class="bi bi-pencil-square"></i> Edit Product</a>
+          </div>
+          <div class="spd-info-grid">
+            <div class="spd-info-item spd-wide"><span class="spd-info-label">Product name</span><span class="spd-info-value">{{ product.name }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Slug</span><span class="spd-info-value spd-mono">{{ product.slug }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">SKU</span><span class="spd-info-value spd-mono">{{ product.sku|default:"&mdash;" }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Barcode</span><span class="spd-info-value spd-mono">{{ product.barcode|default:"&mdash;" }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Weight</span><span class="spd-info-value">{% if product.weight %}{{ product.weight }} kg{% else %}&mdash;{% endif %}</span></div>
+            {% if product.short_description %}<div class="spd-info-item spd-wide"><span class="spd-info-label">Short description</span><span class="spd-info-value">{{ product.short_description }}</span></div>{% endif %}
+            {% if product.description %}<div class="spd-info-item spd-wide"><span class="spd-info-label">Full description</span><span class="spd-info-value">{{ product.description|linebreaksbr }}</span></div>{% endif %}
+            <div class="spd-info-item"><span class="spd-info-label">Category</span><span class="spd-info-value">{% if product.category %}{% if product.category.parent %}{{ product.category.parent.name }} &rsaquo; {% endif %}{{ product.category.name }}{% else %}No category{% endif %}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Brand</span><span class="spd-info-value">{{ product.brand.name|default:"No brand" }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Created</span><span class="spd-info-value">{{ product.created_at|date:"M d, Y" }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Last updated</span><span class="spd-info-value">{{ product.updated_at|custom_timesince }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Publication</span><span class="spd-info-value"><span class="spd-badge spd-badge-{{ product.status }}">{{ product.get_status_display }}</span></span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Approval</span><span class="spd-info-value">{% if product.is_approved %}<span class="spd-badge spd-badge-approved">Approved</span>{% else %}<span class="spd-badge spd-badge-unapproved">Not approved</span>{% endif %}</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ INVENTORY ============ -->
+      <section class="spd-panel" data-spd-panel="inventory" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-boxes"></i> Inventory Management</h2>
+            <button type="button" class="spd-btn spd-btn-secondary spd-btn-sm" data-spd-open="spdStockModal">Adjust Stock</button>
+          </div>
+          <div class="spd-stats-row">
+            <div class="spd-mini-stat"><span>Current</span><strong>{{ inventory.stock }}</strong></div>
+            <div class="spd-mini-stat"><span>Available</span><strong class="spd-up">{{ inventory.available }}</strong></div>
+            <div class="spd-mini-stat"><span>Reserved</span><strong class="spd-warn">{{ inventory.reserved }}</strong></div>
+            <div class="spd-mini-stat"><span>Sold</span><strong>{{ performance.units }}</strong></div>
+          </div>
+          <div class="spd-info-grid">
+            <div class="spd-info-item"><span class="spd-info-label">Minimum stock level</span><span class="spd-info-value">{{ inventory.min_level }} units</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Warehouse</span><span class="spd-info-value">{{ inventory.warehouse|default:"&mdash;" }}</span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Inventory status</span><span class="spd-info-value"><span class="spd-badge spd-badge-stock-{{ inventory.state }}">{{ inventory.label }}</span></span></div>
+            <div class="spd-info-item"><span class="spd-info-label">Publication</span><span class="spd-info-value"><span class="spd-badge spd-badge-{{ product.status }}">{{ product.get_status_display }}</span></span></div>
+          </div>
+          <div class="spd-inline-actions spd-mt">
+            <button type="button" class="spd-btn spd-btn-secondary" data-spd-open="spdStockModal">Adjust Stock</button>
+            <button type="button" class="spd-btn spd-btn-warning" id="spdOutOfStockBtn">Mark Out of Stock</button>
+            <button type="button" class="spd-btn spd-btn-success" id="spdRestoreBtn">Restore Stock</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ORDERS ============ -->
+      <section class="spd-panel" data-spd-panel="orders" role="tabpanel">
+        <div class="spd-stats-row spd-stats-row-7">
+          <div class="spd-mini-stat"><span>Total</span><strong>{{ status_mix.total }}</strong></div>
+          {% for s in order_counts %}<div class="spd-mini-stat"><span>{{ s.label }}</span><strong style="color:{{ s.color }}">{{ s.count }}</strong></div>{% endfor %}
+        </div>
+        <div class="spd-card">
+          <div class="spd-toolbar">
+            <div class="spd-search"><i class="bi bi-search"></i><input type="search" id="spdOrdersSearch" placeholder="Search by order number or customer..." aria-label="Search orders"></div>
+            <select id="spdOrdersStatus" class="spd-select" aria-label="Filter by status">
+              <option value="">All statuses</option>
+              {% for s in order_counts %}<option value="{{ s.key }}">{{ s.label }}</option>{% endfor %}
+            </select>
+          </div>
+          {% if recent_orders %}
+            <div class="spd-table-wrap">
+              <table class="spd-table" id="spdOrdersTable">
+                <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Qty</th><th>Item price</th><th>Item total</th><th>Payment</th><th>Status</th></tr></thead>
+                <tbody>
+                  {% for order in recent_orders %}
+                    {% with item=order.product_items.0 %}
+                    <tr class="spd-row" data-status="{{ order.status }}" data-search="{{ order.order_number }} {{ order.user.first_name }} {{ order.user.last_name }} {{ order.user.username }}">
+                      <td data-label="Order"><a class="spd-link" href="{% url 'order-detail' order_no=order.order_number %}">#{{ order.order_number|slice:":6" }}</a></td>
+                      <td data-label="Customer">{{ order.user.first_name }} {{ order.user.last_name }}</td>
+                      <td data-label="Date">{{ order.created_at|date:"M d, Y" }}</td>
+                      <td data-label="Qty">{{ item.quantity }}</td>
+                      <td data-label="Item price">Rs. {{ item.price|floatformat:0 }}</td>
+                      <td data-label="Item total">Rs. {{ item.total|floatformat:0 }}</td>
+                      <td data-label="Payment"><span class="spd-badge spd-badge-pay-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span></td>
+                      <td data-label="Status"><span class="spd-badge spd-badge-order-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                    </tr>
+                    {% endwith %}
+                  {% endfor %}
+                </tbody>
+              </table>
+              <p class="spd-empty-inline" id="spdOrdersEmpty" hidden>No orders match your filters.</p>
+            </div>
+            <p class="spd-note">Showing the latest {{ recent_orders|length }} orders for this product. <a class="spd-link" href="{% url 'orders-list' %}">See all orders</a></p>
+          {% else %}
+            <div class="spd-empty"><p>No orders yet</p><span>Orders containing this product will appear here.</span></div>
+          {% endif %}
+        </div>
+      </section>
+
+      <!-- ============ ANALYTICS ============ -->
+      <section class="spd-panel" data-spd-panel="analytics" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <div>
+              <h2 class="spd-card-title"><i class="bi bi-graph-up"></i> Sales Trends</h2>
+              <p class="spd-card-desc">Delivered orders only, using the price actually charged.</p>
+            </div>
+            <div class="spd-controls">
+              <div class="spd-seg" role="group" aria-label="Chart metric">
+                <button type="button" class="is-active" data-spd-metric="units">Units</button>
+                <button type="button" data-spd-metric="revenue">Revenue</button>
+                <button type="button" data-spd-metric="orders">Orders</button>
+              </div>
+              <div class="spd-seg" role="group" aria-label="Date range">
+                {% for r in range_options %}<a href="?range={{ r }}#tab-analytics" class="{% if r == sales_trends.range %}is-active{% endif %}">{{ r }}d</a>{% endfor %}
+              </div>
+            </div>
+          </div>
+
+          {% if sales_trends.has_data %}
+            <p class="spd-trend-summary">
+              In the last {{ sales_trends.range }} days: <strong>{{ sales_trends.units }}</strong> units, <strong>Rs. {{ sales_trends.revenue|floatformat:0 }}</strong> revenue across <strong>{{ sales_trends.orders }}</strong> order{{ sales_trends.orders|pluralize }}.
+              {% if sales_trends.units_delta %}Units are <span class="{% if sales_trends.units_delta.dir == 'up' %}spd-up{% elif sales_trends.units_delta.dir == 'down' %}spd-down{% endif %}">{{ sales_trends.units_delta.dir }} {{ sales_trends.units_delta.pct }}%</span> versus the previous {{ sales_trends.range }} days.{% endif %}
+              {% if sales_trends.peak %}Best day: <strong>{{ sales_trends.peak.label }}</strong> ({{ sales_trends.peak.units }} units).{% endif %}
+            </p>
+            <div class="spd-line-chart" id="spdLineChart" role="img" aria-label="Daily sales for the last {{ sales_trends.range }} days"></div>
+            {{ chart_data|json_script:"spdChartData" }}
+            <details class="spd-details">
+              <summary>View data table</summary>
+              <div class="spd-table-wrap spd-scroll">
+                <table class="spd-table">
+                  <thead><tr><th>Day</th><th>Units</th><th>Revenue</th><th>Orders</th></tr></thead>
+                  <tbody>{% for d in sales_trends.days %}<tr><td>{{ d.label }}</td><td>{{ d.units }}</td><td>Rs. {{ d.revenue|floatformat:0 }}</td><td>{{ d.orders }}</td></tr>{% endfor %}</tbody>
+                </table>
+              </div>
+            </details>
+          {% else %}
+            <div class="spd-empty">
+              <p>{% if performance.has_sales %}No sales in the last {{ sales_trends.range }} days{% else %}No sales yet{% endif %}</p>
+              <span>{% if performance.has_sales %}Try a longer range.{% else %}Trends appear once delivered orders include this product.{% endif %}</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="spd-grid-2">
+          <div class="spd-card">
+            <div class="spd-card-head"><h3 class="spd-card-title">Order Status Mix</h3></div>
+            {% if status_mix.total %}
+              <div class="spd-donut-wrap">
+                <div class="spd-donut" style="background: {{ status_mix.conic }};" role="img" aria-label="Order status distribution">
+                  <div class="spd-donut-center"><strong>{{ status_mix.total }}</strong><span>orders</span></div>
+                </div>
+                <ul class="spd-legend">
+                  {% for s in status_mix.segments %}{% if s.count %}<li><i style="background:{{ s.color }}"></i>{{ s.label }} <b>{{ s.count }}</b> <small>{{ s.pct }}%</small></li>{% endif %}{% endfor %}
+                </ul>
+              </div>
+            {% else %}
+              <div class="spd-empty"><p>No orders yet</p><span>The status mix appears with your first order.</span></div>
+            {% endif %}
+          </div>
+
+          <div class="spd-card">
+            <div class="spd-card-head"><h3 class="spd-card-title">Top Customer Locations</h3></div>
+            {% for loc in locations %}
+              <div class="spd-loc-row"><span>{{ loc.name }}</span><div class="spd-loc-bar"><i style="width: {{ loc.pct }}%"></i></div><b>{{ loc.pct|floatformat:0 }}%</b></div>
+            {% empty %}
+              <div class="spd-empty"><p>No location data</p><span>Cities appear once orders include shipping details.</span></div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="spd-card">
+          <div class="spd-card-head"><h3 class="spd-card-title">Engagement &amp; Conversion Summary</h3></div>
+          <div class="spd-kpi-row">
+            <div class="spd-kpi"><span>Wishlist adds</span><strong>{{ kpis.wishlist_total }}</strong>{% include 'products/_spd_delta.html' with d=kpis.wishlist_delta %}</div>
+            <div class="spd-kpi"><span>Avg. order value</span><strong>{% if performance.orders %}Rs. {{ kpis.aov|floatformat:0 }}{% else %}&mdash;{% endif %}</strong>{% include 'products/_spd_delta.html' with d=kpis.aov_delta %}</div>
+            <div class="spd-kpi"><span>Units per order</span><strong>{{ kpis.units_per_order|default:"&mdash;" }}</strong><span class="spd-trend spd-trend-flat">Delivered orders</span></div>
+            <div class="spd-kpi"><span>Last sold</span><strong>{% if kpis.last_sold %}{{ kpis.last_sold|date:"M d" }}{% else %}&mdash;{% endif %}</strong><span class="spd-trend spd-trend-flat">{% if kpis.last_sold %}{{ kpis.last_sold|custom_timesince }} {% else %}No sales yet{% endif %}</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROMOTIONS ============ -->
+      <section class="spd-panel" data-spd-panel="promotions" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-megaphone"></i> Promotions</h2>
+            <a class="spd-btn spd-btn-secondary spd-btn-sm" href="{% url 'seller-edit-product' product_slug=product.slug %}">Manage Promotions</a>
+          </div>
+          {% for pp in promotions %}
+            <div class="spd-promo">
+              <div class="spd-promo-head">
+                <strong>{{ pp.promotion.name }}</strong>
+                <span class="spd-badge spd-badge-promo-{% if pp.running %}active{% elif pp.upcoming %}upcoming{% else %}other{% endif %}">{% if pp.running %}Active{% elif pp.upcoming %}Upcoming{% else %}{{ pp.promotion.get_status_display }}{% endif %}</span>
+                {% if pp.is_featured %}<span class="spd-badge spd-badge-featured"><i class="bi bi-star-fill"></i> Featured</span>{% endif %}
+              </div>
+              <div class="spd-promo-body">
+                <div class="spd-promo-price">Rs. {{ pp.promotion_price|floatformat:0 }}<small>vs Rs. {{ product.price|floatformat:0 }} regular &middot; {{ pp.discount_percentage|floatformat:0 }}% off</small></div>
+                <div class="spd-promo-dates"><i class="bi bi-calendar-event"></i> {{ pp.promotion.start_at|date:"M d, Y" }} &ndash; {{ pp.promotion.end_at|date:"M d, Y" }}</div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="spd-empty"><p>Not part of any promotion</p><span>Join a promotion from the Organization section of the edit page to reach more shoppers.</span></div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- ============ LISTING HEALTH ============ -->
+      <section class="spd-panel" data-spd-panel="health" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head">
+            <h2 class="spd-card-title"><i class="bi bi-clipboard2-check"></i> Listing Health</h2>
+            <span class="spd-count">{{ listing_health.done }} / {{ listing_health.total }} complete</span>
+          </div>
+          <div class="spd-meter" role="progressbar" aria-valuenow="{{ listing_health.score }}" aria-valuemin="0" aria-valuemax="100"><i style="width: {{ listing_health.score }}%"></i></div>
+          <div class="spd-checklist">
+            {% for item in listing_health.items %}
+              <div class="spd-check {% if item.complete %}is-complete{% else %}is-warning{% endif %}">
+                <span class="spd-check-icon"><i class="bi {% if item.complete %}bi-check-lg{% else %}bi-exclamation-lg{% endif %}"></i></span>
+                <div><strong>{{ item.title }}</strong><small>{{ item.description }}</small></div>
+              </div>
+            {% endfor %}
+          </div>
+          <a class="spd-btn spd-btn-primary spd-mt" href="{% url 'seller-edit-product' product_slug=product.slug %}">Improve this listing</a>
+        </div>
+      </section>
+
+      <!-- ============ ACTIVITY ============ -->
+      <section class="spd-panel" data-spd-panel="activity" role="tabpanel">
+        <div class="spd-card">
+          <div class="spd-card-head"><h2 class="spd-card-title"><i class="bi bi-activity"></i> Activity Timeline</h2></div>
+          {% if activity_logs %}
+            <ul class="spd-timeline">
+              {% for log in activity_logs %}
+                <li class="spd-timeline-item">
+                  <span class="spd-timeline-dot"><i class="bi bi-activity"></i></span>
+                  <div>
+                    <strong>{{ log.title|default:log.action }}</strong>
+                    <p>{{ log.description|default:log.action }}</p>
+                    <span class="spd-timeline-time">{{ log.created_at|date:"M d, Y &middot; g:i A" }}{% if log.actor %} &middot; {{ log.actor.username }}{% endif %}</span>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="spd-empty"><p>No activity recorded yet</p><span>Updates to this product will be logged here.</span></div>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="spd-sidebar">
+      <div class="spd-card">
+        <h3 class="spd-card-title spd-sub">Listing Quality</h3>
+        <div class="spd-score">
+          <div class="spd-score-ring" style="--spd-score: {{ listing_health.score }};"><strong>{{ listing_health.score }}</strong><span>/ 100</span></div>
+          <p class="spd-hint">{{ listing_health.done }} of {{ listing_health.total }} checks passed. <button type="button" class="spd-link-btn" data-spd-goto="health">See details</button></p>
+        </div>
+      </div>
+
+      <div class="spd-card">
+        <h3 class="spd-card-title spd-sub">Listing Summary</h3>
+        <div class="spd-kv-list">
+          <div class="spd-kv"><span>Approval</span><strong>{% if product.is_approved %}<span class="spd-badge spd-badge-approved">Approved</span>{% else %}<span class="spd-badge spd-badge-unapproved">Pending</span>{% endif %}</strong></div>
+          <div class="spd-kv"><span>Publication</span><strong><span class="spd-badge spd-badge-{{ product.status }}">{{ product.get_status_display }}</span></strong></div>
+          <div class="spd-kv"><span>Featured</span><strong>{% if product.is_featured %}<span class="spd-badge spd-badge-featured">Yes</span>{% else %}<span class="spd-badge">No</span>{% endif %}</strong></div>
+          <div class="spd-kv"><span>Inventory</span><strong><span class="spd-badge spd-badge-stock-{{ inventory.state }}">{{ inventory.label }}</span></strong></div>
+          <div class="spd-kv"><span>Promotions</span><strong>{{ active_promotions }} active</strong></div>
+        </div>
+      </div>
+
+      <div class="spd-card spd-card-soft">
+        <h3 class="spd-card-title spd-sub">Selling Tips</h3>
+        <ul class="spd-tips">
+          <li>Keep stock above your minimum level so the product never drops out of search.</li>
+          <li>Products with 3+ photos and a full description convert better.</li>
+          <li>Join an active promotion to boost visibility, and check price against your recent average selling price.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="spd-modal-overlay spd-hidden" id="spdZoomModal">
+  <div class="spd-modal spd-modal-lg">
+    <button type="button" class="spd-modal-close" data-spd-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <h3 class="spd-modal-title">Image Preview</h3>
+    <img class="spd-zoom-img" id="spdZoomImage" src="" alt="Product image preview">
+  </div>
+</div>
+
+<div class="spd-modal-overlay spd-hidden" id="spdPriceModal">
+  <div class="spd-modal">
+    <button type="button" class="spd-modal-close" data-spd-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <h3 class="spd-modal-title">Edit Product Price</h3>
+    <p class="spd-modal-text">Update the selling price and optional discount price.</p>
+    <div class="spd-form-group"><label for="spdPriceInput">Current price (Rs.)</label><input type="number" id="spdPriceInput" min="0" step="0.01" value="{{ product.price|default_if_none:''|stringformat:'s' }}"></div>
+    <div class="spd-form-group"><label for="spdDiscountInput">Discount price (Rs.) <small>optional</small></label><input type="number" id="spdDiscountInput" min="0" step="0.01" value="{{ product.discount_price|default_if_none:''|stringformat:'s' }}"></div>
+    <div class="spd-modal-actions"><button type="button" class="spd-btn spd-btn-secondary" data-spd-close>Cancel</button><button type="button" class="spd-btn spd-btn-primary" id="spdSavePriceBtn">Save Changes</button></div>
+  </div>
+</div>
+
+<div class="spd-modal-overlay spd-hidden" id="spdStockModal">
+  <div class="spd-modal">
+    <button type="button" class="spd-modal-close" data-spd-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <h3 class="spd-modal-title">Adjust Stock</h3>
+    <p class="spd-modal-text">Current stock: <strong>{{ product.stock_quantity }} units</strong></p>
+    <div class="spd-form-group"><label for="spdAdjustType">Adjustment type</label>
+      <select id="spdAdjustType"><option value="increase">Increase stock</option><option value="decrease">Decrease stock</option><option value="set">Set exact stock</option></select></div>
+    <div class="spd-form-group"><label for="spdAdjustQty">Quantity</label><input type="number" id="spdAdjustQty" min="0" value="1"></div>
+    <div class="spd-form-group"><label for="spdAdjustReason">Reason</label>
+      <select id="spdAdjustReason"><option>Restock</option><option>Damaged / defective units</option><option>Inventory correction</option><option>Other</option></select></div>
+    <div class="spd-form-group"><label for="spdAdjustNote">Note <small>optional</small></label><textarea id="spdAdjustNote" rows="2" placeholder="Internal note about this change"></textarea></div>
+    <div class="spd-preview">New stock will be <strong id="spdStockPreview">{{ product.stock_quantity }} units</strong></div>
+    <div class="spd-modal-actions"><button type="button" class="spd-btn spd-btn-secondary" data-spd-close>Cancel</button><button type="button" class="spd-btn spd-btn-primary" id="spdSaveStockBtn">Confirm Adjustment</button></div>
+  </div>
+</div>
+
+<div class="spd-modal-overlay spd-hidden" id="spdHideModal">
+  <div class="spd-modal">
+    <button type="button" class="spd-modal-close" data-spd-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <h3 class="spd-modal-title">Hide this product?</h3>
+    <p class="spd-modal-text">It will disappear from search and category listings but is not deleted. You can unhide it any time.</p>
+    <div class="spd-modal-actions"><button type="button" class="spd-btn spd-btn-secondary" data-spd-close>Cancel</button><button type="button" class="spd-btn spd-btn-warning" data-spd-visibility="hide">Hide Product</button></div>
+  </div>
+</div>
+
+<div class="spd-modal-overlay spd-hidden" id="spdArchiveModal">
+  <div class="spd-modal">
+    <button type="button" class="spd-modal-close" data-spd-close aria-label="Close"><i class="bi bi-x-lg"></i></button>
+    <h3 class="spd-modal-title">Archive this product?</h3>
+    <p class="spd-modal-text">Archived products leave the storefront but their order history is kept for reporting.</p>
+    <div class="spd-modal-actions"><button type="button" class="spd-btn spd-btn-secondary" data-spd-close>Cancel</button><button type="button" class="spd-btn spd-btn-warning" data-spd-archive="archive">Archive Product</button></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/product_detail.js' %}"></script>
+{% endblock %}

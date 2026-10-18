@@ -7,7 +7,7 @@
      1. Current date display
      2. Animated stat counters
      3. Scroll-reveal fade-in
-     4. Sales overview chart bar animation + range dropdown UI
+     4. Admin sales overview — live database data
      5. Top category bar fill animation
      6. Quick action / task row ripple feedback
      7. Export report placeholder feedback
@@ -122,52 +122,132 @@
     }
 
     /* =====================================================
-       4. SALES OVERVIEW CHART + RANGE DROPDOWN
+       4. ADMIN SALES OVERVIEW — LIVE DATABASE DATA
        ===================================================== */
-    function initChartPlaceholder() {
-        var chart = document.getElementById('adhChartPlaceholder');
-        if (!chart) return;
+    function initAdminSalesChart() {
+        const rangeSelect = document.getElementById("adhRangeSelect");
+        const chartBars = document.getElementById("adhChartBars");
+        const chartLabels = document.getElementById("adhChartLabels");
+        const chartTotal = document.getElementById("adhChartTotal");
+        const chartCaption = document.getElementById("adhChartCaption");
+        const chartDataElement = document.getElementById("adhSalesChartData");
 
-        if (!('IntersectionObserver' in window)) {
-            chart.classList.add('is-animated');
-        } else {
-            var observer = new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        chart.classList.add('is-animated');
-                        obs.unobserve(chart);
-                    }
-                });
-            }, { threshold: 0.3 });
-
-            observer.observe(chart);
+        if (
+            !rangeSelect ||
+            !chartBars ||
+            !chartLabels ||
+            !chartTotal ||
+            !chartCaption ||
+            !chartDataElement
+        ) {
+            return;
         }
-    }
 
-    // Purely a UI affordance — swaps the placeholder bar heights so the
-    // dropdown "feels" connected until a real chart library is wired up.
-    var RANGE_PATTERNS = {
-        today: [20, 35, 28, 55, 40, 62, 48, 70, 58, 66, 52, 80],
-        '7d': [32, 48, 40, 63, 55, 74, 68, 85, 77, 92, 81, 100],
-        '30d': [45, 30, 60, 50, 72, 40, 85, 55, 78, 60, 90, 68],
-        '12m': [40, 55, 48, 65, 58, 72, 66, 80, 74, 88, 82, 96]
-    };
+        let chartData;
 
-    function initRangeSelect() {
-        var select = document.getElementById('adhRangeSelect');
-        var chart = document.getElementById('adhChartPlaceholder');
-        if (!select || !chart) return;
+        try {
+            chartData = JSON.parse(chartDataElement.textContent);
+        } catch (error) {
+            console.error("Unable to read admin sales chart data.", error);
+            return;
+        }
 
-        var bars = chart.querySelectorAll('.adh-chart-bars span');
+        const rangeCaptions = {
+            today: "Revenue throughout today",
+            "7d": "Revenue for the last 7 days",
+            "30d": "Revenue for the last 30 days",
+            "12m": "Revenue for the last 12 months",
+        };
 
-        select.addEventListener('change', function () {
-            var pattern = RANGE_PATTERNS[select.value] || RANGE_PATTERNS['7d'];
-
-            bars.forEach(function (bar, index) {
-                var height = pattern[index % pattern.length];
-                bar.style.setProperty('--adh-bar-h', height + '%');
-            });
+        const currencyFormatter = new Intl.NumberFormat("en-PK", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
+
+        function formatCurrency(value) {
+            return `Rs. ${currencyFormatter.format(value)}`;
+        }
+
+        function renderChart(range) {
+            const entries = chartData[range] || [];
+
+            chartBars.replaceChildren();
+            chartLabels.replaceChildren();
+
+            if (!entries.length) {
+                chartTotal.textContent = formatCurrency(0);
+                chartCaption.textContent = "No chart data available.";
+                return;
+            }
+
+            const totalRevenue = entries.reduce(
+                (total, entry) => total + Number(entry.revenue || 0),
+                0
+            );
+
+            const maxRevenue = Math.max(
+                ...entries.map(entry => Number(entry.revenue || 0)),
+                0
+            );
+
+            chartTotal.textContent = formatCurrency(totalRevenue);
+            chartCaption.textContent = rangeCaptions[range] || "";
+
+            entries.forEach((entry, index) => {
+                const revenue = Number(entry.revenue || 0);
+
+                /*
+                 * Scale each bar relative to the highest revenue
+                 * in the selected period.
+                 *
+                 * A zero-revenue bar remains visible through CSS.
+                 */
+                const height = maxRevenue > 0
+                    ? (revenue / maxRevenue) * 100
+                    : 0;
+
+                const bar = document.createElement("span");
+
+                bar.className = "adh-chart-bar";
+                bar.style.setProperty("--adh-bar-h", `${height}%`);
+
+                bar.title = `${entry.label}: ${formatCurrency(revenue)}`;
+
+                bar.setAttribute(
+                    "aria-label",
+                    `${entry.label}: ${formatCurrency(revenue)}`
+                );
+
+                chartBars.appendChild(bar);
+
+                const label = document.createElement("span");
+
+                label.className = "adh-chart-label";
+                label.textContent = entry.label;
+
+                /*
+                 * Prevent 30 daily labels from becoming crowded.
+                 * The chart still contains every daily bar.
+                 */
+                if (range === "30d" && index % 5 !== 0 && index !== entries.length - 1) {
+                    label.textContent = "";
+                }
+
+                if (range === "today" && index % 3 !== 0) {
+                    label.textContent = "";
+                }
+
+                label.title = entry.label;
+
+                chartLabels.appendChild(label);
+            });
+        }
+
+        rangeSelect.addEventListener("change", function () {
+            renderChart(this.value);
+        });
+
+        renderChart(rangeSelect.value);
     }
 
     /* =====================================================
@@ -257,8 +337,7 @@
         initCurrentDate();
         initCounters();
         initScrollReveal();
-        initChartPlaceholder();
-        initRangeSelect();
+        initAdminSalesChart(); // Replaced the two old chart initialization calls
         initCategoryBars();
         initRipples();
         initExportButton();

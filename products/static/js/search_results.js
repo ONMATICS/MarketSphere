@@ -233,7 +233,7 @@
     function setFiltersDisabled(disabled) {
         getAllFilterInputs().forEach(function (input) { input.disabled = disabled; });
         [dom.sortSelect, dom.priceSliderDesktop, dom.priceSliderMobile,
-         dom.clearFiltersDesktop, dom.clearFiltersMobile].forEach(function (el) {
+        dom.clearFiltersDesktop, dom.clearFiltersMobile].forEach(function (el) {
             if (el) el.disabled = disabled;
         });
         if (dom.paginationList) {
@@ -435,48 +435,48 @@
 
         return (
             '<div class="col-lg-3 col-md-6 col-6" data-search-item-id="' + escapeHtml(product.id) + '">' +
-                '<div class="product-card">' +
-                    '<div class="product-card-media">' +
-                        (hasDiscount ? '<span class="badge-discount">-' + discountPercent + '%</span>' : '') +
-                        '<button class="wishlist-btn' + (wishlisted ? ' active' : '') + '" type="button" ' +
-                            'data-product-slug="' + escapeHtml(product.slug) + '" ' +
-                            'aria-label="' + (wishlisted ? 'Remove from wishlist' : 'Add to wishlist') + '">' +
-                            '<i class="bi ' + (wishlisted ? 'bi-heart-fill' : 'bi-heart') + '"></i>' +
-                        '</button>' +
-                        (product.category_name
-                            ? '<span class="product-category-badge">' + escapeHtml(product.category_name) + '</span>'
-                            : '') +
-                        '<a href="' + escapeHtml(productUrl) + '" class="product-image-placeholder">' +
-                            (imageUrl
-                                ? '<img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(product.name) + '">'
-                                : '<i class="bi bi-image"></i>') +
-                        '</a>' +
-                    '</div>' +
-                    '<div class="product-card-body">' +
-                        '<span class="product-brand">' +
-                            (product.brand_name ? escapeHtml(product.brand_name) : 'No Brand') +
-                        '</span>' +
-                        '<h6 class="product-name"><a href="' + escapeHtml(productUrl) + '">' +
-                            escapeHtml(product.name) + '</a></h6>' +
-                        '<div class="product-rating">' +
-                            '<i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>' +
-                            '<i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>' +
-                            '<i class="bi bi-star-half"></i>' +
-                            '<span>(' + (product.review_count || 0) + ')</span>' +
-                        '</div>' +
-                        '<div class="product-price">' +
-                            (hasDiscount
-                                ? '<span class="price-current">Rs. ' + discount + '</span>' +
-                                  '<span class="price-original">Rs. ' + price + '</span>'
-                                : '<span class="price-current">Rs. ' + price + '</span>') +
-                        '</div>' +
-                        stockBadge +
-                        '<button class="btn add-to-cart-btn w-100" ' + (stock <= 0 ? 'disabled' : '') +
-                            ' data-add-url="' + escapeHtml(product.add_to_cart_url || '') + '">' +
-                            '<i class="bi bi-cart4"></i> Add to Cart' +
-                        '</button>' +
-                    '</div>' +
-                '</div>' +
+            '<div class="product-card">' +
+            '<div class="product-card-media">' +
+            (hasDiscount ? '<span class="badge-discount">-' + discountPercent + '%</span>' : '') +
+            '<button class="wishlist-btn' + (wishlisted ? ' active' : '') + '" type="button" ' +
+            'data-product-slug="' + escapeHtml(product.slug) + '" ' +
+            'aria-label="' + (wishlisted ? 'Remove from wishlist' : 'Add to wishlist') + '">' +
+            '<i class="bi ' + (wishlisted ? 'bi-heart-fill' : 'bi-heart') + '"></i>' +
+            '</button>' +
+            (product.category_name
+                ? '<span class="product-category-badge">' + escapeHtml(product.category_name) + '</span>'
+                : '') +
+            '<a href="' + escapeHtml(productUrl) + '" class="product-image-placeholder">' +
+            (imageUrl
+                ? '<img src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(product.name) + '">'
+                : '<i class="bi bi-image"></i>') +
+            '</a>' +
+            '</div>' +
+            '<div class="product-card-body">' +
+            '<span class="product-brand">' +
+            (product.brand_name ? escapeHtml(product.brand_name) : 'No Brand') +
+            '</span>' +
+            '<h6 class="product-name"><a href="' + escapeHtml(productUrl) + '">' +
+            escapeHtml(product.name) + '</a></h6>' +
+            '<div class="product-rating">' +
+            '<i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>' +
+            '<i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>' +
+            '<i class="bi bi-star-half"></i>' +
+            '<span>(' + (product.review_count || 0) + ')</span>' +
+            '</div>' +
+            '<div class="product-price">' +
+            (hasDiscount
+                ? '<span class="price-current">Rs. ' + discount + '</span>' +
+                '<span class="price-original">Rs. ' + price + '</span>'
+                : '<span class="price-current">Rs. ' + price + '</span>') +
+            '</div>' +
+            stockBadge +
+            '<button class="btn add-to-cart-btn w-100" ' + (stock <= 0 ? 'disabled' : '') +
+            ' data-add-url="' + escapeHtml(product.add_to_cart_url || '') + '">' +
+            '<i class="bi bi-cart4"></i> Add to Cart' +
+            '</button>' +
+            '</div>' +
+            '</div>' +
             '</div>'
         );
     }
@@ -716,9 +716,6 @@
                 const rating = parseInt(input.id.split('-').pop(), 10);
                 if (!Number.isNaN(rating)) ratingThresholds.push(rating);
             } else if (section === 'discount') {
-                // Forward-compatible: no discount checkbox exists in the
-                // markup yet, but this activates automatically once one
-                // is added inside a `.filter-card` titled "Discount".
                 discountOnly = true;
             }
         });
@@ -727,7 +724,8 @@
             categories: Array.from(new Set(categories)),
             brands: Array.from(new Set(brands)),
             stockStates: Array.from(stockStates),
-            ratingMin: ratingThresholds.length ? Math.min.apply(null, ratingThresholds) : null,
+            // Extracts the highest selected rating (e.g., 4) from the cascaded selection
+            ratingMin: ratingThresholds.length ? Math.max.apply(null, ratingThresholds) : null,
             discountOnly: discountOnly
         };
     }
@@ -739,14 +737,32 @@
             const input = e.target.closest('.filter-card .form-check-input[type="checkbox"]');
             if (!input) return;
 
-            syncFilterPair(input);
+            const section = getSectionTitle(input);
+
+            if (section === 'rating') {
+                const clickedRating = parseInt(input.id.split('-').pop(), 10);
+                const isChecked = input.checked;
+
+                // Cascade: Check all ratings below/equal to clicked, or uncheck all
+                getAllFilterInputs().forEach(function (otherInput) {
+                    if (getSectionTitle(otherInput) === 'rating') {
+                        const otherRating = parseInt(otherInput.id.split('-').pop(), 10);
+                        if (isChecked) {
+                            otherInput.checked = (otherRating <= clickedRating);
+                        } else {
+                            otherInput.checked = false;
+                        }
+                    }
+                });
+            } else {
+                syncFilterPair(input);
+            }
 
             Object.assign(state, readFiltersFromDOM());
             state.page = 1;
             debouncedLoad();
         });
     }
-
     function getCurrentMaxPrice() {
         const slider = dom.priceSliderDesktop || dom.priceSliderMobile;
         return slider ? parsePrice(slider.value) : null;
@@ -975,7 +991,8 @@
                     (label === 'out of stock' && state.stockStates.indexOf('out_of_stock') !== -1);
             } else if (section === 'rating') {
                 const rating = parseInt(input.id.split('-').pop(), 10);
-                input.checked = state.ratingMin != null && rating === state.ratingMin;
+                // Changed from '===' to '<=' to maintain the cascade on page load
+                input.checked = state.ratingMin != null && rating <= state.ratingMin;
             }
         });
 

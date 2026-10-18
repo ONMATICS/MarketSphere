@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load time_tags %}
 
 {% block title %}
   My Profile • MarketSphere
@@ -244,36 +245,36 @@
           <div class="bp-card bp-completion-card">
             <div class="bp-card-head">
               <h2 class="bp-card-title"><i class="bi bi-clipboard-check"></i> Profile Completion</h2>
-              <span class="bp-completion-pct-badge">{{ profile_completion.percentage|default:'65' }}%</span>
+              <span class="bp-completion-pct-badge">{{ profile_completion.percentage|default:'0' }}%</span>
             </div>
 
             <div class="bp-progress-track bp-progress-track-lg">
-              <div class="bp-progress-fill" style="width: {{ profile_completion.percentage|default:'65' }}%;"></div>
+              <div class="bp-progress-fill" style="width: {{ profile_completion.percentage|default:'0' }}%;"></div>
             </div>
 
-            {% if profile_completion.missing %}
-              <div class="bp-completion-missing">
-                <h6><i class="bi bi-list-check"></i> Still missing</h6>
-                <ul>
-                  {% for item in profile_completion.missing %}
-                    <li>{{ item }}</li>
-                  {% endfor %}
-                </ul>
+            {% if profile_completion.is_complete %}
+              <!-- 100% Complete State -->
+              <div class="bp-completion-success" style="margin-top: 15px;">
+                <h6 class="text-success"><i class="bi bi-check-circle-fill"></i> Profile is 100% complete!</h6>
               </div>
             {% else %}
-              <div class="bp-completion-missing">
-                <h6><i class="bi bi-list-check"></i> Still missing</h6>
-                <ul>
-                  <li>Phone number</li>
-                  <li>Profile photo</li>
-                  <li>Default address</li>
-                </ul>
-              </div>
+              <!-- Incomplete State -->
+              {% if profile_completion.missing %}
+                <div class="bp-completion-missing">
+                  <h6><i class="bi bi-list-check"></i> Still missing</h6>
+                  <ul>
+                    {% for item in profile_completion.missing %}
+                      <li>{{ item }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+              
+              <button type="button" class="btn bp-btn-outline bp-completion-btn" data-bs-toggle="modal" data-bs-target="#bpEditProfileModal">
+                Complete Profile
+              </button>
             {% endif %}
-
-            <button type="button" class="btn bp-btn-outline bp-completion-btn" data-bs-toggle="modal" data-bs-target="#bpEditProfileModal">Complete Profile</button>
           </div>
-
           <!-- ============ RECENT ORDERS ============ -->
           <div class="bp-card" id="bpOrders">
             <div class="bp-card-head">
@@ -447,7 +448,7 @@
                   <span class="bp-activity-icon"><i class="bi {{ activity.icon|default:'bi-clock-history' }}"></i></span>
                   <div class="bp-activity-body">
                     <p class="bp-activity-desc">{{ activity.description }}</p>
-                    <time class="bp-activity-time">{{ activity.created_at|timesince }} ago</time>
+                    <time class="bp-activity-time">{{ activity.created_at|custom_timesince }}</time>
                   </div>
                 </li>
               {% empty %}
@@ -653,7 +654,7 @@
                   <div class="bp-notification-copy">
                     <p class="bp-notification-title">{{ notification.title }}</p>
                     <p class="bp-notification-message">{{ notification.message }}</p>
-                    <time>{{ notification.created_at|timesince }} ago</time>
+                    <time>{{ notification.created_at|custom_timesince }}</time>
                   </div>
                 </li>
               {% empty %}

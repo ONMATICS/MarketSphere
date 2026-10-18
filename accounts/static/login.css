@@ -1,3 +1,19 @@
+/* =========================================================
+   MARKETSPHERE — Authentication Stylesheet (login.css)
+   Purpose:
+     Controls the layout and styling for MarketSphere's login,
+     registration, and authentication pages.
+   Scope:
+     Authentication pages (Login, Signup, Password Reset).
+   Sections:
+     1. Base Styles & Layout
+     2. Authentication Card
+     3. Dividers
+     4. Buttons & Actions
+     5. Progress Bar
+========================================================= */
+
+/* ================= 1. BASE STYLES & LAYOUT ================= */
 body {
     background-color: #F7F1DE;
 }
@@ -5,9 +21,10 @@ body {
 .container {
     max-width: 1250px !important;
     margin: 0 auto;
-
 }
 
+
+/* ================= 2. AUTHENTICATION CARD ================= */
 .card {
     border: 2px solid #9D6638 !important;
     border-radius: var(--border-radius) !important;
@@ -15,12 +32,13 @@ body {
 
 .card-header {
     padding: 0px;
-    p{
-        background-color: #9D6638 !important;
-        color: #F7F1DE;
-        padding: 0px 10px 10px;
-        margin: 0;
-    }
+}
+
+.card-header p {
+    background-color: #9D6638 !important;
+    color: #F7F1DE;
+    padding: 0px 10px 10px;
+    margin: 0;
 }
 
 .card-header h3 {
@@ -32,6 +50,8 @@ body {
     width: auto;
 }
 
+
+/* ================= 3. DIVIDERS ================= */
 .divider {
     display: flex;
     align-items: center;
@@ -52,6 +72,8 @@ body {
     white-space: nowrap;
 }
 
+
+/* ================= 4. BUTTONS & ACTIONS ================= */
 .continue-button a {
     width: 100% !important;
     font-size: 15px !important;
@@ -61,24 +83,27 @@ body {
     border: var(--button-border) solid #9D6638 !important;
     border-radius: var(--border-radius);
     text-align: center;
+    transition: 0.25s ease;
+}
 
-    i {
-        background-color: #9D6638;
-        color: #F7F1DE;
-    }
-    transition: 0.25 ease;
+.continue-button a i {
+    background-color: #9D6638;
+    color: #F7F1DE;
 }
 
 .continue-button a:hover {
     background-color: #F7F1DE !important;
     color: #B0BA99;
     border: var(--button-border) solid #9D6638 !important;
-    i {
-        color: #9D6638;
-        background-color: #F7F1DE;
-    }
 }
 
+.continue-button a:hover i {
+    color: #9D6638;
+    background-color: #F7F1DE;
+}
+
+
+/* ================= 5. PROGRESS BAR ================= */
 progress {
     width: 100%;
     height: 20px;
@@ -97,7 +122,6 @@ progress::-webkit-progress-bar {
 /* Filled Portion */
 progress::-webkit-progress-value {
     background-color: #9D6638;
-    border-radius: 1px;
     transition: width 0.35s ease;
     border-radius: 1px;
 }

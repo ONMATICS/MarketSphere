@@ -620,6 +620,7 @@
     background: linear-gradient(180deg, var(--sd-accent) 0%, rgba(157, 102, 56, 0.35) 100%);
     opacity: 0.55;
     transform: scaleY(0);
+    min-height: 4px;
     transform-origin: bottom;
     transition: transform 0.7s var(--sd-ease), opacity 0.7s var(--sd-ease);
 }

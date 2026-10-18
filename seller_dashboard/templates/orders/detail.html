@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-  Order #MS-748213
+  Order #{{ order.order_number|slice:6 }} - {{ order.user.first_name }} {{ order.user.last_name }}
 {% endblock %}
 
 {% block active_page %}
@@ -13,7 +13,7 @@
   <span class="sd-breadcrumb-sep">/</span>
   <a href="{% url 'orders-list' %}" class="sd-breadcrumb-current" style="color:var(--sd-caption-color); font-weight:600;">Orders</a>
   <span class="sd-breadcrumb-sep">/</span>
-  <span class="sd-breadcrumb-current">#MS-{{ order.order_number }}</span>
+  <span class="sd-breadcrumb-current">#{{ order.order_number }}</span>
 {% endblock %}
 
 {% block css %}
@@ -35,7 +35,7 @@
         <div class="sod-header-titleblock">
           <div class="sod-header-title-row">
             <!-- orderItem.order.order_number -->
-            <h1 class="sod-header-title">Order #MS-{{ order.order_number|slice:6 }}</h1>
+            <h1 class="sod-header-title">Order #{{ order.order_number|slice:10 }}</h1>
             <!-- orderItem.order.status -->
             <span class="sod-badge sod-badge-{{ order.status }}" id="sodStatusBadge">{{ order.status|title }}</span>
           </div>
@@ -247,7 +247,7 @@
           <div class="sod-customer-profile">
             <span class="sod-customer-avatar" aria-hidden="true">
               {% if order.user.profile_image_url %}
-                <img src="{{ order.user.profile_image_url }}" alt="" />
+                <img src="{{ order.user.profile_image_url }}" style="width: 100%;" />
               {% else %}
                 <!-- customer.username|slice:1 -->{{ order.user.username|slice:1 }}
               {% endif %}
@@ -331,7 +331,7 @@
                 <path d="M21 8 12 3 3 8l9 5 9-5Z"></path>
                 <path d="M3 8v8l9 5 9-5V8"></path>
                 <path d="M12 13v8"></path>
-              </svg>Your Products in This Order
+              </svg>Ordered Products
               <span class="sod-item-count">{{ order.items.count }} items</span>
             </h2>
             <!-- seller_order.items.count -->
@@ -403,7 +403,7 @@
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="16" x2="12" y2="12"></line>
               <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>Only products from your store are shown. This order may include items fulfilled by other sellers.
+            </svg>Make sure to send the products that are ordered actually to gain the customer trust.
           </p>
         </section>
 

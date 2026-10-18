@@ -1,19 +1,16 @@
 /* =========================================================
    MARKETSPHERE — ADMIN DASHBOARD HOME (admin_dashboard.css)
-   Page-scoped styles for admin_panel/templates/admin_dashboard.html.
-   Builds on the admin shell's tokens (static/css/admin_base_dashboard.css
-   — --ad-* variables) rather than redefining the palette, and prefixes
-   every class `adh-` (Admin Dashboard Home) to avoid collisions with
-   the shell and future admin pages, matching the project's page-scoped
-   prefix convention (dh-, pm-, so-, sod-, sa-, pf- ...).
-
+   Purpose:
+     Page-scoped styles for admin_panel/templates/admin_dashboard.html.
+   Scope:
+     Admin Dashboard Home. Uses the `adh-` prefix convention.
    Sections:
      1. Page Wrapper / Reveal Animation
      2. Welcome Header
      3. Buttons
      4. Statistics Cards
      5. Split Grid / Shared Card
-     6. Sales Overview Chart Placeholder
+     6. Sales Overview Chart
      7. Marketplace Activity Feed
      8. Quick Actions
      9. Pending Tasks
@@ -21,11 +18,11 @@
     11. Recent Orders Table
     12. Badges
     13. System Status
-    14. Responsive
+    14. Responsive Styles
    ========================================================= */
 
-/* ================= 1. PAGE WRAPPER / REVEAL ================= */
 
+/* ================= 1. PAGE WRAPPER / REVEAL ================= */
 .adh-page {
     display: flex;
     flex-direction: column;
@@ -55,6 +52,7 @@
     white-space: nowrap;
     border: 0;
 }
+
 
 /* ================= 2. WELCOME HEADER ================= */
 .adh-welcome {
@@ -102,6 +100,7 @@
     white-space: nowrap;
 }
 
+
 /* ================= 3. BUTTONS ================= */
 .adh-btn {
     display: inline-flex;
@@ -143,6 +142,7 @@
     border-color: var(--ad-accent);
     color: var(--ad-accent-strong);
 }
+
 
 /* ================= 4. STATISTICS CARDS ================= */
 .adh-stats-grid {
@@ -235,17 +235,10 @@
     font-weight: 600;
 }
 
-.adh-trend-up {
-    color: var(--ad-success);
-}
+.adh-trend-up { color: var(--ad-success); }
+.adh-trend-down { color: var(--ad-danger); }
+.adh-trend-neutral { color: var(--ad-caption-color); }
 
-.adh-trend-down {
-    color: var(--ad-danger);
-}
-
-.adh-trend-neutral {
-    color: var(--ad-caption-color);
-}
 
 /* ================= 5. SPLIT GRID / SHARED CARD ================= */
 .adh-split-grid {
@@ -340,55 +333,96 @@
     box-shadow: 0 0 0 3px var(--ad-accent-ring);
 }
 
-/* ================= 6. SALES OVERVIEW CHART PLACEHOLDER ================= */
+
+/* ================= 6. SALES OVERVIEW CHART ================= */
+.adh-sales-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 18px 0 12px;
+}
+
+.adh-sales-summary-label {
+    font-size: 12px;
+    color: #76685d;
+}
+
+.adh-sales-summary strong {
+    font-size: 25px;
+    font-weight: 700;
+    color: #4E220F;
+    line-height: 1.3;
+}
+
 .adh-chart-placeholder {
     position: relative;
+    width: 100%;
+    min-width: 0;
+    height: 300px;
     background-color: var(--ad-bg);
     border: 1px dashed var(--ad-border);
     border-radius: var(--ad-radius-control);
-    padding: 24px 20px 18px;
+    padding: 8px 20px 18px; /* Merged padding cascade */
     overflow: hidden;
-    height: 300px;
-
 }
 
 .adh-chart-bars {
     display: flex;
     align-items: flex-end;
-    gap: 8px;
-    height: 160px;
+    gap: 5px;
+    height: 150px;
+    padding: 12px 4px 0;
+    overflow: hidden;
+    border-bottom: 1px solid #D9D2C4;
 }
 
-.adh-chart-bars span {
+.adh-chart-bars .adh-chart-bar {
     flex: 1;
-    height: var(--adh-bar-h, 40%);
-    border-radius: 6px 6px 2px 2px;
-    background: linear-gradient(180deg, var(--ad-accent) 0%, rgba(192, 138, 78, 0.3) 100%);
-    opacity: 0.6;
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform 0.7s var(--ad-ease), opacity 0.7s var(--ad-ease);
+    min-width: 3px;
+    height: var(--adh-bar-h, 0%);
+    min-height: 4px;
+    background: #9D6638 !important;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease, opacity 0.2s ease;
+    opacity: 0.8;
 }
 
-.adh-chart-placeholder.is-animated .adh-chart-bars span {
-    transform: scaleY(1);
-    opacity: 0.6;
+.adh-chart-bars .adh-chart-bar:hover {
+    opacity: 1;
+}
+
+.adh-chart-labels {
+    display: flex;
+    gap: 5px;
+    padding: 8px 4px 0;
+}
+
+.adh-chart-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: #76685d;
+    font-size: 10px;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .adh-chart-caption {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin-top: 16px;
-    font-size: 12.5px;
+    gap: 7px;
+    margin-top: 15px;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--ad-caption-color);
+    color: #76685d;
 }
 
 .adh-chart-caption svg {
+    flex-shrink: 0;
     color: var(--ad-accent);
 }
+
 
 /* ================= 7. MARKETPLACE ACTIVITY FEED ================= */
 .adh-activity-feed {
@@ -474,6 +508,43 @@
     margin-top: 2px;
 }
 
+/* Empty State */
+.adh-activity-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 180px;
+    padding: 24px;
+    text-align: center;
+    list-style: none;
+}
+
+.adh-activity-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #F7F1DE;
+    color: #9D6638;
+    font-size: 19px;
+}
+
+.adh-activity-empty strong {
+    color: #4E220F;
+    font-size: 14px;
+}
+
+.adh-activity-empty > span:last-child {
+    color: #76685d;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
 /* ================= 8. QUICK ACTIONS ================= */
 .adh-section {
     display: flex;
@@ -557,7 +628,6 @@
     color: var(--ad-caption-color);
 }
 
-/* Ripple element injected by JS */
 .adh-ripple {
     position: absolute;
     border-radius: 50%;
@@ -565,6 +635,7 @@
     transform: scale(0);
     pointer-events: none;
 }
+
 
 /* ================= 9. PENDING TASKS ================= */
 .adh-task-list {
@@ -638,6 +709,7 @@
     color: var(--ad-accent);
 }
 
+
 /* ================= 10. TOP SELLING CATEGORIES ================= */
 .adh-category-list {
     list-style: none;
@@ -709,6 +781,7 @@
     color: var(--ad-caption-color);
     white-space: nowrap;
 }
+
 
 /* ================= 11. RECENT ORDERS TABLE ================= */
 .adh-table-wrap {
@@ -782,6 +855,7 @@
     color: var(--ad-accent-strong);
 }
 
+
 /* ================= 12. BADGES ================= */
 .adh-badge {
     display: inline-flex;
@@ -811,6 +885,7 @@
 }
 
 .adh-badge-paid,
+.adh-badge-confirmed,
 .adh-badge-delivered {
     background-color: rgba(79, 125, 84, 0.15);
     color: var(--ad-success);
@@ -821,6 +896,7 @@
     background-color: rgba(181, 75, 59, 0.13);
     color: var(--ad-danger);
 }
+
 
 /* ================= 13. SYSTEM STATUS ================= */
 .adh-status-grid {
@@ -834,7 +910,6 @@
     align-items: center;
     gap: 12px;
     background-color: var(--ad-surface-raised);
-    background-color: #F7F1DE;
     border: 1px solid var(--ad-border);
     border-radius: var(--ad-radius-card);
     padding: 16px 18px;
@@ -881,35 +956,21 @@
     color: var(--ad-caption-color);
 }
 
-/* ================= 14. RESPONSIVE ================= */
-@media (max-width: 1299.98px) {
-    .adh-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
 
-    .adh-quick-actions {
-        grid-template-columns: repeat(3, 1fr);
-    }
+/* ================= 14. RESPONSIVE STYLES ================= */
+@media (max-width: 1299.98px) {
+    .adh-stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .adh-quick-actions { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 1099.98px) {
-    .adh-split-grid {
-        grid-template-columns: 1fr;
-    }
+    .adh-split-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 899.98px) {
-    .adh-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .adh-quick-actions {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .adh-status-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .adh-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .adh-quick-actions { grid-template-columns: repeat(2, 1fr); }
+    .adh-status-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 767.98px) {
@@ -918,19 +979,15 @@
         align-items: flex-start;
         padding: 20px;
     }
-
+    
     .adh-welcome-actions {
         width: 100%;
         justify-content: space-between;
     }
-
-    .adh-welcome-title {
-        font-size: 22px;
-    }
-
-    .adh-card {
-        padding: 18px;
-    }
+    
+    .adh-welcome-title { font-size: 22px; }
+    
+    .adh-card { padding: 18px; }
 
     /* Recent orders table collapses into stacked rows */
     .adh-table thead {
@@ -940,7 +997,7 @@
         overflow: hidden;
         clip: rect(0, 0, 0, 0);
     }
-
+    
     .adh-table,
     .adh-table tbody,
     .adh-table tr,
@@ -948,12 +1005,12 @@
         display: block;
         width: 100%;
     }
-
+    
     .adh-table tr {
         padding: 12px 4px;
         border-bottom: 1px solid var(--ad-border);
     }
-
+    
     .adh-table td {
         display: flex;
         align-items: center;
@@ -963,7 +1020,7 @@
         white-space: normal;
         text-align: right;
     }
-
+    
     .adh-table td[data-label]::before {
         content: attr(data-label);
         font-size: 11px;
@@ -974,11 +1031,11 @@
         margin-right: 12px;
         text-align: left;
     }
-
+    
     .adh-table td[data-label=""]::before {
         content: none;
     }
-
+    
     .adh-table-action {
         justify-content: flex-end !important;
     }

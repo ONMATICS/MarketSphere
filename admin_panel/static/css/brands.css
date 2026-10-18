@@ -1,38 +1,37 @@
 /* ==========================================================================
-   MARKETSPHERE ADMIN — BRAND MANAGEMENT CONSOLE (list.css)
-   Page-scoped styles for templates/admin_dashboard/catalog/brands/list.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `bm-` (Brand
-   Management) to avoid collisions with the shell and other admin pages,
-   matching the project's page-scoped prefix convention
-   (bd-, sld-, sad-, adu-, bu-, pcl-, cm- ...).
-
+   MARKETSPHERE ADMIN — BRAND MANAGEMENT CONSOLE (brands.css)
+   Purpose:
+     Page-scoped styles for templates/admin_dashboard/catalog/brands/list.html.
+   Scope:
+     Brand Management. Uses the `bm-` prefix convention.
    Sections:
      1. Variables
      2. Base / Page Wrapper
      3. Layout
-     4. Page Header
-     5. Metrics
-     6. Toolbar
-     7. Brand Directory
-     8. Table
+     4. Buttons
+     5. Page Header
+     6. Metrics
+     7. Toolbar
+     8. Brand Directory & Table
      9. Bulk Actions
-    10. Drawer
-    11. Brand Information
-    12. Verification
-    13. Documents
-    14. Products
-    15. Categories
-    16. Analytics
-    17. Visibility
-    18. SEO
-    19. Performance
-    20. Activity
-    21. Admin Notes
-    22. Modals
-    23. Toasts
-    24. Empty States
-    25. Responsive
+    10. Pagination
+    11. Drawer
+    12. Shared Cards
+    13. Brand Information
+    14. Verification
+    15. Documents
+    16. Products & Categories
+    17. Analytics
+    18. Visibility
+    19. SEO
+    20. Performance
+    21. Activity
+    22. Admin Notes
+    23. Modals
+    24. Toasts
+    25. Empty States
+    26. Badges
+    27. Responsive
    ========================================================================== */
 
 /* ================= 1. VARIABLES ================= */
@@ -178,7 +177,7 @@
     gap: 16px;
 }
 
-/* ================= BUTTONS (shared) ================= */
+/* ================= 4. BUTTONS ================= */
 .bm-btn {
     display: inline-flex;
     align-items: center;
@@ -277,7 +276,8 @@
     transform: scale(0);
     pointer-events: none;
 }
-/* ================= 4. PAGE HEADER ================= */
+
+/* ================= 5. PAGE HEADER ================= */
 .bm-header {
     display: flex;
     align-items: flex-start;
@@ -379,7 +379,7 @@
 .bm-dropdown-item.is-danger:hover { background-color: rgba(181, 75, 59, 0.1); }
 .bm-dropdown-divider { height: 1px; background-color: var(--bm-border); margin: 6px 2px; }
 
-/* ================= 5. METRICS ================= */
+/* ================= 6. METRICS ================= */
 .bm-metrics-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -455,7 +455,7 @@
 .bm-metric-trend.down { color: var(--bm-danger); }
 .bm-metric-trend.neutral { color: var(--bm-caption); }
 
-/* ================= 6. TOOLBAR ================= */
+/* ================= 7. TOOLBAR ================= */
 .bm-toolbar-card {
     background-color: var(--bm-surface-raised);
     border: 1px solid var(--bm-border);
@@ -572,7 +572,7 @@
     color: #241A17;
 }
 
-/* ================= 7 & 8. BRAND DIRECTORY / TABLE ================= */
+/* ================= 8. BRAND DIRECTORY & TABLE ================= */
 .bm-table-card {
     background-color: var(--bm-surface-raised);
     border: 1px solid var(--bm-border);
@@ -772,7 +772,7 @@
 .bm-bulk-count { font-size: 15px; font-weight: 700; }
 .bm-bulk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 
-/* ================= PAGINATION ================= */
+/* ================= 10. PAGINATION ================= */
 .bm-pagination-bar {
     display: flex;
     justify-content: space-between;
@@ -803,7 +803,8 @@
 .bm-page-btn:hover:not(:disabled) { border-color: var(--bm-accent); color: var(--bm-accent-strong); background-color: var(--bm-accent-soft); }
 .bm-page-btn.is-active { background-color: var(--bm-accent); color: #241A17; border-color: var(--bm-accent); }
 .bm-page-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-/* ================= 10. DRAWER ================= */
+
+/* ================= 11. DRAWER ================= */
 .bm-drawer-overlay {
     position: fixed;
     inset: 0;
@@ -949,7 +950,7 @@
     flex-shrink: 0;
 }
 
-/* ================= SHARED CARD ================= */
+/* ================= 12. SHARED CARDS ================= */
 .bm-card {
     background-color: #F7F1DE;
     border: 1px solid #E4DCC8;
@@ -962,7 +963,7 @@
 .bm-card-title svg { color: #C08A4E; }
 .bm-card-desc { font-size: 12px; color: #948B79; margin-top: 2px; }
 
-/* ================= 11. BRAND INFORMATION ================= */
+/* ================= 13. BRAND INFORMATION ================= */
 .bm-overview-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
 .bm-overview-stat {
     background-color: #F7F1DE;
@@ -1047,7 +1048,7 @@
 }
 .bm-upload-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ================= 12. VERIFICATION ================= */
+/* ================= 14. VERIFICATION ================= */
 .bm-verification-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
 
 .bm-checklist { display: flex; flex-direction: column; gap: 2px; }
@@ -1078,7 +1079,7 @@
 
 .bm-verify-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 
-/* ================= 13. DOCUMENTS ================= */
+/* ================= 15. DOCUMENTS ================= */
 .bm-docs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .bm-doc-card {
     display: flex;
@@ -1110,7 +1111,7 @@
 .bm-doc-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .bm-doc-actions .bm-btn { flex: 1; min-width: 0; }
 
-/* ================= 14. PRODUCTS / 15. CATEGORIES ================= */
+/* ================= 16. PRODUCTS & CATEGORIES ================= */
 .bm-mini-table-wrap { width: 100%; overflow-x: auto; }
 .bm-mini-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .bm-mini-table thead th {
@@ -1159,7 +1160,7 @@
 .bm-category-bar-fill.is-filled { width: var(--bm-pct, 0%); }
 .bm-category-value { flex: 0 0 auto; text-align: right; font-size: 12px; font-weight: 700; color: #A56B34; }
 
-/* ================= 16. ANALYTICS ================= */
+/* ================= 17. ANALYTICS ================= */
 .bm-analytics-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
 .bm-analytics-grid-full { grid-column: 1 / -1; }
 
@@ -1243,7 +1244,7 @@
 .bm-kpi-card strong { font-size: 17px; color: #241A17; }
 .bm-kpi-card .bm-kpi-trend { font-size: 11px; font-weight: 600; }
 
-/* ================= 17. VISIBILITY ================= */
+/* ================= 18. VISIBILITY ================= */
 .bm-toggle-list { display: flex; flex-direction: column; gap: 2px; }
 .bm-toggle-row {
     display: flex;
@@ -1276,7 +1277,7 @@
     text-align: center;
 }
 
-/* ================= 18. SEO ================= */
+/* ================= 19. SEO ================= */
 .bm-seo-preview {
     background-color: #FFFFFF;
     border: 1px solid #E4DCC8;
@@ -1304,7 +1305,7 @@
     color: #A56B34;
 }
 
-/* ================= 19. PERFORMANCE ================= */
+/* ================= 20. PERFORMANCE ================= */
 .bm-perf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .bm-perf-card {
     display: flex;
@@ -1329,7 +1330,7 @@
 .bm-perf-text strong { display: block; font-size: 13px; color: #241A17; }
 .bm-perf-text span { font-size: 11.5px; color: #948B79; font-weight: 600; }
 
-/* ================= 20. ACTIVITY ================= */
+/* ================= 21. ACTIVITY ================= */
 .bm-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .bm-pill {
     padding: 6px 13px;
@@ -1379,7 +1380,7 @@
 .bm-timeline-body p { font-size: 12px; color: #5B5142; margin: 3px 0; line-height: 1.5; }
 .bm-timeline-time { font-size: 11px; color: #948B79; font-weight: 500; }
 
-/* ================= 21. ADMIN NOTES ================= */
+/* ================= 22. ADMIN NOTES ================= */
 .bm-note-composer { background-color: #F7F1DE; border: 1.5px dashed #E4DCC8; border-radius: 4px; padding: 14px; margin-bottom: 14px; }
 .bm-note-composer textarea {
     width: 100%;
@@ -1408,7 +1409,7 @@
 .bm-note-actions { display: flex; gap: 6px; }
 .bm-note-card.is-pinned { border-color: rgba(192, 138, 78, 0.28); background-color: rgba(192, 138, 78, 0.14); }
 
-/* ================= 22. MODALS ================= */
+/* ================= 23. MODALS ================= */
 .bm-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1558,7 +1559,7 @@
 }
 .bm-import-dropzone:hover { border-color: #C08A4E; background-color: rgba(192, 138, 78, 0.14); }
 
-/* ================= 23. TOASTS ================= */
+/* ================= 24. TOASTS ================= */
 .bm-toast-container {
     position: fixed;
     bottom: 24px;
@@ -1593,7 +1594,7 @@
 @keyframes bmToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes bmToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-/* ================= 24. EMPTY STATES ================= */
+/* ================= 25. EMPTY STATES ================= */
 .bm-empty-state {
     display: flex;
     flex-direction: column;
@@ -1616,7 +1617,7 @@
 .bm-empty-title { font-size: 18px; font-weight: 700; color: var(--bm-heading); margin: 0 0 6px; }
 .bm-empty-subtitle { color: var(--bm-caption); margin: 0 0 20px; max-width: 340px; font-size: 13px; }
 
-/* ================= BADGES ================= */
+/* ================= 26. BADGES ================= */
 .bm-badge {
     display: inline-flex;
     align-items: center;
@@ -1637,7 +1638,7 @@
 .bm-badge.c-muted { background-color: var(--bm-muted-bg); color: #6b7458; }
 .bm-badge.c-blue { background-color: var(--bm-blue-bg); color: var(--bm-blue); }
 
-/* ================= 25. RESPONSIVE ================= */
+/* ================= 27. RESPONSIVE ================= */
 @media (max-width: 1400px) {
     .bm-metrics-grid { grid-template-columns: repeat(4, 1fr); }
 }

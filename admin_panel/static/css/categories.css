@@ -1,36 +1,36 @@
-/* ==========================================================================
-   MARKETSPHERE ADMIN — CATEGORY MANAGEMENT (list.css)
-   Page-scoped styles for admin_panel/templates/catalog/categories/list.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `cm-` (Category
-   Management) to avoid collisions with the shell and other admin pages,
-   matching the project's page-scoped prefix convention
-   (bd-, sld-, sad-, adu-, bu- ...).
-
+/* =========================================================
+   MARKETSPHERE — CATEGORY MANAGEMENT (categories.css)
+   Purpose: Page-scoped styles for admin category list, tree view,
+            analytics, drawer controls, and catalog management.
+   Scope: Admin Panel (Catalog Management)
+   
    Sections:
      1. Variables
      2. Base / Reset
-     3. Layout
+     3. Layout & Shared Cards
      4. Page Header
-     5. Metrics
-     6. Toolbar
-     7. Tree
-     8. Tree Rows
-     9. Table View
-    10. Drawer
-    11. Category Information
-    12. SEO
-    13. Display Settings
-    14. Subcategories
-    15. Products
-    16. Analytics
-    17. Activity
-    18. Modals
-    19. Bulk Actions
-    20. Toasts
-    21. Empty States
-    22. Responsive
-   ========================================================================== */
+     5. Buttons & Actions
+     6. Dropdowns
+     7. Metrics & KPI Cards
+     8. Toolbar & Filters
+     9. Bulk Actions
+    10. Checkboxes & Switches
+    11. Badges & Indicators
+    12. Footer
+    13. Tree View & Rows
+    14. Table View
+    15. Drawer Panels
+    16. Category Information & Forms
+    17. SEO Preview
+    18. Subcategories
+    19. Products Integration
+    20. Analytics & Charts
+    21. Activity Timeline
+    22. Modals & Danger Zones
+    23. Toasts & Notifications
+    24. Empty States
+    25. Responsive Styles
+========================================================= */
 
 /* ================= 1. VARIABLES ================= */
 .cm-page {
@@ -97,6 +97,7 @@
 .cm-dropdown-menu {
     z-index: 1003;
 }
+
 .cm-page,
 .cm-page *,
 .cm-page *::before,
@@ -183,7 +184,7 @@
 .c-info { color: var(--cm-info) !important; }
 .c-muted { color: var(--cm-caption) !important; }
 
-/* ================= 3. LAYOUT ================= */
+/* ================= 3. LAYOUT & SHARED CARDS ================= */
 .cm-card {
     background-color: var(--cm-surface-raised);
     border: 1px solid var(--cm-border);
@@ -292,7 +293,8 @@
     flex-shrink: 0;
     flex-wrap: wrap;
 }
-/* ================= BUTTONS (shared) ================= */
+
+/* ================= 5. BUTTONS & ACTIONS ================= */
 .cm-btn {
     position: relative;
     display: inline-flex;
@@ -319,6 +321,7 @@
     color: #F7F1DE !important;
     border: 1.5px solid #C08A4E !important;
 }
+
 .cm-btn-primary:hover:not(:disabled) {
     background-color: transparent !important;
     color: #9D6638 !important;
@@ -329,6 +332,7 @@
     color: #9D6638 !important;
     border: 1.5px solid #C08A4E !important;
 }
+
 .cm-btn-secondary:hover:not(:disabled) {
     background-color: #C08A4E !important;
     color: #F7F1DE !important;
@@ -339,6 +343,7 @@
     color: #948B79;
     border-color: transparent;
 }
+
 .cm-btn-ghost:hover:not(:disabled) {
     background-color: #F7F1DE;
     color: #241A17;
@@ -349,6 +354,7 @@
     color: #F7F1DE !important;
     border: 1.5px solid #9D6638 !important;
 }
+
 .cm-btn-danger:hover:not(:disabled) {
     background-color: #93372a !important;
     border-color: #93372a !important;
@@ -357,7 +363,13 @@
 .cm-btn-sm { padding: 7px 13px; font-size: 12.5px; }
 .cm-btn-icon-only { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
 
-/* ---- Dropdown ---- */
+.cm-link-btn {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
+    color: #A56B34; transition: gap 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cm-link-btn:hover { gap: 8px; }
+
+/* ================= 6. DROPDOWNS ================= */
 .cm-dropdown { position: relative; }
 
 .cm-dropdown-menu {
@@ -397,6 +409,7 @@
     text-align: left;
     transition: background-color var(--cm-transition);
 }
+
 .cm-dropdown-item svg { color: var(--cm-caption); }
 .cm-dropdown-item:hover { background-color: var(--cm-bg); }
 .cm-dropdown-item.is-danger { color: var(--cm-danger); }
@@ -409,7 +422,7 @@
     margin: 6px 2px;
 }
 
-/* ================= 5. METRICS ================= */
+/* ================= 7. METRICS & KPI CARDS ================= */
 .cm-metrics-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -446,6 +459,7 @@
     background-color: var(--cm-accent-soft);
     color: var(--cm-accent-strong);
 }
+
 .cm-metric-icon.c-success { background-color: var(--cm-success-bg); color: var(--cm-success); }
 .cm-metric-icon.c-danger { background-color: var(--cm-danger-bg); color: var(--cm-danger); }
 .cm-metric-icon.c-warning { background-color: var(--cm-warning-bg); color: var(--cm-warning); }
@@ -481,11 +495,12 @@
     font-size: 11.5px;
     font-weight: 600;
 }
+
 .cm-metric-trend.up { color: var(--cm-success); }
 .cm-metric-trend.down { color: var(--cm-danger); }
 .cm-metric-trend.neutral { color: var(--cm-caption); }
 
-/* ================= 6. TOOLBAR ================= */
+/* ================= 8. TOOLBAR & FILTERS ================= */
 .cm-toolbar-card {
     background-color: var(--cm-surface-raised);
     border: 1px solid var(--cm-border);
@@ -507,6 +522,7 @@
     flex: 1;
     min-width: 260px;
 }
+
 .cm-search svg {
     position: absolute;
     left: 13px;
@@ -515,6 +531,7 @@
     color: var(--cm-caption);
     pointer-events: none;
 }
+
 .cm-search-input {
     width: 100%;
     padding: 9px 14px 9px 38px;
@@ -525,6 +542,7 @@
     background-color: var(--cm-bg);
     transition: border-color var(--cm-transition), box-shadow var(--cm-transition), background-color var(--cm-transition);
 }
+
 .cm-search-input:focus {
     outline: none;
     background-color: var(--cm-surface-raised);
@@ -540,6 +558,7 @@
 }
 
 .cm-select-wrap { position: relative; }
+
 .cm-select-wrap::after {
     content: "";
     position: absolute;
@@ -553,6 +572,7 @@
     border-top: 5px solid var(--cm-caption);
     pointer-events: none;
 }
+
 .cm-select {
     appearance: none;
     -webkit-appearance: none;
@@ -567,6 +587,7 @@
     min-width: 150px;
     transition: border-color var(--cm-transition), box-shadow var(--cm-transition), background-color var(--cm-transition);
 }
+
 .cm-select:focus {
     outline: none;
     background-color: var(--cm-surface-raised);
@@ -580,6 +601,7 @@
     border-radius: 4px;
     overflow: hidden;
 }
+
 .cm-view-btn {
     display: inline-flex;
     align-items: center;
@@ -591,6 +613,7 @@
     background-color: var(--cm-bg);
     transition: background-color var(--cm-transition), color var(--cm-transition);
 }
+
 .cm-view-btn + .cm-view-btn { border-left: 1.5px solid var(--cm-border); }
 .cm-view-btn.is-active {
     background-color: var(--cm-accent);
@@ -606,6 +629,7 @@
     padding-top: 14px;
     border-top: 1px solid var(--cm-border);
 }
+
 .cm-chip {
     padding: 6px 14px;
     font-size: 12.5px;
@@ -616,6 +640,7 @@
     color: var(--cm-caption);
     transition: background-color var(--cm-transition), color var(--cm-transition), border-color var(--cm-transition);
 }
+
 .cm-chip:hover { border-color: var(--cm-accent); color: var(--cm-accent-strong); }
 .cm-chip.is-active {
     background-color: var(--cm-accent);
@@ -623,7 +648,12 @@
     color: #F7F1DE;
 }
 
-/* ================= 19. BULK ACTIONS ================= */
+/* ================= 9. BULK ACTIONS ================= */
+@keyframes cmFadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .cm-bulk-bar {
     display: flex;
     align-items: center;
@@ -637,10 +667,7 @@
     margin-top: 14px;
     animation: cmFadeInUp 0.2s var(--cm-ease);
 }
-@keyframes cmFadeInUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+
 .cm-bulk-info {
     display: flex;
     align-items: center;
@@ -649,9 +676,11 @@
     font-weight: 600;
     color: var(--cm-accent-strong);
 }
+
 .cm-bulk-count { font-size: 15px; font-weight: 700; }
 .cm-bulk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-/* ================= CHECKBOX (shared) ================= */
+
+/* ================= 10. CHECKBOXES & SWITCHES ================= */
 .cm-checkbox { position: relative; display: inline-flex; cursor: pointer; }
 .cm-checkbox input { position: absolute; opacity: 0; height: 0; width: 0; }
 .cm-checkbox-box {
@@ -680,7 +709,14 @@
 }
 .cm-checkbox input:checked ~ .cm-checkbox-box::after { display: block; }
 
-/* ================= BADGES (shared) ================= */
+.cm-switch { flex: 0 0 auto; position: relative; width: 42px; height: 24px; }
+.cm-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+.cm-switch-track { position: absolute; inset: 0; background-color: #E4DCC8; border-radius: 999px; transition: background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.cm-switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background-color: #F7F1DE; box-shadow: 0 1px 2px rgba(36, 26, 23, 0.07); transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.cm-switch input:checked ~ .cm-switch-track { background-color: #C08A4E; }
+.cm-switch input:checked ~ .cm-switch-track .cm-switch-thumb { transform: translateX(18px); }
+
+/* ================= 11. BADGES & INDICATORS ================= */
 .cm-badge {
     display: inline-flex;
     align-items: center;
@@ -692,6 +728,7 @@
     line-height: 1;
     white-space: nowrap;
 }
+
 .cm-badge::before {
     content: "";
     display: block;
@@ -701,6 +738,7 @@
     background-color: currentColor;
     flex-shrink: 0;
 }
+
 .cm-badge.c-success { background-color: rgba(79, 125, 84, 0.13); color: #4f7d54; }
 .cm-badge.c-warning { background-color: rgba(183, 128, 43, 0.16); color: #b7802b; }
 .cm-badge.c-danger { background-color: rgba(181, 75, 59, 0.13); color: #b54b3b; }
@@ -708,11 +746,12 @@
 .cm-badge.c-accent { background-color: rgba(192, 138, 78, 0.14); color: #A56B34; }
 .cm-badge.c-muted { background-color: rgba(176, 186, 153, 0.22); color: #6b7458; }
 
-/* ================= FOOTER ================= */
+/* ================= 12. FOOTER ================= */
 .cm-footer {
     text-align: center;
     padding: 14px 10px 4px;
 }
+
 .cm-footer p {
     font-size: 12.5px;
     color: var(--cm-caption);
@@ -721,7 +760,7 @@
     line-height: 1.6;
 }
 
-/* ================= 7. TREE ================= */
+/* ================= 13. TREE VIEW & ROWS ================= */
 .cm-tree-card { padding: 22px 18px 22px 22px; }
 
 .cm-tree-count {
@@ -741,7 +780,6 @@
     gap: 2px;
 }
 
-/* ================= 8. TREE ROWS ================= */
 .cm-tree-node { display: flex; flex-direction: column; }
 
 .cm-tree-row {
@@ -759,7 +797,7 @@
 .cm-tree-row.is-selected { background-color: var(--cm-accent-soft); box-shadow: inset 2px 0 0 var(--cm-accent); }
 .cm-tree-row:focus-visible { outline: 2px solid var(--cm-accent); outline-offset: -2px; }
 
-/* connecting lines for children */
+/* Connecting lines for children */
 .cm-tree-node[data-cm-depth="1"] > .cm-tree-row::before,
 .cm-tree-node[data-cm-depth="2"] > .cm-tree-row::before {
     content: "";
@@ -770,6 +808,7 @@
     width: 1px;
     background-color: var(--cm-border);
 }
+
 .cm-tree-node[data-cm-depth="1"] > .cm-tree-row::after,
 .cm-tree-node[data-cm-depth="2"] > .cm-tree-row::after {
     content: "";
@@ -794,6 +833,7 @@
     z-index: 1;
     background-color: var(--cm-surface-raised);
 }
+
 .cm-tree-toggle:hover { background-color: var(--cm-accent-soft); color: var(--cm-accent-strong); }
 .cm-tree-toggle.is-open svg { transform: rotate(90deg); }
 .cm-tree-toggle svg { transition: transform var(--cm-transition); }
@@ -812,6 +852,7 @@
     font-size: 15px;
     z-index: 1;
 }
+
 .cm-tree-node[data-cm-depth="0"] .cm-tree-icon {
     background-color: var(--ad-muted);
     color: #9D6638 !important;
@@ -824,6 +865,7 @@
     flex-direction: column;
     gap: 1px;
 }
+
 .cm-tree-name {
     display: flex;
     align-items: center;
@@ -832,6 +874,7 @@
     font-weight: 700;
     color: var(--cm-heading);
 }
+
 .cm-tree-node[data-cm-depth="0"] .cm-tree-name { font-size: 14.5px; }
 .cm-tree-slug { font-size: 11.5px; color: var(--cm-caption); font-family: "SFMono-Regular", Consolas, monospace; }
 
@@ -844,11 +887,11 @@
     color: var(--cm-caption);
     font-weight: 600;
 }
+
 .cm-tree-meta-item { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
 .cm-tree-meta-item svg { color: var(--cm-accent); }
 
 .cm-tree-badges { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
-
 .cm-tree-actions { flex: 0 0 auto; }
 
 .cm-tree-icon-btn {
@@ -861,6 +904,7 @@
     color: var(--cm-caption);
     transition: background-color var(--cm-transition), color var(--cm-transition);
 }
+
 .cm-tree-icon-btn:hover { background-color: var(--cm-accent-soft); color: var(--cm-accent-strong); }
 
 .cm-tree-children {
@@ -868,11 +912,13 @@
     overflow: hidden;
     transition: max-height 0.3s var(--cm-ease);
 }
+
 .cm-tree-children.is-open { max-height: 4000px; }
 
-/* ================= 9. TABLE VIEW ================= */
+/* ================= 14. TABLE VIEW ================= */
 .cm-table-wrap { width: 100%; overflow-x: auto; }
 .cm-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+
 .cm-table thead th {
     text-align: left;
     font-size: 10.5px;
@@ -884,12 +930,14 @@
     border-bottom: 1px solid var(--cm-border);
     white-space: nowrap;
 }
+
 .cm-table tbody td {
     padding: 12px;
     border-bottom: 1px solid var(--cm-border);
     color: var(--cm-body);
     vertical-align: middle;
 }
+
 .cm-table tbody tr:last-child td { border-bottom: none; }
 .cm-table tbody tr { transition: background-color var(--cm-transition); }
 .cm-table tbody tr:hover { background-color: var(--cm-accent-soft); }
@@ -904,7 +952,7 @@
 .cm-table-cat-name { font-weight: 700; color: var(--cm-heading); }
 .cm-table-cat-slug { font-size: 11px; color: var(--cm-caption); display: block; }
 
-/* ================= 10. DRAWER ================= */
+/* ================= 15. DRAWER PANELS ================= */
 .cm-drawer-overlay {
     position: fixed;
     inset: 0;
@@ -917,13 +965,14 @@
     opacity: 0;
     transition: opacity 0.25s ease;
 }
+
 .cm-drawer-overlay.is-open { opacity: 1; }
 
 .cm-drawer {
     width: min(760px, 100%);
     height: 100%;
     background-color: #F7F1DE;
-    box-shadow:  0 20px 50px rgba(36, 26, 23, 0.18);
+    box-shadow: 0 20px 50px rgba(36, 26, 23, 0.18);
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
@@ -931,8 +980,8 @@
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
     color: #5B5142;
 }
-.cm-drawer-overlay.is-open .cm-drawer { transform: translateX(0); }
 
+.cm-drawer-overlay.is-open .cm-drawer { transform: translateX(0); }
 .cm-drawer * { box-sizing: border-box; }
 
 .cm-drawer-header {
@@ -940,18 +989,21 @@
     padding: 20px 26px;
     border-bottom: 1px solid #E4DCC8;
 }
+
 .cm-drawer-header-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
 }
+
 .cm-drawer-close {
     width: 36px; height: 36px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     background-color: #F7F1DE; border: 1px solid #E4DCC8; color: #241A17;
     transition: background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .cm-drawer-close:hover { background-color: rgba(192, 138, 78, 0.14); color: #A56B34; }
 .cm-drawer-header-actions { display: flex; align-items: center; gap: 8px; }
 
@@ -981,21 +1033,28 @@
     overflow-x: auto;
     scrollbar-width: thin;
 }
+
 .cm-drawer-tabs::-webkit-scrollbar { height: 4px; }
 .cm-drawer-tabs::-webkit-scrollbar-thumb { background: #E4DCC8; border-radius: 10px; }
+
 .cm-drawer-tab {
     flex: 0 0 auto; padding: 8px 13px; font-size: 12.5px; font-weight: 600;
     color: #948B79; border-radius: 6px; white-space: nowrap;
     transition: background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .cm-drawer-tab:hover { background-color: #F7F1DE; color: #241A17; }
 .cm-drawer-tab.is-active { background-color: #C08A4E; color: #F7F1DE; }
 
 .cm-drawer-body { flex: 1; overflow-y: auto; padding: 22px 26px 40px; }
 
+@keyframes cmPanelIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .cm-drawer-panel { display: none; flex-direction: column; gap: 18px; animation: cmPanelIn 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
 .cm-drawer-panel.is-active { display: flex; }
-@keyframes cmPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 .cm-drawer-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .cm-drawer-stat {
@@ -1022,7 +1081,7 @@
 
 .cm-desc-text { font-size: 13.5px; color: #5B5142; line-height: 1.6; }
 
-/* ================= 11. CATEGORY INFORMATION ================= */
+/* ================= 16. CATEGORY INFORMATION & FORMS ================= */
 .cm-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .cm-info-item { display: flex; flex-direction: column; gap: 4px; }
 .cm-info-item-wide { grid-column: span 2; }
@@ -1049,7 +1108,7 @@
 .cm-form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
 .cm-form { display: flex; flex-direction: column; }
 
-/* ================= 12. SEO ================= */
+/* ================= 17. SEO PREVIEW ================= */
 .cm-seo-preview { margin-top: 8px; }
 .cm-seo-preview-label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #948B79; margin-bottom: 8px; }
 .cm-seo-preview-card {
@@ -1060,31 +1119,7 @@
 .cm-seo-preview-title { font-size: 15.5px; color: #1a0dab; font-weight: 500; }
 .cm-seo-preview-desc { font-size: 12.5px; color: #5B5142; line-height: 1.5; }
 
-/* ================= 13. DISPLAY SETTINGS ================= */
-.cm-toggle-list { display: flex; flex-direction: column; }
-.cm-toggle-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 14px;
-    padding: 13px 0; border-bottom: 1px solid #E4DCC8;
-}
-.cm-toggle-row:last-child { border-bottom: none; }
-.cm-toggle-text strong { display: block; font-size: 13.5px; color: #241A17; }
-.cm-toggle-text small { font-size: 12px; color: #948B79; }
-
-.cm-switch { flex: 0 0 auto; position: relative; width: 42px; height: 24px; }
-.cm-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
-.cm-switch-track { position: absolute; inset: 0; background-color: #E4DCC8; border-radius: 999px; transition: background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-.cm-switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background-color: #F7F1DE; box-shadow: 0 1px 2px rgba(36, 26, 23, 0.07); transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
-.cm-switch input:checked ~ .cm-switch-track { background-color: #C08A4E; }
-.cm-switch input:checked ~ .cm-switch-track .cm-switch-thumb { transform: translateX(18px); }
-
-.cm-toggle-list-compact { flex-direction: row; flex-wrap: wrap; gap: 16px; margin-top: 6px; }
-.cm-inline-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #241A17; cursor: pointer; }
-.cm-inline-toggle input { accent-color: #C08A4E; width: 16px; height: 16px; }
-
-.cm-details { margin-top: 6px; border-top: 1px solid #E4DCC8; padding-top: 14px; }
-.cm-details summary { font-size: 13px; font-weight: 700; color: #A56B34; cursor: pointer; }
-
-/* ================= 14. SUBCATEGORIES ================= */
+/* ================= 18. SUBCATEGORIES ================= */
 .cm-sub-list { display: flex; flex-direction: column; gap: 2px; }
 .cm-sub-row {
     display: flex; align-items: center; gap: 12px; padding: 12px 8px;
@@ -1102,13 +1137,7 @@
 .cm-sub-info span { font-size: 12px; color: #948B79; }
 .cm-sub-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; }
 
-/* ================= 15. PRODUCTS ================= */
-.cm-link-btn {
-    display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
-    color: #A56B34; transition: gap 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cm-link-btn:hover { gap: 8px; }
-
+/* ================= 19. PRODUCTS INTEGRATION ================= */
 .cm-product-cell { display: flex; align-items: center; gap: 10px; }
 .cm-product-thumb {
     flex: 0 0 auto; width: 38px; height: 38px; border-radius: 8px;
@@ -1117,7 +1146,7 @@
 }
 .cm-product-name-cell strong { font-size: 13px; color: #241A17; display: block; }
 
-/* ================= 16. ANALYTICS ================= */
+/* ================= 20. ANALYTICS & CHARTS ================= */
 .cm-analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 .cm-line-chart-wrap { position: relative; height: 170px; }
@@ -1157,7 +1186,7 @@
 .cm-top-bar-fill { display: block; height: 100%; background: linear-gradient(90deg, #C08A4E, #A56B34); }
 .cm-top-value { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: #A56B34; }
 
-/* ================= 17. ACTIVITY ================= */
+/* ================= 21. ACTIVITY TIMELINE ================= */
 .cm-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .cm-pill {
     padding: 5px 12px; font-size: 11.5px; font-weight: 600; border-radius: 999px;
@@ -1189,19 +1218,25 @@
 .cm-timeline-body p { font-size: 12px; color: #5B5142; margin: 3px 0; line-height: 1.5; }
 .cm-timeline-time { font-size: 11px; color: #948B79; font-weight: 500; }
 
-/* ================= 18. MODALS ================= */
+/* ================= 22. MODALS & DANGER ZONES ================= */
+@keyframes cmScaleIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .cm-modal-overlay {
     position: fixed; inset: 0; background-color: rgba(33, 27, 34, 0.5); backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
     z-index: 1100; padding: 20px; opacity: 0; transition: opacity 0.2s ease; overflow-y: auto;
 }
 .cm-modal-overlay:not(.is-hidden) { opacity: 1; }
+
 .cm-modal {
     position: relative; background-color: #F7F1DE; border-radius: 4px; padding: 30px; width: 100%; max-width: 460px;
     box-shadow: 0 20px 50px rgba(36, 26, 23, 0.18); text-align: left; animation: cmScaleIn 0.25s cubic-bezier(0.22, 1, 0.36, 1); margin: auto;
 }
 .cm-modal-lg { max-width: 620px; }
-@keyframes cmScaleIn { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+
 .cm-modal-icon {
     display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%;
     background-color: rgba(181, 75, 59, 0.13); color: #b54b3b; margin-bottom: 16px;
@@ -1270,25 +1305,35 @@
 .cm-upload-hint { font-size: 11.5px; color: #948B79; margin: 4px 0 0; }
 .cm-upload-filename { margin-top: 10px; font-size: 12.5px; font-weight: 600; color: #A56B34; }
 
-/* ================= 20. TOASTS ================= */
+/* ================= 23. TOASTS & NOTIFICATIONS ================= */
+@keyframes cmToastIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cmToastOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
+}
+
 .cm-toast-container {
     position: fixed; bottom: 24px; right: 24px; z-index: 1400; display: flex; flex-direction: column; gap: 10px; max-width: 340px;
 }
+
 .cm-toast {
     display: flex; align-items: center; gap: 10px; background-color: #F7F1DE; border: 1px solid var(--cm-border);
     border-left: 4px solid var(--cm-accent); border-radius: 8px; padding: 12px 14px; box-shadow: var(--cm-shadow-md);
     font-size: 13.5px; color: var(--cm-heading); animation: cmToastIn 0.25s ease;
 }
+
 .cm-toast svg { color: var(--cm-accent); flex-shrink: 0; }
 .cm-toast.cm-toast-success { border-left-color: var(--cm-success); }
 .cm-toast.cm-toast-success svg { color: var(--cm-success); }
 .cm-toast.cm-toast-danger { border-left-color: var(--cm-danger); }
 .cm-toast.cm-toast-danger svg { color: var(--cm-danger); }
 .cm-toast.is-leaving { animation: cmToastOut 0.22s ease forwards; }
-@keyframes cmToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes cmToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-/* ================= 21. EMPTY STATES ================= */
+/* ================= 24. EMPTY STATES ================= */
 .cm-empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; }
 .cm-empty-state-sm { padding: 30px 16px; }
 .cm-empty-icon {
@@ -1298,23 +1343,27 @@
 .cm-empty-state h3 { font-size: 16px; font-weight: 700; color: var(--cm-heading); margin: 0 0 6px; }
 .cm-empty-state p { font-size: 13px; color: var(--cm-caption); max-width: 340px; margin: 0 0 18px; }
 
-/* ================= 22. RESPONSIVE ================= */
+/* ================= 25. RESPONSIVE STYLES ================= */
 @media (max-width: 1299.98px) {
     .cm-metrics-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
 @media (max-width: 1099.98px) {
     .cm-drawer-stats-grid { grid-template-columns: repeat(2, 1fr); }
     .cm-analytics-grid { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 991.98px) {
     .cm-drawer { width: min(560px, 100%); }
 }
+
 @media (max-width: 899.98px) {
     .cm-metrics-grid { grid-template-columns: repeat(2, 1fr); }
     .cm-info-grid, .cm-form-grid { grid-template-columns: 1fr; }
     .cm-info-item-wide, .cm-form-group-full { grid-column: span 1; }
     .cm-quick-actions { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 767.98px) {
     .cm-header { flex-direction: column; padding: 20px; }
     .cm-header-actions { width: 100%; }
@@ -1335,6 +1384,7 @@
     }
     .cm-table td[data-label=""]::before { content: none; }
 }
+
 @media (max-width: 560px) {
     .cm-metrics-grid { grid-template-columns: 1fr; }
     .cm-drawer-stats-grid { grid-template-columns: 1fr; }

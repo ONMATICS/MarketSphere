@@ -1,5 +1,6 @@
 <html lang="en">
   {% load static %}
+  {% load time_tags %}
 
   <head>
     <meta charset="UTF-8" />
@@ -107,7 +108,7 @@
                                           <p>{{ notification.message|safe }}</p>
 
                                           <time datetime="{{ notification.created_at|date:'c' }}">
-                                              {{ notification.created_at|timesince }} ago
+                                              {{ notification.created_at|custom_timesince }}
                                           </time>
                                       </div>
 

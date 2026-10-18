@@ -230,10 +230,10 @@
           <tbody id="pmProductsTableBody">
             <!-- Product rows will be rendered here by Django from seller.products queryset -->
             {% for product in dashboard_seller_products %}
-              <tr class="pm-row" data-product-name="wireless over-ear headphones">
+              <tr class="pm-row" data-product-name="{{ product.name }}" data-product-slug="{{ product.slug }}">
                 <td data-label="">
                   <label class="pm-checkbox">
-                    <input type="checkbox" class="pm-row-checkbox" aria-label="Select Wireless Over-Ear Headphones" />
+                    <input type="checkbox" class="pm-row-checkbox" aria-label="Select {{ product.name }}" />
                     <span class="pm-checkbox-box"></span>
                   </label>
                 </td>
@@ -243,7 +243,7 @@
                   </div>
                 </td>
                 <td data-label="Product">
-                  <span class="pm-product-name" onclick="window.open('/product/{{ product.slug }}/', '_blank')">{{ product.name }}</span>
+                  <span class="pm-product-name" onclick="window.open('/seller/products/{{ product.slug }}/detail/', '_blank')">{{ product.name }}</span>
                   <span class="pm-product-sku">SKU: {{ product.sku }}</span>
                 </td>
                 <td data-label="Category">
@@ -297,6 +297,13 @@
                       </svg>
                     </button>
                     <div class="pm-dropdown-menu" role="menu" data-product-slug="{{ product.slug }}">
+                      <button type="button" class="pm-dropdown-item" role="menuitem" data-row-action="live">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-up-right" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5"/>
+                          <path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z"/>
+                        </svg>
+                        View Live
+                      </button>
                       <button type="button" class="pm-dropdown-item" role="menuitem" data-row-action="edit">
                         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>

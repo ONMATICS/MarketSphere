@@ -1,14 +1,28 @@
 /* =========================================================
-   MARKETSPHERE — SELLER ACCOUNT PAGE STYLES
-   Builds on global tokens (static/css/styles.css) and reuses
-   .btn-hero-primary / .btn-hero-secondary / .section-label /
-   .product-image-placeholder classes from home.css. Card,
-   badge and timeline visual language mirrors orders/order_detail.css
-   and orders/orders.css, but every class here is prefixed
-   `sa-` (Seller Account) to avoid collisions per project
-   convention.
-   ========================================================= */
+   MARKETSPHERE — SELLER ACCOUNT DASHBOARD (seller_account.css)
+   Purpose:
+     Controls the layout, components, navigation, and specific 
+     views for the Seller Account application and dashboard.
+   Scope:
+     Seller Account Dashboard, Application Status, Store Info, 
+     Document Uploads, and Verification Timeline.
+   Sections:
+     1. Variables
+     2. Base Layout & Typography
+     3. Shared Components (Cards, Buttons, Badges)
+     4. Sidebar Profile Card
+     5. Application Status & Progress
+     6. Application Documents
+     7. Store Information
+     8. Verification Timeline
+     9. Tips & Future Features
+     10. Modals & Toasts
+     11. Animations & Loading
+     12. Responsive Styles
+========================================================= */
 
+
+/* ================= 1. VARIABLES ================= */
 :root {
     --sa-accent: #9D6638;
     --sa-accent-dark: #4E220F;
@@ -19,7 +33,28 @@
     --sa-muted: #B0BA99;
 }
 
-/* ================= BREADCRUMB ================= */
+
+/* ================= 2. BASE LAYOUT & TYPOGRAPHY ================= */
+/* Header */
+.sa-header-section {
+    padding: 10px 0 24px;
+    background-color: var(--background-color);
+}
+
+.sa-page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 6px 0 6px;
+}
+
+.sa-page-subtitle {
+    font-size: 15px;
+    color: #4f7d54;
+    margin: 0;
+}
+
+/* Breadcrumb */
 .sa-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
@@ -43,26 +78,7 @@
     color: var(--sa-muted);
 }
 
-/* ================= HEADER ================= */
-.sa-header-section {
-    padding: 10px 0 24px;
-    background-color: var(--background-color);
-}
-
-.sa-page-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--headings);
-    margin: 6px 0 6px;
-}
-
-.sa-page-subtitle {
-    font-size: 15px;
-    color: #4f7d54;
-    margin: 0;
-}
-
-/* ================= SECTION LAYOUT ================= */
+/* Section Layout */
 .sa-section {
     padding: 6px 0 60px;
     background-color: var(--background-color);
@@ -78,361 +94,104 @@
     gap: 20px;
 }
 
-/* ================= APPLICATION DOCUMENTS ================= */
-.sa-documents-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-  padding: 0 1.5rem 1.5rem 1.5rem;
+
+/* ================= 3. SHARED COMPONENTS ================= */
+/* Shared Card */
+.sa-card {
+    background-color: #F7F1DE;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
 }
 
-.sa-document-card {
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  background-color: #F7F1DE;
-  transition: border-color 0.2s ease-in-out;
-}
-
-.sa-document-card:hover {
-  border-color: var(--sa-accent);
-}
-
-.sa-document-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.sa-document-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--headings);
-  margin: 0;
-}
-
-.sa-document-status {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.6rem;
-  border-radius: 50rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* Status Variations Matching the App's Aesthetic */
-.sa-document-status.verified { background-color: var(--sa-success); color: #F7F1DE; }
-.sa-document-status.pending { background-color: var(--sa-warning); color: #F7F1DE; }
-.sa-document-status.missing { background-color: var(--sa-danger); color: #F7F1DE; }
-.sa-document-status.rejected { background-color: var(--sa-danger); color: #F7F1DE; }
-
-.sa-document-feedback {
+.sa-card-head {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-
-    margin: 12px 0;
-    padding: 10px 12px;
-
-    background: rgba(245, 158, 11, 0.08);
-    border: 1px solid rgba(245, 158, 11, 0.22);
-    border-left: 4px solid #f59e0b;
-
-    border-radius: 10px;
-}
-
-.sa-document-feedback i {
-    flex-shrink: 0;
-
-    margin-top: 2px;
-
-    font-size: 15px;
-    color: #d97706;
-}
-
-.sa-document-feedback-message {
-    margin: 0;
-
-    color: #5b4a17;
-    font-size: 13px;
-    line-height: 1.45;
-    font-weight: 500;
-
-    word-break: break-word;
-}
-
-.sa-document-feedback-message br {
-    content: "";
-    display: block;
-    margin-top: 4px;
-}
-
-.sa-document-preview {
-  height: 160px;
-  background-color: #F7F1DE;
-  border: 1px dashed var(--sa-accent);
-  border-radius: 0.375rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.sa-document-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.sa-document-preview .sa-doc-icon {
-  font-size: 3.5rem;
-  color: #adb5bd;
-}
-
-.sa-document-empty {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.sa-document-empty i {
-  font-size: 2rem;
-  color: #adb5bd;
-  margin-bottom: 0.5rem;
-}
-
-.sa-document-empty-text {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #495057;
-  display: block;
-}
-
-.sa-document-empty-helper {
-  font-size: 0.75rem;
-  color: #6c757d;
-  margin-top: 0.25rem;
-}
-
-.sa-document-meta {
-  font-size: 0.875rem;
-  margin-bottom: 1.25rem;
-  display: flex;
-  gap: 0.375rem;
-}
-
-.sa-document-meta-label {
-  color: #6c757d;
-  font-weight: 500;
-}
-
-.sa-document-meta-value {
-  color: #212529;
-  font-weight: 500;
-}
-
-.sa-document-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: auto;
-}
-
-.sa-document-actions .btn {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  font-size: 0.875rem !important;
-  font-weight: 600 ;
-  padding: 0.4rem 0.75rem !important;
-}
-
-/* Responsive Behaviour */
-@media (max-width: 991px) {
-  .sa-documents-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 767px) {
-  .sa-documents-grid {
-    grid-template-columns: 1fr;
-    padding: 0 1rem 1rem 1rem;
-  }
-}
-
-/* =========================================================
-   Additional Document Preview Styles
-   ========================================================= */
-
-.sa-document-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.sa-document-pdf {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 1rem;
-    box-sizing: border-box;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
 }
 
-.sa-document-pdf .sa-doc-icon {
-    font-size: 2.5rem; /* Large icon size specifically for the PDF preview layout */
+.sa-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.sa-document-file-name {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-    word-break: break-all;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 1; /* Limits filename to a maximum of 2 lines */
-    -webkit-box-orient: vertical;
-}
-
-.uploaded-date{
-    margin-top: 0.1rem;
-    font-size: 0.75rem;
-    color: #6c757d;
-
-}
-
-/* ===========================================
-   APPLICATION PROGRESS
-=========================================== */
-
-
-.sa-progress-subtitle{
-    margin-top:6px;
-    margin-bottom:0;
-    color: #B0BA99;
-    font-size:.72rem;
-    font-weight:600;
-}
-
-.sa-progress-percentage{
-    font-size:1.5rem;
-    font-weight:700;
-    color:var(--headings);
-    white-space:nowrap;
-}
-
-.sa-progress-bar{
-    width:100%;
-    height:10px;
-    margin-top: 1px;
-    border-radius:100px;
-    background: #F7F1DE;
-    overflow:hidden;
-}
-
-.sa-progress-fill{
-    height:100%;
-    border-radius:100px;
-    background: var(--sa-accent);
-    transition:width .35s ease;
-}
-
-.sa-progress-warning,
-.sa-progress-success{
-    display:flex;
-    gap:14px;
-    align-items:flex-start;
-    margin-top:20px;
-    padding:16px 18px;
-    border-radius:14px;
-}
-
-.sa-progress-warning{
-    background:#F7F1DE;
-    border:1px solid var(--border-color);
-}
-
-.sa-progress-warning i{
+.sa-card-title i {
     color: var(--sa-accent);
-    font-size:1.2rem;
+    background-color: transparent;
+    font-size: 19px;
 }
 
-.sa-progress-success{
-    background: #4f7d54;
-    border:1px solid var(--border-color);
+.sa-item-count {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--sa-warning);
+    background-color: rgba(183, 128, 43, 0.16);
+    padding: 4px 12px;
+    border-radius: 20px;
 }
 
-.sa-progress-success i{
-    color:#4f7d54;
-    font-size:1.2rem;
+/* Shared Buttons */
+.sa-edit-btn {
+    width: auto !important;
+    background-color: transparent !important;
+    color: #4E220F !important;
+    border: 1.5px solid #9D6638 !important;
+    border-radius: 2px !important;
+    padding: 8px 16px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.sa-progress-warning strong,
-.sa-progress-success strong{
-    display:block;
-    margin-bottom:4px;
+.sa-edit-btn:hover {
+    color: #F7F1DE !important;
+    background-color: #9D6638 !important;
 }
 
-.sa-progress-warning p,
-.sa-progress-success p{
-    margin:0;
-    color: var(--sa-accent);
-    font-size:.92rem;
+.sa-edit-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
-.sa-progress-missing{
-    margin-top:20px;
-    padding-top:18px;
-    border-top:1px solid var(--border-color);
+/* Status Badges */
+.sa-status-badge-wrap {
+    margin-bottom: 20px;
 }
 
-.sa-progress-missing h6{
-    font-size:.95rem;
-    font-weight:600;
-    margin-bottom:12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
+.sa-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 20px;
 }
 
-.sa-progress-missing ul{
-    margin:0;
-    padding-left:18px;
+.sa-status-badge i {
+    background-color: transparent;
+    font-size: 14px;
 }
 
-.sa-progress-missing li{
-    margin-bottom:4px;
-    font-size: 0.9rem;
-    color: #B0BA99;
-}
+.sa-status-pending { background-color: rgba(183, 128, 43, 0.16); color: var(--sa-warning); }
+.sa-status-verified { background-color: rgba(79, 125, 84, 0.14); color: var(--sa-success); }
+.sa-status-rejected { background-color: rgba(181, 75, 59, 0.13); color: var(--sa-danger); }
+.sa-status-suspended { background-color: rgba(183, 128, 43, 0.18); color: var(--sa-warning); }
+.sa-status-blocked { background-color: rgba(78, 34, 15, 0.14); color: var(--sa-accent-dark); }
+.sa-status-deactivated { background-color: rgba(176, 186, 153, 0.28); color: #6b7458; }
 
-@media (max-width:768px){
 
-    .sa-progress-header{
-        flex-direction:column;
-    }
-
-    .sa-progress-percentage{
-        font-size:1.75rem;
-    }
-
-}
-/* ================= SIDEBAR PROFILE CARD ================= */
+/* ================= 4. SIDEBAR PROFILE CARD ================= */
 .sa-profile-card {
     position: sticky;
     top: calc(var(--sticky-header-height, 96px) + 16px);
@@ -550,56 +309,6 @@
     color: var(--sa-accent);
 }
 
-/* ---- Status badge ---- */
-.sa-status-badge-wrap {
-    margin-bottom: 20px;
-}
-
-.sa-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 7px 16px;
-    border-radius: 20px;
-}
-
-.sa-status-badge i {
-    background-color: transparent;
-    font-size: 14px;
-}
-
-.sa-status-pending {
-    background-color: rgba(183, 128, 43, 0.16);
-    color: var(--sa-warning);
-}
-
-.sa-status-verified {
-    background-color: rgba(79, 125, 84, 0.14);
-    color: var(--sa-success);
-}
-
-.sa-status-rejected {
-    background-color: rgba(181, 75, 59, 0.13);
-    color: var(--sa-danger);
-}
-
-.sa-status-suspended {
-    background-color: rgba(183, 128, 43, 0.18);
-    color: var(--sa-warning);
-}
-
-.sa-status-blocked {
-    background-color: rgba(78, 34, 15, 0.14);
-    color: var(--sa-accent-dark);
-}
-
-.sa-status-deactivated {
-    background-color: rgba(176, 186, 153, 0.28);
-    color: #6b7458;
-}
-
 .sa-sidebar-divider {
     width: 100%;
     border: none;
@@ -608,7 +317,7 @@
     opacity: 1;
 }
 
-/* ---- Quick info ---- */
+/* Quick Info */
 .sa-quick-info {
     width: 100%;
     display: flex;
@@ -650,73 +359,9 @@
     white-space: nowrap;
 }
 
-/* ================= SHARED CARD ================= */
-.sa-card {
-    background-color: #F7F1DE;
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 24px;
-}
 
-.sa-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.sa-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--headings);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sa-card-title i {
-    color: var(--sa-accent);
-    background-color: transparent;
-    font-size: 19px;
-}
-
-.sa-item-count {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--sa-warning);
-    background-color: rgba(183, 128, 43, 0.16);
-    padding: 4px 12px;
-    border-radius: 20px;
-}
-
-.sa-edit-btn {
-    width: auto !important;
-    background-color: transparent !important;
-    color: #4E220F !important;
-    border: 1.5px solid #9D6638 !important;
-    border-radius: 2px !important;
-    padding: 8px 16px !important;
-    font-weight: 600 !important;
-    font-size: 13px !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-.sa-edit-btn:hover {
-    border: 1.5px solid #9D6638!important;
-    color: #F7F1DE !important;
-    background-color: #9D6638 !important;
-}
-
-.sa-edit-btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-/* ================= APPLICATION STATUS CARD ================= */
+/* ================= 5. APPLICATION STATUS & PROGRESS ================= */
+/* Status Card */
 .sa-status-card {
     display: flex;
     align-items: flex-start;
@@ -738,47 +383,22 @@
     background-color: transparent;
 }
 
-.sa-status-card-icon-pending {
-    background-color: rgba(183, 128, 43, 0.16);
-}
+.sa-status-card-icon-pending { background-color: rgba(183, 128, 43, 0.16); }
+.sa-status-card-icon-pending i { color: var(--sa-warning); }
 
-.sa-status-card-icon-pending i {
-    color: var(--sa-warning);
-}
-
-.sa-status-card-icon-verified {
-    background-color: rgba(79, 125, 84, 0.14);
-}
-
-.sa-status-card-icon-verified i {
-    color: var(--sa-success);
-}
+.sa-status-card-icon-verified { background-color: rgba(79, 125, 84, 0.14); }
+.sa-status-card-icon-verified i { color: var(--sa-success); }
 
 .sa-status-card-icon-rejected,
-.sa-status-card-icon-blocked {
-    background-color: rgba(181, 75, 59, 0.13);
-}
-
+.sa-status-card-icon-blocked { background-color: rgba(181, 75, 59, 0.13); }
 .sa-status-card-icon-rejected i,
-.sa-status-card-icon-blocked i {
-    color: var(--sa-danger);
-}
+.sa-status-card-icon-blocked i { color: var(--sa-danger); }
 
-.sa-status-card-icon-suspended {
-    background-color: rgba(183, 128, 43, 0.18);
-}
+.sa-status-card-icon-suspended { background-color: rgba(183, 128, 43, 0.18); }
+.sa-status-card-icon-suspended i { color: var(--sa-warning); }
 
-.sa-status-card-icon-suspended i {
-    color: var(--sa-warning);
-}
-
-.sa-status-card-icon-deactivated {
-    background-color: rgba(176, 186, 153, 0.28);
-}
-
-.sa-status-card-icon-deactivated i {
-    color: #6b7458;
-}
+.sa-status-card-icon-deactivated { background-color: rgba(176, 186, 153, 0.28); }
+.sa-status-card-icon-deactivated i { color: #6b7458; }
 
 .sa-status-card-body {
     flex: 1;
@@ -815,7 +435,7 @@
     cursor: not-allowed;
 }
 
-/* Reason boxes (rejected / suspended / blocked) */
+/* Reason Boxes (Rejected / Suspended / Blocked) */
 .sa-reason-box {
     margin-top: 14px;
     padding: 14px 16px;
@@ -865,7 +485,322 @@
     color: var(--sa-warning);
 }
 
-/* ================= STORE INFORMATION ================= */
+/* Application Progress */
+.sa-progress-subtitle {
+    margin-top: 6px;
+    margin-bottom: 0;
+    color: #B0BA99;
+    font-size: .72rem;
+    font-weight: 600;
+}
+
+.sa-progress-percentage {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--headings);
+    white-space: nowrap;
+}
+
+.sa-progress-bar {
+    width: 100%;
+    height: 10px;
+    margin-top: 1px;
+    border-radius: 100px;
+    background: #F7F1DE;
+    overflow: hidden;
+}
+
+.sa-progress-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--sa-accent);
+    transition: width .35s ease;
+}
+
+.sa-progress-warning,
+.sa-progress-success {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: 14px;
+}
+
+.sa-progress-warning {
+    background: #F7F1DE;
+    border: 1px solid var(--border-color);
+}
+
+.sa-progress-warning i {
+    color: var(--sa-accent);
+    font-size: 1.2rem;
+}
+
+.sa-progress-success {
+    background: #4f7d54;
+    border: 1px solid var(--border-color);
+}
+
+.sa-progress-success i {
+    color: #4f7d54;
+    font-size: 1.2rem;
+}
+
+.sa-progress-warning strong,
+.sa-progress-success strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.sa-progress-warning p,
+.sa-progress-success p {
+    margin: 0;
+    color: var(--sa-accent);
+    font-size: .92rem;
+}
+
+.sa-progress-missing {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-color);
+}
+
+.sa-progress-missing h6 {
+    font-size: .95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sa-progress-missing ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.sa-progress-missing li {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: #B0BA99;
+}
+
+
+/* ================= 6. APPLICATION DOCUMENTS ================= */
+.sa-documents-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.sa-document-card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #F7F1DE;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.sa-document-card:hover {
+    border-color: var(--sa-accent);
+}
+
+.sa-document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.sa-document-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--headings);
+    margin: 0;
+}
+
+.sa-document-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.sa-document-status.verified { background-color: var(--sa-success); color: #F7F1DE; }
+.sa-document-status.pending { background-color: var(--sa-warning); color: #F7F1DE; }
+.sa-document-status.missing { background-color: var(--sa-danger); color: #F7F1DE; }
+.sa-document-status.rejected { background-color: var(--sa-danger); color: #F7F1DE; }
+
+.sa-document-feedback {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 12px 0;
+    padding: 10px 12px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+    border-left: 4px solid #f59e0b;
+    border-radius: 10px;
+}
+
+.sa-document-feedback i {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 15px;
+    color: #d97706;
+}
+
+.sa-document-feedback-message {
+    margin: 0;
+    color: #5b4a17;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.sa-document-feedback-message br {
+    content: "";
+    display: block;
+    margin-top: 4px;
+}
+
+.sa-document-preview {
+    height: 160px;
+    background-color: #F7F1DE;
+    border: 1px dashed var(--sa-accent);
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.sa-document-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sa-document-preview .sa-doc-icon {
+    font-size: 3.5rem;
+    color: #adb5bd;
+}
+
+.sa-document-empty {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.sa-document-empty i {
+    font-size: 2rem;
+    color: #adb5bd;
+    margin-bottom: 0.5rem;
+}
+
+.sa-document-empty-text {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+    display: block;
+}
+
+.sa-document-empty-helper {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.sa-document-meta {
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.375rem;
+}
+
+.sa-document-meta-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.sa-document-meta-value {
+    color: #212529;
+    font-weight: 500;
+}
+
+.sa-document-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.sa-document-actions .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    font-size: 0.875rem !important;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem !important;
+}
+
+/* Additional Document Preview Styles */
+.sa-document-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sa-document-pdf {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.sa-document-pdf .sa-doc-icon {
+    font-size: 2.5rem;
+}
+
+.sa-document-file-name {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.uploaded-date {
+    margin-top: 0.1rem;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+
+/* ================= 7. STORE INFORMATION ================= */
 .sa-info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -963,7 +898,8 @@
     background-color: transparent;
 }
 
-/* ================= VERIFICATION TIMELINE ================= */
+
+/* ================= 8. VERIFICATION TIMELINE ================= */
 .sa-timeline {
     list-style: none;
     margin: 0;
@@ -1067,7 +1003,9 @@
     font-weight: 500;
 }
 
-/* ================= MARKETPLACE TIPS ================= */
+
+/* ================= 9. TIPS & FUTURE FEATURES ================= */
+/* Marketplace Tips */
 .sa-tips-card {
     background-color: rgba(157, 102, 56, 0.05);
     border-color: rgba(157, 102, 56, 0.25);
@@ -1097,7 +1035,7 @@
     font-size: 16px;
 }
 
-/* ================= FUTURE FEATURES GRID ================= */
+/* Future Features Grid */
 .sa-future-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1160,7 +1098,9 @@
     white-space: nowrap;
 }
 
-/* ================= EDIT MODALS (Store Info / Business Address) ================= */
+
+/* ================= 10. MODALS & TOASTS ================= */
+/* Edit Modals */
 .sa-edit-modal .modal-content {
     background-color: #F7F1DE;
     border: 1.5px solid var(--sa-accent);
@@ -1226,7 +1166,7 @@
     border: 1.5px solid var(--border-color) !important;
 }
 
-/* ================= TOAST ================= */
+/* Toast */
 .sa-toast-container {
     position: fixed;
     bottom: 24px;
@@ -1259,25 +1199,13 @@
     color: var(--sa-accent);
 }
 
-.sa-toast.sa-toast-success {
-    border-left-color: var(--sa-success);
-}
+.sa-toast.sa-toast-success { border-left-color: var(--sa-success); }
+.sa-toast.sa-toast-success i { color: var(--sa-success); }
 
-.sa-toast.sa-toast-success i {
-    color: var(--sa-success);
-}
+.sa-toast.sa-toast-error { border-left-color: var(--sa-danger); }
+.sa-toast.sa-toast-error i { color: var(--sa-danger); }
 
-.sa-toast.sa-toast-error {
-    border-left-color: var(--sa-danger);
-}
-
-.sa-toast.sa-toast-error i {
-    color: var(--sa-danger);
-}
-
-.sa-toast.sa-toast-info {
-    border-left-color: var(--sa-accent);
-}
+.sa-toast.sa-toast-info { border-left-color: var(--sa-accent); }
 
 .sa-toast.is-leaving {
     animation: saToastOut 0.22s ease forwards;
@@ -1293,7 +1221,8 @@
     to { opacity: 0; transform: translateY(10px); }
 }
 
-/* ================= LOADING / MOTION HELPERS ================= */
+
+/* ================= 11. ANIMATIONS & LOADING ================= */
 .sa-spin {
     animation: saSpin 0.8s linear infinite;
 }
@@ -1308,8 +1237,13 @@
     opacity: 0.85;
 }
 
-/* ================= RESPONSIVE ================= */
+
+/* ================= 12. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
+    .sa-documents-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .sa-profile-card {
         position: static;
     }
@@ -1324,6 +1258,19 @@
 }
 
 @media (max-width: 767.98px) {
+    .sa-documents-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    .sa-progress-header {
+        flex-direction: column;
+    }
+
+    .sa-progress-percentage {
+        font-size: 1.75rem;
+    }
+
     .sa-card {
         padding: 18px;
     }
