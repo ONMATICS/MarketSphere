@@ -1,10 +1,29 @@
 /* =========================================================
-   MARKETSPHERE — PRODUCT DETAIL PAGE STYLES
-   Builds on global tokens (static/css/styles.css) and reuses
-   .product-card / .section-heading / .btn-hero-* from home.css
+   MARKETSPHERE — PRODUCT DETAIL STYLESHEET
+   Purpose: Controls the layout and components of the Product
+   Detail Page (PDP), including the main gallery, purchase
+   actions, specification tabs, reviews, and cross-sells.
+   Scope: Storefront PDP
+
+   Sections:
+   1. Variables
+   2. Base Layout & Utilities
+   3. Breadcrumbs
+   4. Main Image Gallery & Thumbnails
+   5. Product Information & Pricing
+   6. Purchase Controls & Actions
+   7. Delivery Card
+   8. Seller Information Card
+   9. Features Strip
+   10. Specification & Review Tabs
+   11. Frequently Bought Together (FBT)
+   12. Recently Viewed Slider
+   13. Empty States
+   14. Fullscreen Overlay (Modals)
+   15. Responsive Styles
    ========================================================= */
 
-
+/* ================= 1. VARIABLES ================= */
 :root {
     --pd-accent: #9D6638;
     --pd-accent-dark: #4E220F;
@@ -14,7 +33,24 @@
     --pd-danger: #b54b3b;
 }
 
-/* ================= BREADCRUMB ================= */
+/* ================= 2. BASE LAYOUT & UTILITIES ================= */
+.pd-main-section {
+    padding: 16px 0 40px;
+    background-color: var(--background-color);
+}
+
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ================= 3. BREADCRUMBS ================= */
 .pd-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
@@ -38,13 +74,7 @@
     color: #B0BA99;
 }
 
-/* ================= MAIN SECTION LAYOUT ================= */
-.pd-main-section {
-    padding: 16px 0 40px;
-    background-color: var(--background-color);
-}
-
-/* ================= GALLERY ================= */
+/* ================= 4. MAIN IMAGE GALLERY & THUMBNAILS ================= */
 .pd-gallery {
     position: sticky;
     top: calc(var(--sticky-header-height, 96px) + 16px);
@@ -98,6 +128,7 @@
 .pd-gallery-badge-secondary {
     top: 52px;
 }
+
 .pd-zoom-btn {
     position: absolute;
     top: 16px;
@@ -116,7 +147,6 @@
     transition: 0.2s ease;
 }
 
-.back-to-top-btn:hover,
 .pd-zoom-btn:hover {
     background-color: var(--pd-accent) !important;
     border-radius: 50% !important;
@@ -172,7 +202,6 @@
     border-radius: 20px;
 }
 
-/* Thumbnail Strip */
 .pd-thumb-strip {
     display: flex;
     gap: 10px;
@@ -196,12 +225,14 @@
     padding: 0 !important;
     transition: border-color 0.2s ease, transform 0.2s ease;
 }
-.pd-thumb img{
+
+.pd-thumb img {
     width: 100%;
     height: 100%;
     border-radius: 10px;
     border-width: 2px;
 }
+
 .pd-thumb:hover {
     border-color: var(--pd-accent) !important;
 }
@@ -211,7 +242,7 @@
     box-shadow: 0 0 0 2px var(--pd-accent-ring);
 }
 
-/* ================= PRODUCT INFO ================= */
+/* ================= 5. PRODUCT INFORMATION & PRICING ================= */
 .pd-info-meta {
     display: flex;
     align-items: center;
@@ -329,7 +360,7 @@
     opacity: 1;
 }
 
-/* Purchase controls */
+/* ================= 6. PURCHASE CONTROLS & ACTIONS ================= */
 .pd-purchase-controls {
     display: flex;
     flex-direction: column;
@@ -434,17 +465,9 @@
 }
 
 @keyframes pdBtnPulse {
-    0% {
-        transform: scale(1);
-    }
-
-    40% {
-        transform: scale(0.96);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0% { transform: scale(1); }
+    40% { transform: scale(0.96); }
+    100% { transform: scale(1); }
 }
 
 .pd-secondary-actions {
@@ -490,17 +513,9 @@
 }
 
 @keyframes pdHeartPop {
-    0% {
-        transform: scale(1);
-    }
-
-    45% {
-        transform: scale(1.35);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0% { transform: scale(1); }
+    45% { transform: scale(1.35); }
+    100% { transform: scale(1); }
 }
 
 .pd-share-wrap {
@@ -549,7 +564,59 @@
     background-color: var(--pd-accent) !important;
     color: #F7F1DE !important;
 }
-/* ================= DELIVERY CARD ================= */
+
+/* Sticky Mobile Purchase Bar */
+.pdp-mobile-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1060;
+    background-color: #F7F1DE;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0px -6px 18px rgba(78, 34, 15, 0.1);
+    padding: 10px 14px;
+    display: none;
+    align-items: center;
+    gap: 12px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.pdp-mobile-bar.visible {
+    transform: translateY(0);
+}
+
+.pdp-mobile-bar-price {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.pdp-mobile-bar-price strong {
+    font-size: 17px;
+    color: #4E220F;
+}
+
+.pdp-mobile-bar-price span {
+    font-size: 11.5px;
+    color: #B0BA99;
+    text-decoration: line-through;
+}
+
+.pdp-mobile-bar .pdp-action-buttons {
+    flex: 1;
+    margin: 0;
+}
+
+.pdp-mobile-bar .pdp-btn-cart,
+.pdp-mobile-bar .pdp-btn-buy {
+    height: 42px !important;
+    min-width: 0;
+    font-size: 13.5px !important;
+}
+
+/* ================= 7. DELIVERY CARD ================= */
 .pd-delivery-card {
     background-color: #F7F1DE;
     border: 1px solid var(--border-color);
@@ -617,9 +684,7 @@
     color: var(--pd-accent);
 }
 
-
-
-/* ================= SELLER CARD ================= */
+/* ================= 8. SELLER INFORMATION CARD ================= */
 .pdp-seller-section {
     padding: 0 0 40px;
 }
@@ -710,7 +775,8 @@
     background-color: #9D6638;
     font-weight: 600 !important;
 }
-.pdp-seller-actions a:hover{
+
+.pdp-seller-actions a:hover {
     background-color: transparent;
 }
 
@@ -726,9 +792,7 @@
     border: 1.5px solid #4E220F !important;
 }
 
-
-
-/* ================= FEATURES STRIP ================= */
+/* ================= 9. FEATURES STRIP ================= */
 .pdp-features-section {
     padding: 0 0 45px;
     background-color: #F7F1DE;
@@ -772,7 +836,7 @@
     margin: 0;
 }
 
-/* ================= TABS ================= */
+/* ================= 10. SPECIFICATION & REVIEW TABS ================= */
 .pdp-tabs-section {
     padding: 0 0 50px;
     background-color: #F7F1DE;
@@ -824,7 +888,6 @@
     font-size: 14.5px;
 }
 
-/* Specifications table */
 .pdp-spec-table {
     width: 100%;
     border-collapse: collapse;
@@ -853,7 +916,6 @@
     color: #4E220F;
 }
 
-/* Reviews */
 .pdp-reviews-summary {
     display: flex;
     gap: 40px;
@@ -1021,46 +1083,7 @@
     border-color: #9D6638 !important;
 }
 
-/* ================= RELATED / FBT / RECENTLY VIEWED ================= */
-.pd-slider-controls {
-    display: flex;
-    gap: 8px;
-}
-
-.pd-slider-btn {
-    width: 36px !important;
-    height: 36px !important;
-    border-radius: 50% !important;
-    background-color: #F7F1DE !important;
-    border: 1px solid var(--border-color) !important;
-    color: var(--pd-accent) !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 !important;
-    transition: 0.2s ease;
-}
-
-.pd-slider-btn:hover {
-    background-color: var(--pd-accent) !important;
-    color: #F7F1DE !important;
-    border-radius: 50% !important;
-}
-
-.pd-recent-slider {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding-bottom: 10px;
-}
-
-.pd-recent-slide {
-    flex: 0 0 auto;
-    width: 250px;
-}
-
-/* ================= FREQUENTLY BOUGHT TOGETHER ================= */
+/* ================= 11. FREQUENTLY BOUGHT TOGETHER (FBT) ================= */
 .pd-fbt-section {
     padding-top: 10px;
 }
@@ -1100,7 +1123,7 @@
     flex-shrink: 0;
 }
 
-.pd-fbt-image img {    
+.pd-fbt-image img {
     width: 100%;
     height: 100%;
     border-radius: 8px;
@@ -1179,7 +1202,7 @@
     padding: 10px 20px !important;
 }
 
-/* ================= RECENTLY VIEWED SLIDER ================= */
+/* ================= 12. RECENTLY VIEWED SLIDER ================= */
 .pd-slider-controls {
     display: flex;
     gap: 8px;
@@ -1202,6 +1225,7 @@
 .pd-slider-btn:hover {
     background-color: var(--pd-accent) !important;
     color: #F7F1DE !important;
+    border-radius: 50% !important;
 }
 
 .pd-recent-slider {
@@ -1217,7 +1241,7 @@
     width: 250px;
 }
 
-/* ================= EMPTY STATES (hidden by default) ================= */
+/* ================= 13. EMPTY STATES ================= */
 .pdp-empty-state {
     display: none;
     text-align: center;
@@ -1242,70 +1266,74 @@
     margin: 0;
 }
 
-/* ================= STICKY MOBILE PURCHASE BAR ================= */
-.pdp-mobile-bar {
+/* ================= 14. FULLSCREEN OVERLAY (MODALS) ================= */
+.pdp-review-image img {
+    cursor: zoom-in;
+    transition: opacity 0.2s ease;
+}
+
+.pdp-review-image img:hover {
+    opacity: 0.85;
+}
+
+.pd-fullscreen-overlay {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1060;
-    background-color: #F7F1DE;
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0px -6px 18px rgba(78, 34, 15, 0.1);
-    padding: 10px 14px;
-    display: none;
-    align-items: center;
-    gap: 12px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-}
-
-.pdp-mobile-bar.visible {
-    transform: translateY(0);
-}
-
-.pdp-mobile-bar-price {
+    inset: 0;
+    z-index: 9999;
     display: flex;
-    flex-direction: column;
-    line-height: 1.15;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: rgba(247, 241, 222, 0.18);
+    backdrop-filter: blur(35px) saturate(180%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    animation: fadeIn 0.25s ease;
 }
 
-.pdp-mobile-bar-price strong {
-    font-size: 17px;
+.pd-fullscreen-overlay:not(.d-none) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pd-fullscreen-image {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 12px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.pd-fullscreen-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #F7F1DE;
+    color: #F7F1DE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.25s;
+    border: 1.5px solid #9D6638;
+}
+
+.pd-fullscreen-close:hover {
+    background: #F7F1DE;
     color: #4E220F;
 }
 
-.pdp-mobile-bar-price span {
-    font-size: 11.5px;
-    color: #B0BA99;
-    text-decoration: line-through;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.pdp-mobile-bar .pdp-action-buttons {
-    flex: 1;
-    margin: 0;
-}
-
-.pdp-mobile-bar .pdp-btn-cart,
-.pdp-mobile-bar .pdp-btn-buy {
-    height: 42px !important;
-    min-width: 0;
-    font-size: 13.5px !important;
-}
-
-/* ================= SCROLL REVEAL (shared pattern) ================= */
-.reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* ================= RESPONSIVE ================= */
+/* ================= 15. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .pdp-info {
         padding-left: 0;
@@ -1360,106 +1388,20 @@
         flex-direction: column;
         gap: 20px;
     }
-}
-/* ================= FULLSCREEN VIEWER ================= */
 
-/* Make review images look clickable */
-.pdp-review-image img {
-    cursor: zoom-in;
-    transition: opacity 0.2s ease;
-}
-
-.pdp-review-image img:hover {
-    opacity: 0.85; /* Slight fade effect on hover */
-}
-
-.pd-fullscreen-overlay{
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 40px;
-
-    /* Liquid glass background */
-    background: rgba(247, 241, 222, 0.18);
-    backdrop-filter: blur(35px) saturate(180%);
-    -webkit-backdrop-filter: blur(35px) saturate(180%);
-
-    animation: fadeIn .25s ease;
-}
-.pd-fullscreen-overlay:not(.d-none){
-    opacity: 1;
-    visibility: visible;
-}
-
-.pd-fullscreen-image{
-    max-width: 92vw;
-    max-height: 92vh;
-
-    object-fit: contain;
-    object-position: center;
-
-    border-radius: 12px;
-
-    user-select: none;
-    -webkit-user-drag: none;
-}
-
-/* Close Button */
-
-.pd-fullscreen-close{
-    position: absolute;
-    top: 24px;
-    right: 24px;
-
-    width: 46px;
-    height: 46px;
-
-    border: none;
-    border-radius: 50%;
-
-    background: #F7F1DE;
-    color: #F7F1DE;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 20px;
-    cursor: pointer;
-
-    transition: .25s;
-    border: 1.5px solid #9D6638;
-}
-
-.pd-fullscreen-close:hover{
-    background: #F7F1DE;
-    color: #4E220F;
-    /* transform: rotate(90deg); */
-}
-
-/* Mobile */
-
-@media (max-width:768px){
-
-    .pd-fullscreen-overlay{
-        padding:20px;
+    .pd-fullscreen-overlay {
+        padding: 20px;
     }
 
-    .pd-fullscreen-close{
-        top:16px;
-        right:16px;
-        width:42px;
-        height:42px;
+    .pd-fullscreen-close {
+        top: 16px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
     }
 
-    .pd-fullscreen-image{
-        max-width:100%;
-        max-height:85vh;
+    .pd-fullscreen-image {
+        max-width: 100%;
+        max-height: 85vh;
     }
-
 }

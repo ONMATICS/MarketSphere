@@ -533,7 +533,7 @@
 
           <div class="hs-requests-list" id="hsRequestsList">
             {% for support_request in support_requests %}
-            <div class="hs-request-row" data-bs-toggle="modal" data-bs-target="#hsRequestDetailsModal"
+            <div class="hs-request-row" data-bs-toggle="modal" data-request-pk="{{ support_request.id }}" data-bs-target="#hsRequestDetailsModal"
                  data-request-id="SR-{{ support_request.id|stringformat:'05d' }}"
                  data-request-subject="{{ support_request.subject }}"
                  data-request-category="{{ support_request.get_category_display }}"
@@ -861,9 +861,9 @@
             </div>
           </div>
 
-          <div class="hs-request-detail-message">
-            <span class="hs-info-label">Message</span>
-            <p id="hsRequestDetailMessage">—</p>
+          <div class="hs-request-detail-message" id="hsRequestDetailThread" hidden>
+            <span class="hs-info-label">Conversation</span>
+            <div id="hsRequestDetailThreadList"></div>
           </div>
         </div>
 

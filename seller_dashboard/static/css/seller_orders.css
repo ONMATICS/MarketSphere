@@ -2,11 +2,8 @@
    MARKETSPHERE — SELLER DASHBOARD: ORDERS (orders.css)
    Page-scoped styles for seller_dashboard/templates/orders/list.html.
    Matches the MarketSphere earth-tone design system used across the
-   storefront and seller dashboard shell (see static/css/styles.css and
-   seller_dashboard/static/css/dashboard.css). No Bootstrap, no Tailwind,
-   no external libraries — plain CSS only. Every class is prefixed `so-`
-   (Seller Orders) to avoid collisions with the shell and other
-   seller-dashboard pages, mirroring the pm- (products) convention.
+   storefront and seller dashboard shell. No external libraries.
+   Every class is prefixed `so-` (Seller Orders) to avoid collisions.
 
    Sections:
      1. Variables
@@ -316,21 +313,6 @@
     font-weight: 600;
 }
 
-.so-stat-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-
-.so-stat-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--so-heading);
-    line-height: 1.2;
-}
-
 .so-stat-trend {
     display: inline-flex;
     align-items: center;
@@ -346,7 +328,6 @@
 .so-trend-down {
     color: var(--so-danger);
 }
-
 
 /* ================= 6. TOOLBAR & FILTERS ================= */
 .so-toolbar-card {

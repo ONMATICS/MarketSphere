@@ -1,0 +1,118 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}{{ display_id }}{% endblock %}
+{% block active_page %}support{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span><span class="adh-breadcrumb-sep">/</span>
+    <a href="{% url 'admin-support' %}" style="color:inherit;">Help &amp; Support</a>
+    <span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">{{ display_id }}</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_support.css' %}" />{% endblock %}
+
+{% block content %}
+<div class="asp-page" id="aspDetailPage">
+  <header class="asp-card asp-header">
+    <div>
+      <div class="asp-title-row">
+        <h1 class="asp-title">{{ support_request.subject }}</h1>
+        <span class="asp-badge asp-badge-{{ support_request.status }}">{{ support_request.get_status_display }}</span>
+      </div>
+      <p class="asp-subtitle">
+        {{ display_id }} &middot; {{ support_request.get_request_type_display }} &middot;
+        Opened {{ support_request.created_at|date:"M j, Y g:i A" }} &middot;
+        Updated {{ support_request.updated_at|date:"M j, Y g:i A" }}
+      </p>
+    </div>
+    <a href="{% url 'admin-support' %}" class="asp-btn asp-btn-primary">&larr; All Requests</a>
+  </header>
+
+  <div class="asp-layout">
+    <div class="asp-main">
+      <section class="asp-card">
+        <h2 class="asp-card-title">Conversation</h2>
+        <div class="asp-thread">
+          {% for m in thread %}
+          <article class="asp-msg asp-msg-{{ m.sender_type }}">
+            <header>
+              <strong>{% if m.sender_type == 'admin' %}{{ m.sender.get_full_name|default:m.sender.username|default:"Support Team" }} <span class="asp-tag">Admin</span>{% else %}{{ support_request.user.get_full_name|default:support_request.user.username }} <span class="asp-tag asp-tag-buyer">Buyer</span>{% endif %}</strong>
+              <time class="asp-muted">{{ m.created_at|date:"M j, Y g:i A" }}</time>
+            </header>
+            <p>{{ m.message|linebreaksbr }}</p>
+            {% if m.attachment %}<a class="asp-link" href="{{ m.attachment.url }}" target="_blank" rel="noopener noreferrer">View attachment</a>{% endif %}
+          </article>
+          {% empty %}
+          <article class="asp-msg asp-msg-customer">
+            <header><strong>{{ support_request.user.get_full_name|default:support_request.user.username }} <span class="asp-tag asp-tag-buyer">Buyer</span></strong>
+              <time class="asp-muted">{{ support_request.created_at|date:"M j, Y g:i A" }}</time></header>
+            <p>{{ support_request.message|linebreaksbr }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="asp-card">
+        <h2 class="asp-card-title">Respond to Buyer</h2>
+        {% if can_reply %}
+        <form method="post" action="{% url 'admin-support-reply' request_id=support_request.pk %}" id="aspReplyForm" novalidate>
+          {% csrf_token %}
+          <textarea name="message" id="aspReplyText" class="asp-input asp-textarea" rows="6" maxlength="{{ max_response_length }}" placeholder="Write your response to the buyer…" required></textarea>
+          <div class="asp-form-foot">
+            <span class="asp-muted"><span id="aspReplyCount">0</span> / {{ max_response_length }}</span>
+            <button type="submit" class="asp-btn asp-btn-primary" id="aspReplyBtn">Send Response</button>
+          </div>
+        </form>
+        {% else %}
+        <p class="asp-muted">This request is closed. Reopen it to send another response.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="asp-side">
+      <section class="asp-card">
+        <h2 class="asp-card-title">Status</h2>
+        {% if transitions %}
+        <form method="post" action="{% url 'admin-support-status' request_id=support_request.pk %}" id="aspStatusForm">
+          {% csrf_token %}
+          <select name="status" class="asp-input" style="padding: 8px 16px;" aria-label="New status">
+            {% for value, label in transitions %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+          <button type="submit" class="asp-btn asp-btn-secondary">Update Status</button>
+        </form>
+        {% endif %}
+      </section>
+
+      <section class="asp-card">
+        <h2 class="asp-card-title">Buyer</h2>
+        <dl class="asp-kv">
+          <dt>Name</dt><dd>{{ support_request.user.get_full_name|default:support_request.user.username }}</dd>
+          <dt>Email</dt><dd>{{ support_request.user.email }}</dd>
+          <dt>Preferred contact</dt><dd>{{ support_request.get_preferred_contact_method_display }}</dd>
+        </dl>
+        {% if buyer_url %}<a href="{{ buyer_url }}" class="asp-link">View buyer profile &rarr;</a>{% endif %}
+      </section>
+
+      <section class="asp-card">
+        <h2 class="asp-card-title">Request Details</h2>
+        <dl class="asp-kv">
+          <dt>Type</dt><dd>{{ support_request.get_request_type_display }}</dd>
+          <dt>Category</dt><dd>{{ support_request.get_category_display }}</dd>
+          {% if support_request.related_order %}
+          <dt>Related order</dt>
+          <dd>{% if order_url %}<a class="asp-link" href="{{ order_url }}">#{{ support_request.related_order.order_number }}</a>{% else %}#{{ support_request.related_order.order_number }}{% endif %}</dd>
+          {% endif %}
+          {% if support_request.related_product_name %}<dt>Related product</dt><dd>{{ support_request.related_product_name }}</dd>{% endif %}
+          {% if support_request.attachment %}<dt>Attachment</dt><dd><a class="asp-link" href="{{ support_request.attachment.url }}" target="_blank" rel="noopener noreferrer">View file</a></dd>{% endif %}
+        </dl>
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/admin_support.js' %}"></script>{% endblock %}

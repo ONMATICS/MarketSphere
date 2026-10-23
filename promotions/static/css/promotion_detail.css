@@ -1,16 +1,21 @@
 /* =========================================================
-   MARKETSPHERE — PROMOTION / SALE LANDING PAGE STYLES
-   Reusable for any promotion (Summer Sale, Eid Sale, Black
-   Friday, Flash Sale, etc.). Builds on global tokens
-   (static/css/styles.css) and reuses .filter-card / .sorting-
-   row / .search-product-grid / .no-results-section / .pagination
-   from search_results.css and .product-card / .why-us-card /
-   .newsletter-inner / .section-label from home.css.
-   All new classes are prefixed `promod-` (PROMOtion Detail) to
-   avoid colliding with the existing `.promo-banner` classes
-   already used on the homepage.
+   MARKETSPHERE — PROMOTION LANDING PAGE STYLESHEET
+   Purpose: Controls the layout and unique components for
+   promotional campaigns, including the countdown hero,
+   highlight metrics, and category scrolling chips.
+   Scope: Storefront Promotion Pages
+
+   Sections:
+   1. Variables
+   2. Promotion Hero & Banner
+   3. Countdown Timer
+   4. Highlight Metrics
+   5. Category Scroll Chips
+   6. General Layout Sections
+   7. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --promod-accent: #9D6638;
     --promod-accent-dark: #4E220F;
@@ -20,7 +25,7 @@
     --promod-danger: #b54b3b;
 }
 
-/* ================= HERO ================= */
+/* ================= 2. PROMOTION HERO & BANNER ================= */
 .promod-hero {
     position: relative;
     padding: 64px 0;
@@ -48,7 +53,6 @@
     gap: 48px;
     flex-wrap: wrap;
     background: none !important;
-    /* background: linear-gradient(120deg, #4E220F 0%, #9D6638 110%); */
 }
 
 .promod-hero-inner-no-image {
@@ -151,17 +155,23 @@
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
     transition: 0.3s ease;
 }
+
 .promod-hero-image:hover {
     transform: rotate(0deg);
     transition: 0.3s ease;
 }
-/* ================= COUNTDOWN ================= */
+
+/* ================= 3. COUNTDOWN TIMER ================= */
 .promod-countdown {
     display: inline-flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 4px;
     background-color: transparent !important;
+}
+
+.promod-countdown.is-finished {
+    display: none;
 }
 
 .promod-countdown-label {
@@ -208,11 +218,7 @@
     background-color: transparent !important;
 }
 
-.promod-countdown.is-finished {
-    display: none;
-}
-
-/* ================= HIGHLIGHTS ================= */
+/* ================= 4. HIGHLIGHT METRICS ================= */
 .promod-highlights-section {
     padding: 26px 0;
     border-bottom: 1px solid var(--border-color) !important;
@@ -247,7 +253,7 @@
     letter-spacing: 0.4px;
 }
 
-/* ================= CATEGORY SCROLL ================= */
+/* ================= 5. CATEGORY SCROLL CHIPS ================= */
 .promod-categories-section {
     padding: 40px 0 10px;
 }
@@ -275,7 +281,7 @@
     align-items: center;
     gap: 8px;
     background-color: transparent;
-    border: 1.5px solid var(--border-color)!important;
+    border: 1.5px solid var(--border-color) !important;
     color: var(--promod-accent-dark) !important;
     font-weight: 600;
     font-size: 14px;
@@ -298,26 +304,25 @@
     background-color: var(--promod-accent) !important;
     color: #F7F1DE !important;
     border-color: var(--promod-accent) !important;
-    span {
-        background-color: var(--promod-accent) !important;
-    }
+}
+
+.promod-category-chip.is-active span {
+    background-color: var(--promod-accent) !important;
 }
 
 .promod-category-chip.is-active i {
     color: #F7F1DE;
 }
 
-/* ================= FEATURED SECTION ================= */
+/* ================= 6. GENERAL LAYOUT SECTIONS ================= */
 .promod-featured-section {
     padding-top: 30px;
 }
 
-/* ================= SHOP SECTION ================= */
 .promod-shop-section {
     padding: 40px 0 60px;
 }
 
-/* ================= TRUST / FINAL CTA ================= */
 .promod-trust-section {
     padding-top: 20px;
 }
@@ -326,7 +331,7 @@
     padding-top: 10px;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 7. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .promod-hero-title {
         font-size: 36px;

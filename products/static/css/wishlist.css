@@ -1,16 +1,33 @@
 /* =========================================================
-   MARKETSPHERE WISHLIST PAGE STYLES
-   Builds on global variables (static/css/styles.css) and
-   reuses .product-card / .badge- / .stock-badge / .wishlist-btn
-   classes from home.css to stay consistent with the rest of the app.
+   MARKETSPHERE — WISHLIST STYLESHEET
+   Purpose: Controls the layout and components of the user's
+   wishlist page, including the product grid, removal animations,
+   action buttons, and the empty state.
+   Scope: Customer Account / Wishlist
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs & Header
+   4. Product Grid & Cards
+   5. Card Actions & Buttons
+   6. Empty State
+   7. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --wishlist-accent: #9D6638;
     --wishlist-accent-ring: rgba(157, 102, 56, 0.25);
 }
 
-/* ================= BREADCRUMB ================= */
+/* ================= 2. BASE LAYOUT ================= */
+.wishlist-section {
+    background-color: #F7F1DE;
+    padding: 10px 0 60px;
+}
+
+/* ================= 3. BREADCRUMBS & HEADER ================= */
 .wishlist-breadcrumb-wrap {
     padding: 18px 0 0;
     background-color: var(--background-color);
@@ -34,7 +51,6 @@
     color: #B0BA99;
 }
 
-/* ================= HEADING ================= */
 .wishlist-hero-section {
     padding: 16px 0 28px;
     background-color: var(--background-color);
@@ -65,24 +81,7 @@
     color: var(--headings);
 }
 
-.wishlist-continue-link {
-    width: auto !important;
-    padding: 10px 22px !important;
-    font-weight: 600 !important;
-    display: inline-flex;
-    align-items: center;
-    border-radius: 1px;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-/* ================= LAYOUT ================= */
-.wishlist-section {
-    background-color: #F7F1DE;
-    padding: 10px 0 60px;
-}
-
-/* ================= PRODUCT GRID ================= */
+/* ================= 4. PRODUCT GRID & CARDS ================= */
 .wishlist-product-grid {
     position: relative;
 }
@@ -111,31 +110,6 @@
     object-fit: cover;
 }
 
-/* Remove (heart) button on the media area reuses .wishlist-btn styling
-   from home.css; it starts in the active/filled state since the product
-   is already saved. */
-.wishlist-remove-btn.active {
-    background-color: #9D6638 !important;
-    color: #F7F1DE !important;
-}
-.wishlist-remove-btn.is-removing i {
-    animation: wishlistHeartBreak 0.4s ease forwards;
-}
-
-@keyframes wishlistHeartBreak {
-    0% {
-        transform: scale(1);
-    }
-
-    40% {
-        transform: scale(1.3);
-    }
-
-    100% {
-        transform: scale(0);
-    }
-}
-
 .wishlist-added-date {
     display: block;
     font-size: 12px;
@@ -149,7 +123,18 @@
     margin-right: 3px;
 }
 
-/* ================= CARD ACTIONS ================= */
+/* ================= 5. CARD ACTIONS & BUTTONS ================= */
+.wishlist-continue-link {
+    width: auto !important;
+    padding: 10px 22px !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 1px;
+    gap: 8px;
+    white-space: nowrap;
+}
+
 .wishlist-card-actions {
     margin-top: auto;
     display: flex;
@@ -208,14 +193,28 @@
     cursor: not-allowed;
 }
 
-/* Loading state for buttons while UI simulates an action */
 .wishlist-add-cart-btn.is-loading,
 .wishlist-remove-inline-btn.is-loading {
     opacity: 0.75;
     pointer-events: none;
 }
 
-/* ================= EMPTY STATE ================= */
+.wishlist-remove-btn.active {
+    background-color: #9D6638 !important;
+    color: #F7F1DE !important;
+}
+
+.wishlist-remove-btn.is-removing i {
+    animation: wishlistHeartBreak 0.4s ease forwards;
+}
+
+@keyframes wishlistHeartBreak {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.3); }
+    100% { transform: scale(0); }
+}
+
+/* ================= 6. EMPTY STATE ================= */
 .wishlist-empty-section {
     text-align: center;
     padding: 90px 20px;
@@ -263,7 +262,7 @@
     gap: 8px;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 7. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .wishlist-page-title {
         font-size: 28px;

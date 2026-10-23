@@ -1,7 +1,26 @@
 /* =========================================================
-   MARKETSPHERE ORDER CONFIRMATION PAGE STYLES
+   MARKETSPHERE — CONFIRMATION STYLESHEET
+   Purpose: Controls the layout and components of the order
+   confirmation page, including the success hero, order 
+   status grids, and multi-seller summary cards.
+   Scope: Storefront Checkout/Confirmation
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs & Header
+   4. Progress Steps
+   5. Success Hero & Animations
+   6. Pills & Copy Actions
+   7. Cards & Shared Components
+   8. Order & Shipping Information
+   9. Ordered Items
+   10. Payment Summary (Sticky)
+   11. Action Buttons & Links
+   12. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --cf-accent: #9D6638;
     --cf-accent-dark: #4E220F;
@@ -11,99 +30,272 @@
     --cf-danger: #b54b3b;
 }
 
-.btn-hero-primary {
-    border-radius: 2px;
-    border-width: 1.5px !important;
+/* ================= 2. BASE LAYOUT ================= */
+.cf-section {
+    padding: 6px 0 60px;
+    background-color: var(--background-color);
 }
 
-/* ================= BREADCRUMB & STEPS ================= */
+.cf-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cf-right-col {
+    position: relative;
+}
+
+/* ================= 3. BREADCRUMBS & HEADER ================= */
 .cf-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
 }
+
 .cf-breadcrumb-wrap .breadcrumb {
     background-color: transparent;
     font-size: 13.5px;
 }
-.cf-breadcrumb-wrap .breadcrumb-item a { color: var(--cf-accent); }
-.cf-breadcrumb-wrap .breadcrumb-item.active { color: #B0BA99; font-weight: 500; }
-.cf-breadcrumb-wrap .breadcrumb-item + .breadcrumb-item::before { color: #B0BA99; }
+
+.cf-breadcrumb-wrap .breadcrumb-item a {
+    color: var(--cf-accent);
+}
+
+.cf-breadcrumb-wrap .breadcrumb-item.active {
+    color: #B0BA99;
+    font-weight: 500;
+}
+
+.cf-breadcrumb-wrap .breadcrumb-item + .breadcrumb-item::before {
+    color: #B0BA99;
+}
 
 .cf-header-section {
     padding: 10px 0 6px;
     background-color: var(--background-color);
 }
-.co-steps { display: flex; align-items: center; max-width: 100%; }
-.co-step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; }
-.co-step-circle { width: 34px; height: 34px; border-radius: 50%; background-color: #F7F1DE; border: 2px solid var(--border-color); color: #B0BA99; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; transition: 0.25s ease; }
-.co-step-label { font-size: 12px; font-weight: 600; color: #B0BA99; white-space: nowrap; }
-.co-step.is-done .co-step-circle { background-color: var(--cf-success); border-color: var(--cf-success); color: #F7F1DE; }
-.co-step.is-done .co-step-label { color: var(--cf-success); }
-.co-step.is-done.is-current .co-step-circle { background-color: var(--cf-accent); border-color: var(--cf-accent); }
-.co-step.is-done.is-current .co-step-label { color: var(--cf-accent-dark); font-weight: 700; }
-.co-step-line { flex: 1; height: 2px; background-color: var(--border-color); margin: 0 8px 22px; }
-.co-step-line.is-done { background-color: var(--cf-success); }
 
-/* ================= SUCCESS HERO ================= */
+/* ================= 4. PROGRESS STEPS ================= */
+.co-steps {
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+}
+
+.co-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.co-step-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #F7F1DE;
+    border: 2px solid var(--border-color);
+    color: #B0BA99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.25s ease;
+}
+
+.co-step-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #B0BA99;
+    white-space: nowrap;
+}
+
+.co-step.is-done .co-step-circle {
+    background-color: var(--cf-success);
+    border-color: var(--cf-success);
+    color: #F7F1DE;
+}
+
+.co-step.is-done .co-step-label {
+    color: var(--cf-success);
+}
+
+.co-step.is-done.is-current .co-step-circle {
+    background-color: var(--cf-accent);
+    border-color: var(--cf-accent);
+}
+
+.co-step.is-done.is-current .co-step-label {
+    color: var(--cf-accent-dark);
+    font-weight: 700;
+}
+
+.co-step-line {
+    flex: 1;
+    height: 2px;
+    background-color: var(--border-color);
+    margin: 0 8px 22px;
+}
+
+.co-step-line.is-done {
+    background-color: var(--cf-success);
+}
+
+/* ================= 5. SUCCESS HERO & ANIMATIONS ================= */
 .cf-hero-section {
     padding: 18px 0 20px;
     background-color: var(--background-color);
 }
-.cf-hero-inner { max-width: 650px; margin: 0 auto; text-align: center; }
+
+.cf-hero-inner {
+    max-width: 650px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.cf-hero-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--headings);
+    margin-bottom: 12px;
+}
+
+.cf-hero-message {
+    color: #4f7d54;
+    font-size: 15.5px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+}
 
 .cf-success-icon {
-    width: 92px; height: 92px; margin: 0 auto 22px; border-radius: 50%; background-color: rgba(79, 125, 84, 0.13); display: flex; align-items: center; justify-content: center; position: relative; animation: cfPopIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background-color: rgba(79, 125, 84, 0.13);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: cfPopIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .cf-success-icon::before {
-    content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(79, 125, 84, 0.35); animation: cfRingPulse 1.8s ease-out 0.3s 1;
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(79, 125, 84, 0.35);
+    animation: cfRingPulse 1.8s ease-out 0.3s 1;
 }
-.cf-success-icon i { font-size: 44px; color: var(--cf-success); }
 
-@keyframes cfPopIn { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
-@keyframes cfRingPulse { 0% { transform: scale(0.85); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
+.cf-success-icon i {
+    font-size: 44px;
+    color: var(--cf-success);
+}
 
-.cf-hero-title { font-size: 32px; font-weight: 700; color: var(--headings); margin-bottom: 12px; }
-.cf-hero-message { color: #4f7d54; font-size: 15.5px; line-height: 1.6; margin-bottom: 22px; }
+@keyframes cfPopIn {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+}
 
-/* Wrapper for multiple order pills */
+@keyframes cfRingPulse {
+    0% { transform: scale(0.85); opacity: 1; }
+    100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* ================= 6. PILLS & COPY ACTIONS ================= */
 .cf-pills-wrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
 }
+
 .cf-order-number-pill {
-    display: inline-flex; align-items: center; gap: 10px; background-color: #F7F1DE; border: 1.5px solid var(--cf-accent); border-radius: 30px; padding: 6px 8px 6px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #F7F1DE;
+    border: 1.5px solid var(--cf-accent);
+    border-radius: 30px;
+    padding: 6px 8px 6px 18px;
 }
-.cf-order-number-pill span { font-size: 12px; font-weight: 600; color: #B0BA99; text-transform: uppercase; letter-spacing: 0.4px; }
-.cf-order-number-pill strong { color: var(--cf-accent-dark); font-size: 14.5px; font-weight: 700; }
+
+.cf-order-number-pill span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #B0BA99;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.cf-order-number-pill strong {
+    color: var(--cf-accent-dark);
+    font-size: 14.5px;
+    font-weight: 700;
+}
 
 .cf-copy-btn {
-    width: 30px !important; height: 30px !important; border-radius: 50% !important; background-color: rgba(157, 102, 56, 0.1) !important; color: var(--cf-accent) !important; border: none !important; display: flex; align-items: center; justify-content: center; padding: 0 !important; transition: 0.2s ease;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+    background-color: rgba(157, 102, 56, 0.1) !important;
+    color: var(--cf-accent) !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    transition: 0.2s ease;
 }
-.cf-copy-btn:hover { background-color: var(--cf-accent) !important; color: #F7F1DE !important; border-radius: 50% !important; }
 
-/* ================= SECTION LAYOUT ================= */
-.cf-section { padding: 6px 0 60px; background-color: var(--background-color); }
-.cf-left-col { display: flex; flex-direction: column; gap: 24px; }
-.cf-right-col { position: relative; }
+.cf-copy-btn:hover {
+    background-color: var(--cf-accent) !important;
+    color: #F7F1DE !important;
+    border-radius: 50% !important;
+}
 
-/* ================= SHARED CARDS ================= */
+/* ================= 7. CARDS & SHARED COMPONENTS ================= */
 .cf-card {
     background-color: #F7F1DE;
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 24px;
 }
-.cf-card-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-.cf-card-title { font-size: 18px; font-weight: 700; color: var(--headings); margin: 0; display: flex; align-items: center; gap: 10px; }
-.cf-card-title i { color: var(--cf-accent); font-size: 19px; }
 
-/* ================= MULTI-SELLER CARDS ================= */
+.cf-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cf-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cf-card-title i {
+    color: var(--cf-accent);
+    font-size: 19px;
+}
+
 .cf-seller-card {
     padding: 0; /* Remove padding to allow flush header/footer */
     overflow: hidden;
 }
+
 .cf-seller-header {
     background-color: rgba(157, 102, 56, 0.05);
     padding: 18px 24px;
@@ -114,9 +306,11 @@
     flex-wrap: wrap;
     gap: 12px;
 }
+
 .cf-seller-body {
     padding: 24px;
 }
+
 .cf-seller-footer {
     background-color: rgba(176, 186, 153, 0.15); /* Light muted green tint */
     padding: 16px 24px;
@@ -125,78 +319,367 @@
     justify-content: flex-end;
 }
 
-/* ================= ORDER INFORMATION ================= */
-.cf-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.cf-info-item { display: flex; flex-direction: column; gap: 6px; }
-.cf-info-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #B0BA99; display: flex; align-items: center; gap: 6px; }
-.cf-info-label i { color: var(--cf-accent); font-size: 13px; }
-.cf-info-value { font-size: 14.5px; font-weight: 600; color: var(--headings); }
+/* ================= 8. ORDER & SHIPPING INFORMATION ================= */
+.cf-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
 
-.cf-status-badge { display: inline-flex; align-items: center; width: fit-content; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: capitalize; }
-.cf-status-badge.cf-status-paid, .cf-status-badge.cf-status-completed, .cf-status-badge.cf-status-delivered, .cf-status-badge.cf-status-confirmed { background-color: rgba(79, 125, 84, 0.13); color: var(--cf-success); }
-.cf-status-badge.cf-status-pending, .cf-status-badge.cf-status-unpaid, .cf-status-badge.cf-status-processing { background-color: rgba(183, 128, 43, 0.16); color: var(--cf-warning); }
-.cf-status-badge.cf-status-failed, .cf-status-badge.cf-status-cancelled, .cf-status-badge.cf-status-refunded { background-color: rgba(181, 75, 59, 0.14); color: var(--cf-danger); }
+.cf-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-/* ================= SHIPPING INFORMATION ================= */
-.cf-shipping-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.cf-shipping-item { display: flex; flex-direction: column; gap: 4px; }
-.cf-shipping-item-wide { grid-column: span 3; }
-.cf-shipping-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #B0BA99; }
-.cf-shipping-value { font-size: 14.5px; font-weight: 500; color: var(--headings); line-height: 1.5; }
+.cf-info-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #B0BA99;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-/* ================= ORDERED ITEMS ================= */
-.cf-items-list { display: flex; flex-direction: column; gap: 16px; }
-.cf-order-item { display: flex; align-items: center; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
-.cf-order-item:last-child { padding-bottom: 0; border-bottom: none; }
-.cf-order-item-img { flex: 0 0 auto; width: 64px; height: 64px; border-radius: 12px; overflow: hidden; }
-.cf-order-item-img img { width: 100%; height: 100%; object-fit: cover; }
-.cf-order-item-info { flex: 1; min-width: 0; }
-.cf-order-item-name { font-size: 14.5px; font-weight: 600; color: var(--headings); margin: 0 0 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cf-order-item-meta { font-size: 13px; color: #B0BA99; font-weight: 500; }
-.cf-order-item-total { flex: 0 0 auto; font-size: 15px; font-weight: 700; color: var(--cf-accent-dark); }
+.cf-info-label i {
+    color: var(--cf-accent);
+    font-size: 13px;
+}
 
-/* ================= PAYMENT SUMMARY (STICKY) ================= */
-.cf-summary-card { position: sticky; top: calc(var(--sticky-header-height, 96px) + 16px); background-color: #F7F1DE; border: 1.5px solid var(--cf-accent); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.cf-summary-title { color: var(--headings); font-weight: 700; font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
-.cf-summary-title i { color: var(--cf-accent); }
+.cf-info-value {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--headings);
+}
 
-.cf-summary-totals { display: flex; flex-direction: column; gap: 10px; }
-.cf-summary-row { display: flex; align-items: center; justify-content: space-between; font-size: 14.5px; color: #4E220F; }
-.cf-summary-row span:last-child { color: var(--headings); font-weight: 600; }
+.cf-status-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: capitalize;
+}
 
-.cf-summary-divider { border: none; border-top: 1px solid var(--border-color); margin: 0; opacity: 1; }
-.cf-summary-grand-total { font-size: 17px; }
-.cf-summary-grand-total span { font-weight: 700 !important; }
-.cf-summary-grand-total span:last-child { color: var(--cf-accent-dark) !important; font-size: 23px; }
+.cf-status-badge.cf-status-paid,
+.cf-status-badge.cf-status-completed,
+.cf-status-badge.cf-status-delivered,
+.cf-status-badge.cf-status-confirmed {
+    background-color: rgba(79, 125, 84, 0.13);
+    color: var(--cf-success);
+}
 
-/* ================= ACTION BUTTONS ================= */
-.cf-action-buttons { display: flex; flex-direction: column; gap: 10px; }
-.cf-primary-action { width: 100% !important; padding: 13px !important; font-weight: 700 !important; font-size: 15px !important; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.cf-secondary-action { width: 100% !important; background-color: transparent !important; color: var(--cf-accent-dark) !important; border: 1.5px solid var(--cf-accent) !important; padding: 12px !important; font-weight: 600 !important; font-size: 14.5px !important; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--border-radius); transition: 0.2s ease; }
-.cf-secondary-action:hover { background-color: var(--cf-accent) !important; color: #F7F1DE !important; }
+.cf-status-badge.cf-status-pending,
+.cf-status-badge.cf-status-unpaid,
+.cf-status-badge.cf-status-processing {
+    background-color: rgba(183, 128, 43, 0.16);
+    color: var(--cf-warning);
+}
 
-/* ================= EXTRA / SECONDARY ACTIONS ================= */
-.cf-extra-link { background: none !important; border: none !important; width: auto !important; padding: 4px 0 !important; color: var(--cf-accent) !important; font-size: 13.5px !important; font-weight: 600 !important; display: inline-flex; align-items: center; gap: 8px; text-align: left; transition: 0.2s ease; text-decoration: none; }
-.cf-extra-link:hover { color: var(--cf-accent-dark) !important; }
+.cf-status-badge.cf-status-failed,
+.cf-status-badge.cf-status-cancelled,
+.cf-status-badge.cf-status-refunded {
+    background-color: rgba(181, 75, 59, 0.14);
+    color: var(--cf-danger);
+}
 
-/* ================= TRUST ROW ================= */
-.cf-trust-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-top: 4px; }
-.cf-trust-row span { font-size: 11.5px; color: #B0BA99; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
-.cf-trust-row i { color: var(--cf-accent); }
+.cf-shipping-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
 
-/* ================= RESPONSIVE ================= */
+.cf-shipping-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cf-shipping-item-wide {
+    grid-column: span 3;
+}
+
+.cf-shipping-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #B0BA99;
+}
+
+.cf-shipping-value {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--headings);
+    line-height: 1.5;
+}
+
+/* ================= 9. ORDERED ITEMS ================= */
+.cf-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cf-order-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cf-order-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.cf-order-item-img {
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cf-order-item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cf-order-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cf-order-item-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--headings);
+    margin: 0 0 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cf-order-item-meta {
+    font-size: 13px;
+    color: #B0BA99;
+    font-weight: 500;
+}
+
+.cf-order-item-total {
+    flex: 0 0 auto;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cf-accent-dark);
+}
+
+/* ================= 10. PAYMENT SUMMARY (STICKY) ================= */
+.cf-summary-card {
+    position: sticky;
+    top: calc(var(--sticky-header-height, 96px) + 16px);
+    background-color: #F7F1DE;
+    border: 1.5px solid var(--cf-accent);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cf-summary-title {
+    color: var(--headings);
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cf-summary-title i {
+    color: var(--cf-accent);
+}
+
+.cf-summary-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cf-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14.5px;
+    color: #4E220F;
+}
+
+.cf-summary-row span:last-child {
+    color: var(--headings);
+    font-weight: 600;
+}
+
+.cf-summary-divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 0;
+    opacity: 1;
+}
+
+.cf-summary-grand-total {
+    font-size: 17px;
+}
+
+.cf-summary-grand-total span {
+    font-weight: 700 !important;
+}
+
+.cf-summary-grand-total span:last-child {
+    color: var(--cf-accent-dark) !important;
+    font-size: 23px;
+}
+
+.cf-trust-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.cf-trust-row span {
+    font-size: 11.5px;
+    color: #B0BA99;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cf-trust-row i {
+    color: var(--cf-accent);
+}
+
+/* ================= 11. ACTION BUTTONS & LINKS ================= */
+.btn-hero-primary {
+    border-radius: 2px;
+    border-width: 1.5px !important;
+}
+
+.cf-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cf-primary-action {
+    width: 100% !important;
+    padding: 13px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cf-secondary-action {
+    width: 100% !important;
+    background-color: transparent !important;
+    color: var(--cf-accent-dark) !important;
+    border: 1.5px solid var(--cf-accent) !important;
+    padding: 12px !important;
+    font-weight: 600 !important;
+    font-size: 14.5px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--border-radius);
+    transition: 0.2s ease;
+}
+
+.cf-secondary-action:hover {
+    background-color: var(--cf-accent) !important;
+    color: #F7F1DE !important;
+}
+
+.cf-extra-link {
+    background: none !important;
+    border: none !important;
+    width: auto !important;
+    padding: 4px 0 !important;
+    color: var(--cf-accent) !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    transition: 0.2s ease;
+    text-decoration: none;
+}
+
+.cf-extra-link:hover {
+    color: var(--cf-accent-dark) !important;
+}
+
+/* ================= 12. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
-    .cf-summary-card { position: static; }
-    .cf-info-grid, .cf-shipping-grid { grid-template-columns: repeat(2, 1fr); }
-    .cf-shipping-item-wide { grid-column: span 2; }
+    .cf-summary-card {
+        position: static;
+    }
+
+    .cf-info-grid, 
+    .cf-shipping-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cf-shipping-item-wide {
+        grid-column: span 2;
+    }
 }
 
 @media (max-width: 767.98px) {
-    .cf-card, .cf-seller-body, .cf-seller-header, .cf-seller-footer { padding: 18px; }
-    .cf-info-grid, .cf-shipping-grid { grid-template-columns: 1fr; }
-    .cf-shipping-item-wide { grid-column: span 1; }
-    .cf-hero-title { font-size: 24px; }
-    .cf-success-icon { width: 76px; height: 76px; }
-    .cf-success-icon i { font-size: 36px; }
-    .cf-order-number-pill { flex-wrap: wrap; justify-content: center; text-align: center; }
+    .cf-card, 
+    .cf-seller-body, 
+    .cf-seller-header, 
+    .cf-seller-footer {
+        padding: 18px;
+    }
+
+    .cf-info-grid, 
+    .cf-shipping-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cf-shipping-item-wide {
+        grid-column: span 1;
+    }
+
+    .cf-hero-title {
+        font-size: 24px;
+    }
+
+    .cf-success-icon {
+        width: 76px;
+        height: 76px;
+    }
+
+    .cf-success-icon i {
+        font-size: 36px;
+    }
+
+    .cf-order-number-pill {
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
+    }
 }

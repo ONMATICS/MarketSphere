@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models.support import SupportMessage, SupportRequest
-from .models.product_reviews import Review, ReviewReport
+from .models.support_models import SupportMessage, SupportRequest
+from .models.review_models import Review, ReviewReport
 
 class SupportMessageInline(admin.TabularInline):
     model = SupportMessage

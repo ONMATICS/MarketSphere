@@ -69,6 +69,7 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
 
+
 class ReviewReport(models.Model):
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"

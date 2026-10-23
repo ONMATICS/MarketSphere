@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from .models.support import SupportRequest
+from support.models.review_models import Review
+from support.models.support_models import SupportRequest
 
 
 class SupportFlowTests(TestCase):

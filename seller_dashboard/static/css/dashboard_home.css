@@ -105,23 +105,20 @@
     font-size: 13px;
     font-weight: 600;
     color: #6b7458;
-    /* Changed to a darker, richer version of your original warm cream */
     background-color: #E2DAB7; 
-
     border: 1px solid var(--sd-border);
     padding: 8px 14px;
     border-radius: var(--sd-radius-pill);
     white-space: nowrap;
 }
 
-/* ---- Buttons (page-local, mirrors .sd-btn from the shell) ---- */
+/* ---- Buttons ---- */
 .dh-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     border: 1.5px solid #9D6638 !important;
     padding: 11px 20px;
-    /* color: #6b7458 !important; */
     font-size: 13.5px;
     font-weight: 600;
     border-radius: 1px;
@@ -138,13 +135,12 @@
 .dh-btn-primary {
     background-color: #9D6638 !important;
     color: #F7F1DE !important;
-    border-color: var(--pf-accent);
     border: 1.5px solid #9D6638 !important;
 }
 
 .dh-btn-primary:hover {
     background-color: #F7F1DE !important;
-    box-shadow: var(--pf-shadow-sm);
+    box-shadow: var(--sd-shadow-sm);
     color: #9D6638 !important;
 }
 
@@ -446,7 +442,6 @@
     color: var(--sd-accent);
 }
 
-/* ---- Status badges ---- */
 .dh-badge {
     display: inline-flex;
     align-items: center;
@@ -477,10 +472,12 @@
     background-color: rgba(79, 125, 84, 0.15);
     color: var(--sd-info);
 }
+
 .dh-badge-delivered {
     background-color: rgba(79, 125, 84, 0.15);
     color: var(--sd-success);
 }
+
 .dh-badge-cancelled {
     background-color: rgba(125, 79, 97, 0.15);
     color: var(--sd-danger);
@@ -762,7 +759,6 @@
         padding: 18px;
     }
 
-    /* Recent orders table collapses into stacked label/value rows */
     .dh-table thead {
         position: absolute;
         width: 1px;

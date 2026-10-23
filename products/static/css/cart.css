@@ -1,9 +1,27 @@
 /* =========================================================
-   MARKETSPHERE CART PAGE STYLES
-   Builds on global variables (static/css/styles.css) and
-   reuses product-card / badge / stock-badge classes from home.css
+   MARKETSPHERE — CART STYLESHEET
+   Purpose: Controls the layout and components of the shopping
+   cart page, including the items list, quantity selectors, 
+   empty states, and the sticky order summary.
+   Scope: Storefront Cart
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs & Header
+   4. Progress Steps
+   5. Items Toolbar
+   6. Cart Items List
+   7. Quantity & Item Actions
+   8. Order Summary (Sticky)
+   9. Empty State
+   10. Action Buttons & Links
+   11. Modals & Notifications
+   12. Utilities
+   13. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --cart-accent: #9D6638;
     --cart-accent-dark: #4E220F;
@@ -12,15 +30,48 @@
     --cart-danger: #b54b3b;
 }
 
+/* ================= 2. BASE LAYOUT ================= */
+.cart-section {
+    padding: 10px 0 60px;
+    background-color: var(--background-color);
+}
 
-/* ================= BREADCRUMB ================= */
+.cart-heading-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 26px;
+}
+
+.cart-page-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #4E220F;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-page-title i {
+    color: var(--cart-accent);
+    background-color: transparent;
+}
+
+.cart-item-count {
+    font-size: 14.5px;
+    color: #4f7d54;
+    margin: 0;
+}
+
+/* ================= 3. BREADCRUMBS & HEADER ================= */
 .cart-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: #F7F1DE !important;
 }
-.btn-hero-primary {
-    border-radius: 2px;
-}
+
 .cart-breadcrumb-wrap .breadcrumb {
     background-color: transparent;
     font-size: 13.5px;
@@ -39,7 +90,6 @@
     color: #B0BA99;
 }
 
-/* ================= HEADER ================= */
 .co-header-section {
     padding: 10px 0 22px;
 }
@@ -57,7 +107,7 @@
     margin-bottom: 26px;
 }
 
-/* ---- Progress steps ---- */
+/* ================= 4. PROGRESS STEPS ================= */
 .co-steps {
     display: flex;
     align-items: center;
@@ -107,7 +157,6 @@
     background-color: #4f7d54;
     border-color: #4f7d54;
     color: #F7F1DE;
-    
 }
 
 .co-step.is-done .co-step-label {
@@ -126,48 +175,7 @@
     background-color: #4f7d54;
 }
 
-
-/* ================= SECTION LAYOUT ================= */
-.cart-section {
-    padding: 10px 0 60px;
-    background-color: var(--background-color);
-}
-
-.cart-heading-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 26px;
-}
-
-.cart-page-title {
-    font-size: 30px;
-    font-weight: 700;
-    color: #4E220F;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.cart-page-title i {
-    color: var(--cart-accent);
-    background-color: transparent;
-}
-
-.cart-item-count {
-    font-size: 14.5px;
-    color: #4f7d54;
-    margin: 0;
-}
-
-.cart-continue-link {
-    white-space: nowrap;
-}
-
-/* ================= ITEMS TOOLBAR ================= */
+/* ================= 5. ITEMS TOOLBAR ================= */
 .cart-items-toolbar {
     display: flex;
     align-items: center;
@@ -218,7 +226,7 @@
     cursor: not-allowed;
 }
 
-/* ================= CART ITEMS LIST ================= */
+/* ================= 6. CART ITEMS LIST ================= */
 .cart-items-list {
     display: flex;
     flex-direction: column;
@@ -264,8 +272,8 @@
     border-radius: 12px !important;
     aspect-ratio: unset;
 }
-.cart-item-image-placeholder img{
-    
+
+.cart-item-image-placeholder img {
     border-radius: 12px !important;
 }
 
@@ -324,6 +332,59 @@
     margin-bottom: 0;
 }
 
+.cart-item-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.cart-item-price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.cart-item-price-current {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cart-accent-dark);
+}
+
+.cart-item-price-original {
+    font-size: 12.5px;
+    color: #B0BA99;
+    text-decoration: line-through;
+}
+
+.cart-item-subtotal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.cart-item-subtotal-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #B0BA99;
+}
+
+.cart-item-subtotal-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cart-accent-dark);
+    transition: color 0.2s ease;
+}
+
+.cart-item-subtotal-value.is-flashing {
+    color: var(--cart-success);
+}
+
+/* ================= 7. QUANTITY & ITEM ACTIONS ================= */
 .cart-remove-btn {
     background-color: transparent !important;
     color: #B0BA99 !important;
@@ -353,33 +414,6 @@
     cursor: not-allowed;
 }
 
-.cart-item-bottom-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 14px;
-}
-
-.cart-item-price-block {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-}
-
-.cart-item-price-current {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--cart-accent-dark);
-}
-
-.cart-item-price-original {
-    font-size: 12.5px;
-    color: #B0BA99;
-    text-decoration: line-through;
-}
-
-/* Quantity Selector */
 .cart-qty-selector {
     display: inline-flex;
     align-items: center;
@@ -443,71 +477,7 @@
     margin: 0;
 }
 
-.cart-item-subtotal {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-}
-
-.cart-item-subtotal-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: #B0BA99;
-}
-
-.cart-item-subtotal-value {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--cart-accent-dark);
-    transition: color 0.2s ease;
-}
-
-.cart-item-subtotal-value.is-flashing {
-    color: var(--cart-success);
-}
-
-/* ================= EMPTY CART ================= */
-.cart-empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    background-color: #F7F1DE;
-    border: 1px dashed var(--border-color);
-    border-radius: 16px;
-}
-
-.cart-empty-icon {
-    width: 110px;
-    height: 110px;
-    margin: 0 auto 22px;
-    border-radius: 50%;
-    background-color: rgba(157, 102, 56, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.cart-empty-icon i {
-    font-size: 48px;
-    color: var(--cart-accent);
-    background-color: transparent;
-}
-
-.cart-empty-state h3 {
-    color: #4E220F;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.cart-empty-state p {
-    color: #4f7d54;
-    max-width: 420px;
-    margin: 0 auto 26px;
-}
-
-/* ================= ORDER SUMMARY ================= */
+/* ================= 8. ORDER SUMMARY (STICKY) ================= */
 .cart-summary-card {
     position: sticky;
     top: calc(var(--sticky-header-height, 96px) + 16px);
@@ -572,7 +542,6 @@
     font-size: 22px;
 }
 
-/* Promo Code */
 .cart-promo-form {
     margin-top: 4px;
 }
@@ -601,31 +570,6 @@
     font-weight: 600 !important;
 }
 
-/* Actions */
-.cart-checkout-btn {
-    width: 100% !important;
-    padding: 12px !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
-}
-
-.cart-checkout-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.cart-continue-shopping-link {
-    text-align: center;
-    font-size: 13.5px !important;
-    font-weight: 600 !important;
-    color: var(--cart-accent) !important;
-}
-
 .cart-trust-row {
     display: flex;
     justify-content: space-between;
@@ -650,7 +594,89 @@
     color: var(--cart-accent);
 }
 
-/* ================= TOAST / MESSAGES ================= */
+/* ================= 9. EMPTY STATE ================= */
+.cart-empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background-color: #F7F1DE;
+    border: 1px dashed var(--border-color);
+    border-radius: 16px;
+}
+
+.cart-empty-icon {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background-color: rgba(157, 102, 56, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-empty-icon i {
+    font-size: 48px;
+    color: var(--cart-accent);
+    background-color: transparent;
+}
+
+.cart-empty-state h3 {
+    color: #4E220F;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.cart-empty-state p {
+    color: #4f7d54;
+    max-width: 420px;
+    margin: 0 auto 26px;
+}
+
+/* ================= 10. ACTION BUTTONS & LINKS ================= */
+.btn-hero-primary {
+    border-radius: 2px;
+}
+
+.cart-continue-link {
+    white-space: nowrap;
+}
+
+.cart-checkout-btn {
+    width: 100% !important;
+    padding: 12px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.cart-checkout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cart-checkout-btn.pd-btn-pulse {
+    animation: cartBtnPulse 0.4s ease;
+}
+
+@keyframes cartBtnPulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(0.97); }
+    100% { transform: scale(1); }
+}
+
+.cart-continue-shopping-link {
+    text-align: center;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: var(--cart-accent) !important;
+    display: block;
+}
+
+/* ================= 11. MODALS & NOTIFICATIONS ================= */
 .cart-toast-container {
     position: fixed;
     bottom: 24px;
@@ -704,67 +730,30 @@
 }
 
 @keyframes cartToastIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes cartToastOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
 }
 
-/* ================= LOADING / MOTION HELPERS ================= */
+/* ================= 12. UTILITIES ================= */
 .spin {
     animation: cartSpin 0.8s linear infinite;
 }
 
 @keyframes cartSpin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.cart-checkout-btn.pd-btn-pulse {
-    animation: cartBtnPulse 0.4s ease;
-}
-
-@keyframes cartBtnPulse {
-    0% {
-        transform: scale(1);
-    }
-
-    40% {
-        transform: scale(0.97);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .is-loading {
     pointer-events: none;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 13. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .cart-summary-card {
         position: static;

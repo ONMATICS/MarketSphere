@@ -7,8 +7,8 @@ from django.db.models import Count, QuerySet
 from orders.models import Order, OrderItem
 from services import cloudinary_service
 
-from support.models.product_reviews import Review
-from .models.support import SupportMessage, SupportRequest
+from support.models.review_models import Review
+from support.models.support_models import SupportMessage, SupportRequest
 
 
 # ------------------------------

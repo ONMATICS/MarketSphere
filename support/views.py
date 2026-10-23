@@ -188,6 +188,16 @@ def _serialize_support_request(support_request: Any) -> Dict[str, Any]:
         "category_label": support_request.get_category_display(),
         "created_label": created_label,
         "updated_label": updated_label,
+        "messages": [
+            {
+                "id": m.id,
+                "sender_type": m.sender_type,
+                "sender_label": "Support Team" if m.sender_type == "admin" else "You",
+                "message": m.message,
+                "created_label": m.created_at.strftime("%b %d, %Y %I:%M %p"),
+            }
+            for m in support_request.messages.all()
+        ],
     }
 
 

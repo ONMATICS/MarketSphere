@@ -1,41 +1,38 @@
 /* ==========================================================================
-   MARKETSPHERE ADMIN — SELLER DETAIL (detail.css)
-   Page-scoped styles for templates/admin_dashboard/users/sellers/detail.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `sld-` (Seller Detail)
-   to avoid collisions with the shell and other admin pages, matching the
-   project's page-scoped prefix convention (bd-, adu-, adh- ...).
+   MARKETSPHERE ADMIN — SELLER DETAIL (seller_detail.css)
+   Purpose: Page-scoped styles for reviewing seller profiles, analytics,
+            products, and administrative actions.
+   Scope: Admin Panel (Seller Detail)
 
    Sections:
-     1. Variables
-     2. Reset / Page Wrapper
-     3. Buttons
+     1. Variables & Root Design Tokens
+     2. Reset & Page Wrapper
+     3. Buttons & Loading States
      4. Header (back, breadcrumb, profile, banner, quick stats, actions)
      5. Overview Metrics Grid
      6. Store Information Card
-     7. Tabs
+     7. Tabs & Navigation
      8. Shared Card / Table Primitives
      9. Products Tab
-    10. Orders Tab
-    11. Customers Tab
-    12. Analytics Tab (SVG charts)
-    13. Documents Tab
-    14. Reviews Tab
-    15. Support Tab
-    16. Activity Timeline
-    17. Security Tab
-    18. Admin Notes Tab
-    19. Administrative Actions Panel
-    20. Sidebar
-    21. Footer
-    22. Badges
-    23. Dropdown
-    24. Modals
-    25. Toast
-    26. Responsive
+    10. Orders Tab / Customers Tab
+    11. Analytics Tab (SVG charts)
+    12. Documents Tab
+    13. Reviews Tab
+    14. Support Tab
+    15. Activity Timeline
+    16. Security Tab
+    17. Admin Notes Tab
+    18. Administrative Actions Panel
+    19. Sidebar Layout & Badges
+    20. Footer
+    21. Status Badges
+    22. Dropdown Menus
+    23. Modals & Forms
+    24. Toast Notifications
+    25. Responsive Media Queries
    ========================================================================== */
 
-/* ================= 1. VARIABLES ================= */
+/* ================= 1. VARIABLES & ROOT DESIGN TOKENS ================= */
 .sld-page {
     --sld-bg: var(--ad-bg, #F7F1DE);
     --sld-surface: var(--ad-surface-raised, #F7F1DE);
@@ -84,7 +81,7 @@
     --sld-transition: 0.2s var(--sld-ease);
 }
 
-/* ================= 2. RESET / PAGE WRAPPER ================= */
+/* ================= 2. RESET & PAGE WRAPPER ================= */
 .sld-page,
 .sld-page *,
 .sld-page *::before,
@@ -128,6 +125,12 @@
     }
 }
 
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 6px; }
+::-webkit-scrollbar-thumb { background: #9D6638; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ad-accent-strong, #A56B34); }
+
 .sld-reveal {
     opacity: 0;
     transform: translateY(14px);
@@ -154,7 +157,9 @@
 .c-blue { color: var(--sld-blue) !important; }
 .c-muted { color: var(--sld-caption) !important; }
 
-/* ================= 3. BUTTONS ================= */
+/* ================= 3. BUTTONS & LOADING STATES ================= */
+@keyframes sldSpin { to { transform: rotate(360deg); } }
+
 .sld-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-weight: 600; font-size: 13.5px; border-radius: var(--sld-radius-sm);
@@ -170,15 +175,22 @@
     border: 1.5px solid var(--sld-accent) !important; border-radius: 2px !important;
 }
 .sld-btn-primary:hover:not(:disabled) {
-    background-color: transparent !important; color: #9D6638 !important;
+    background-color: transparent !important; color: #9D6638 !important; border-color: #9D6638 !important;
 }
-.sld-btn-secondary:hover:not(:disabled) {
-    background-color: var(--sld-accent) !important; color: #F7F1DE !important;
-}
+
 .sld-btn-secondary {
     background-color: transparent !important; color: #9D6638 !important;
     border: 1.5px solid var(--sld-accent) !important; border-radius: 2px !important;
 }
+.sld-btn-secondary:hover:not(:disabled) {
+    background-color: var(--sld-accent) !important; color: #F7F1DE !important; border-color: var(--sld-accent) !important;
+}
+
+.sld-btn-outline {
+    background-color: transparent; color: var(--sld-heading);
+    border: 1.5px solid var(--sld-border) !important; border-radius: 2px !important;
+}
+.sld-btn-outline:hover:not(:disabled) { border-color: var(--sld-accent); color: var(--sld-accent-strong); }
 
 .sld-btn-warning {
     background-color: transparent; color: var(--sld-heading);
@@ -191,14 +203,6 @@
 
 .sld-btn-success { background-color: var(--sld-success-bg) !important; color: var(--sld-success) !important; border: 1.5px solid rgba(79,125,84,.3) !important; border-radius: 2px !important; }
 .sld-btn-success:hover:not(:disabled) { color: #F7F1DE !important; }
-.sld-btn-outline {
-    background-color: transparent; color: var(--sld-heading);
-    border: 1.5px solid var(--sld-border) !important; border-radius: 2px !important;
-}
-.sld-btn-outline:hover:not(:disabled) { border-color: var(--sld-accent); color: var(--sld-accent-strong); }
-
-/* .sld-btn-warning { background-color: var(--sld-warning-bg); color: var(--sld-warning); border: 1.5px solid rgba(183,128,43,.3); }
-.sld-btn-warning:hover:not(:disabled) { background-color: var(--sld-warning); color: #F7F1DE; } */
 
 .sld-btn-danger { background-color: var(--sld-danger); color: #F7F1DE; border: 1.5px solid #9D6638 !important; }
 .sld-btn-danger:hover:not(:disabled) { background-color: #93372a; border-color: #93372a; }
@@ -215,7 +219,6 @@
     border-radius: 50%; border: 2px solid rgba(0,0,0,.15); border-top-color: currentColor;
     vertical-align: -2px; animation: sldSpin .7s linear infinite;
 }
-@keyframes sldSpin { to { transform: rotate(360deg); } }
 
 .sld-link-btn {
     display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
@@ -223,15 +226,16 @@
 }
 .sld-link-btn:hover { gap: 8px; }
 
+.sld-ripple { position: absolute; border-radius: 50%; background: rgba(192,138,78,.35); transform: scale(0); pointer-events: none; }
+
 /* ================= 4. HEADER ================= */
 .sld-header {
+    position: relative; z-index: 100;
     background-color: var(--sld-surface-raised); border: 1px solid var(--sld-border);
     border-radius: var(--sld-radius-md); overflow: visible; box-shadow: var(--sld-shadow-sm);
 }
 
-.sld-header-top {
-    display: flex; align-items: center; gap: 14px; padding: 18px 26px 0;
-}
+.sld-header-top { display: flex; align-items: center; gap: 14px; padding: 18px 26px 0; }
 
 .sld-back-btn {
     flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%;
@@ -284,6 +288,10 @@
 .sld-logo img { width: 100%; height: 100%; object-fit: cover; }
 .sld-logo:hover { transform: scale(1.03); }
 
+@keyframes sldPulseDot {
+    0%,100% { box-shadow: 0 0 0 3px rgba(79,125,84,.22); }
+    50% { box-shadow: 0 0 0 6px rgba(79,125,84,.1); }
+}
 .sld-online-dot {
     position: absolute; bottom: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%;
     background-color: var(--sld-caption); border: 3px solid var(--sld-surface-raised);
@@ -291,10 +299,6 @@
 .sld-online-dot.is-online {
     background-color: var(--sld-success); box-shadow: 0 0 0 3px rgba(79,125,84,.22);
     animation: sldPulseDot 2.2s ease-in-out infinite;
-}
-@keyframes sldPulseDot {
-    0%,100% { box-shadow: 0 0 0 3px rgba(79,125,84,.22); }
-    50% { box-shadow: 0 0 0 6px rgba(79,125,84,.1); }
 }
 
 .sld-profile-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding-bottom: 4px; }
@@ -336,18 +340,8 @@
 .sld-quickstat span { font-size: 11.5px; font-weight: 600; color: var(--sld-caption); text-transform: uppercase; letter-spacing: .3px; }
 
 /* ================= 5. OVERVIEW METRICS GRID ================= */
-.sld-header {
-    position: relative;
-    z-index: 100;
-}
-
 .sld-metrics-grid {
-    position: relative;
-    z-index: 1;
-}
-
-.sld-metrics-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
 }
 .sld-metric-card {
     position: relative; overflow: visible; display: flex; align-items: flex-start; gap: 13px; z-index: 1;
@@ -391,7 +385,7 @@
 }
 .sld-social-chip svg { color: var(--sld-accent-strong); }
 
-/* ================= 7. TABS ================= */
+/* ================= 7. TABS & NAVIGATION ================= */
 .sld-tabs {
     position: sticky; top: calc(var(--ad-topbar-height, 68px) + 12px); z-index: 50;
     display: flex; align-items: center; gap: 4px; background-color: var(--sld-surface-raised);
@@ -409,10 +403,10 @@
 .sld-tab:hover { background-color: var(--sld-bg); color: var(--sld-heading); }
 .sld-tab.is-active { background-color: var(--sld-accent); color: #241A17; }
 
+@keyframes sldPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 .sld-tab-panels { display: flex; flex-direction: column; }
 .sld-tab-panel { display: none; flex-direction: column; gap: 18px; animation: sldPanelIn .3s var(--sld-ease); }
 .sld-tab-panel.is-active { display: flex; }
-@keyframes sldPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ================= 8. SHARED CARD / TABLE PRIMITIVES ================= */
 .sld-card {
@@ -459,7 +453,17 @@
 .sld-table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
 .sld-table-toolbar-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-.sld-table-wrap { width: 100%; overflow-x: auto; }
+/* Table Scrollbar Configuration */
+.sld-table-wrap { overflow: auto; max-width: 100%; scrollbar-width: thin; scrollbar-color: var(--sld-accent) transparent; }
+.sld-table-wrap::-webkit-scrollbar { width: 10px; height: 10px; }
+.sld-table-wrap::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
+.sld-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--sld-accent); border-radius: 999px; border: 2px solid transparent;
+    background-clip: padding-box; transition: background-color .2s ease;
+}
+.sld-table-wrap::-webkit-scrollbar-thumb:hover { background: var(--sld-text-muted); background-clip: padding-box; }
+.sld-table-wrap::-webkit-scrollbar-corner { background: transparent; }
+
 .sld-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .sld-table thead th {
     text-align: left; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
@@ -489,12 +493,12 @@
 .sld-order-link, .sld-customer-link { font-weight: 700; color: var(--sld-accent-strong); cursor: pointer; }
 .sld-order-link:hover, .sld-customer-link:hover { text-decoration: underline; }
 
-.sld-checkbox { position: relative; display: inline-flex; cursor: pointer; }
-.sld-checkbox input { position: absolute; opacity: 0; height: 0; width: 0; }
+.sld-checkbox { position: relative; display: inline-flex; cursor: pointer; user-select: none; align-items: center; gap: 10px; }
+.sld-checkbox input { position: absolute; opacity: 0; height: 0; width: 0; display: none; }
 .sld-checkbox-box {
     position: relative; height: 18px; width: 18px; background-color: var(--sld-surface-raised);
     border: 1.8px solid var(--sld-border); border-radius: 5px; display: block;
-    transition: background-color var(--sld-transition), border-color var(--sld-transition);
+    transition: background-color var(--sld-transition), border-color var(--sld-transition); flex-shrink: 0;
 }
 .sld-checkbox:hover input ~ .sld-checkbox-box { border-color: var(--sld-accent); }
 .sld-checkbox input:checked ~ .sld-checkbox-box { background-color: var(--sld-accent); border-color: var(--sld-accent); }
@@ -504,13 +508,13 @@
 }
 .sld-checkbox input:checked ~ .sld-checkbox-box::after { display: block; }
 
+@keyframes sldFadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .sld-bulk-bar {
     display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
     background-color: var(--sld-accent-soft); border: 1px solid var(--sld-accent-ring);
     border-radius: var(--sld-radius-sm); padding: 12px 16px; margin-bottom: 14px;
     animation: sldFadeInUp 0.2s var(--sld-ease);
 }
-@keyframes sldFadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .sld-bulk-info { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--sld-accent-strong); }
 .sld-bulk-count { font-size: 15px; font-weight: 700; }
 .sld-bulk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -519,43 +523,8 @@
 .sld-progress-bar { width: 100%; height: 6px; border-radius: var(--sld-radius-pill); background-color: var(--sld-bg); overflow: hidden; }
 .sld-progress-fill { display: block; height: 100%; width: 0; border-radius: var(--sld-radius-pill); background: linear-gradient(90deg, var(--sld-accent), var(--sld-accent-strong)); transition: width .8s var(--sld-ease); }
 .sld-progress-fill.is-filled { width: var(--sld-pct, 0%); }
-/* ================= TABLE SCROLLBAR ================= */
 
-.sld-table-wrap {
-    overflow: auto;
-    max-width: 100%;
-    scrollbar-width: thin;
-    scrollbar-color: var(--sld-accent) transparent;
-}
-
-/* Chrome, Edge, Safari */
-.sld-table-wrap::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-.sld-table-wrap::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 999px;
-}
-
-.sld-table-wrap::-webkit-scrollbar-thumb {
-    background: var(--sld-accent);
-    border-radius: 999px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    transition: background-color .2s ease;
-}
-
-.sld-table-wrap::-webkit-scrollbar-thumb:hover {
-    background: var(--sld-text-muted);
-    background-clip: padding-box;
-}
-
-.sld-table-wrap::-webkit-scrollbar-corner {
-    background: transparent;
-}
-/* ================= 10. ORDERS TAB / 11. CUSTOMERS TAB ================= */
+/* ================= 10. ORDERS TAB / CUSTOMERS TAB ================= */
 .sld-customers-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; }
 .sld-customer-list { display: flex; flex-direction: column; gap: 2px; }
 .sld-customer-row {
@@ -582,7 +551,7 @@
 .sld-location-bar-fill { display: block; height: 100%; border-radius: var(--sld-radius-pill); background: linear-gradient(90deg, var(--sld-accent), var(--sld-accent-strong)); }
 .sld-location-row span:last-child { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: #B0BA99; width: 34px; text-align: right; }
 
-/* ================= 12. ANALYTICS TAB ================= */
+/* ================= 11. ANALYTICS TAB ================= */
 .sld-analytics-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; }
 .sld-analytics-grid-full { grid-column: 1 / -1; }
 
@@ -637,7 +606,7 @@
 .sld-kpi-card strong { font-size: 18px; color: var(--sld-heading); }
 .sld-kpi-card .sld-kpi-trend { font-size: 11px; font-weight: 600; }
 
-/* ================= 13. DOCUMENTS TAB ================= */
+/* ================= 12. DOCUMENTS TAB ================= */
 .sld-docs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .sld-doc-card {
     display: flex; flex-direction: column; gap: 12px; background-color: var(--sld-surface-raised);
@@ -657,7 +626,7 @@
 .sld-doc-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .sld-doc-actions .sld-btn { flex: 1; min-width: 0; }
 
-/* ================= 14. REVIEWS TAB ================= */
+/* ================= 13. REVIEWS TAB ================= */
 .sld-reviews-summary { display: flex; gap: 30px; align-items: center; padding-bottom: 20px; margin-bottom: 16px; border-bottom: 1px solid var(--sld-border); flex-wrap: wrap; }
 .sld-reviews-score { text-align: center; }
 .sld-reviews-score strong { font-size: 40px; font-weight: 700; color: var(--sld-heading); display: block; }
@@ -677,9 +646,9 @@
 .sld-review-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--sld-border); font-size: 12px; color: var(--sld-caption); font-weight: 600; }
 .sld-review-actions { display: flex; gap: 6px; }
 
-/* ================= 15. SUPPORT TAB (reuses .sld-table) ================= */
+/* ================= 14. SUPPORT TAB (reuses .sld-table) ================= */
 
-/* ================= 16. ACTIVITY TIMELINE ================= */
+/* ================= 15. ACTIVITY TIMELINE ================= */
 .sld-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .sld-pill {
     padding: 6px 13px; font-size: 12px; font-weight: 600; border-radius: var(--sld-radius-pill);
@@ -711,7 +680,7 @@
 .sld-timeline-body p { font-size: 12.5px; color: var(--sld-body); margin: 3px 0; line-height: 1.5; }
 .sld-timeline-time { font-size: 11.5px; color: var(--sld-caption); font-weight: 500; }
 
-/* ================= 17. SECURITY TAB ================= */
+/* ================= 16. SECURITY TAB ================= */
 .sld-security-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .sld-sec-card {
     display: flex; align-items: center; gap: 12px; background-color: var(--sld-surface-raised);
@@ -733,7 +702,9 @@
 .sld-sec-value { font-size: 12.5px; color: var(--sld-caption); font-weight: 600; }
 .sld-sec-actions-row { display: flex; flex-wrap: wrap; gap: 10px; }
 
-/* ================= 18. ADMIN NOTES TAB ================= */
+/* ================= 17. ADMIN NOTES TAB ================= */
+@keyframes sldNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
 .sld-note-composer { background-color: var(--sld-bg); border: 1.5px dashed var(--sld-border); border-radius: var(--sld-radius-sm); padding: 14px; margin-bottom: 16px; }
 .sld-note-composer textarea {
     width: 100%; resize: vertical; min-height: 80px; padding: 10px 12px; font-size: 13.5px; font-family: inherit;
@@ -745,7 +716,6 @@
 
 .sld-notes-list { display: flex; flex-direction: column; gap: 14px; }
 .sld-note-card { background-color: var(--sld-bg); border: 1px solid var(--sld-border); border-radius: var(--sld-radius-sm); padding: 16px; animation: sldNoteIn .3s var(--sld-ease); }
-@keyframes sldNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 .sld-note-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .sld-note-avatar { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background-color: var(--sld-accent-strong); color: #F4EEE3; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .sld-note-meta { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
@@ -754,7 +724,7 @@
 .sld-note-content { font-size: 13.5px; color: var(--sld-body); line-height: 1.6; margin-bottom: 10px; }
 .sld-note-actions { display: flex; gap: 6px; }
 
-/* ================= 19. ADMINISTRATIVE ACTIONS PANEL ================= */
+/* ================= 18. ADMINISTRATIVE ACTIONS PANEL ================= */
 .sld-actions-groups { display: flex; flex-direction: column; gap: 22px; }
 .sld-actions-group-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--sld-caption); margin-bottom: 12px; }
 .sld-actions-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -781,7 +751,7 @@
 .sld-danger-text strong { display: block; font-size: 13.5px; color: var(--sld-heading); }
 .sld-danger-text small { font-size: 12px; color: var(--sld-caption); }
 
-/* ================= 20. SIDEBAR ================= */
+/* ================= 19. SIDEBAR LAYOUT & BADGES ================= */
 .sld-layout { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
 .sld-main-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
 .sld-sidebar { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--ad-topbar-height, 68px) + 20px); }
@@ -821,7 +791,7 @@
 .sld-tips-links a { font-size: 12px; font-weight: 700; color: var(--sld-accent-strong); }
 .sld-tips-links a:hover { text-decoration: underline; }
 
-/* ================= 21. FOOTER ================= */
+/* ================= 20. FOOTER ================= */
 .sld-footer { text-align: center; padding: 18px 10px 6px; border-top: 1px solid var(--sld-border); }
 .sld-footer p { font-size: 12.5px; color: var(--sld-caption); max-width: 640px; margin: 0 auto 10px; line-height: 1.6; }
 .sld-footer-links { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 12.5px; font-weight: 600; }
@@ -829,7 +799,7 @@
 .sld-footer-links a:hover { text-decoration: underline; }
 .sld-footer-links span { color: var(--sld-border); }
 
-/* ================= 22. BADGES ================= */
+/* ================= 21. STATUS BADGES ================= */
 .sld-badge {
     display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 11px; font-weight: 700;
     border-radius: var(--sld-radius-pill); line-height: 1; white-space: nowrap;
@@ -843,7 +813,7 @@
 .sld-badge.c-muted { background-color: var(--sld-muted-bg); color: #6b7458; }
 .sld-badge.c-blue { background-color: var(--sld-blue-bg); color: var(--sld-blue); }
 
-/* ================= 23. DROPDOWN ================= */
+/* ================= 22. DROPDOWN MENUS ================= */
 .sld-dropdown { position: relative; }
 .sld-dropdown-menu {
     position: absolute; top: calc(100% + 8px); right: 0; width: 210px; background-color: var(--sld-surface-raised);
@@ -864,149 +834,90 @@
 .sld-icon-btn:hover { background-color: var(--sld-accent-soft); color: var(--sld-accent-strong); }
 .sld-row-dropdown .sld-dropdown-menu { width: 180px; }
 
-/* ================= 24. MODALS ================= */
-.sad-modal-overlay {
+/* ================= 23. MODALS & FORMS ================= */
+@keyframes sldScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+
+.sad-modal-overlay,
+.sld-modal-overlay {
     position: fixed; inset: 0; background-color: rgba(33,27,34,.5); backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
     z-index: 900; padding: 20px; opacity: 0; transition: opacity .2s ease; overflow-y: auto;
 }
-.sad-modal-overlay:not(.is-hidden) { opacity: 1; }
-.sad-modal {
-    background-color: #F7F1DE; border-radius: var(--sad-radius-lg); padding: 30px; width: 100%; max-width: 420px;
-    box-shadow: var(--sad-shadow-lg); text-align: center; animation: sadScaleIn .25s var(--sad-ease);
+.sad-modal-overlay:not(.is-hidden),
+.sld-modal-overlay:not(.is-hidden) { opacity: 1; }
+
+.sad-modal,
+.sld-modal {
+    background-color: #F7F1DE; border-radius: var(--sld-radius-lg); padding: 30px; width: 100%; max-width: 420px;
+    box-shadow: var(--sld-shadow-lg); text-align: center; animation: sldScaleIn .25s var(--sld-ease);
 }
 .sad-modal-lg { max-width: 560px; text-align: left; }
-@keyframes sadScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
-.sad-modal-icon { display: inline-flex; align-items: center; background-color: #B0BA99 !important; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--sad-danger-bg); color: var(--sad-danger); margin-bottom: 18px; }
-.sad-modal-icon.c-accent { background-color: var(--sad-accent-soft); color: var(--sad-accent-strong); }
-.sad-modal-icon.c-success { background-color: var(--sad-success-bg); color: var(--sad-success); }
-.sad-modal-title { font-size: 18px; font-weight: 700; margin: 0 0 8px; color: #9D6638; }
-.sad-modal-text { font-size: 13.5px; color: var(--sad-caption); line-height: 1.55; margin: 0 0 22px; }
-.sad-modal-actions { display: flex; gap: 10px; }
-.sad-modal-actions .sad-btn { flex: 1; }
-.sad-modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sad-caption); transition: background-color var(--sad-transition); }
-.sad-modal-close:hover { background-color: var(--sad-bg); color: var(--sad-heading); }
-.sad-modal-preview-img { width: 100%; max-height: 60vh; object-fit: contain; border-radius: var(--sad-radius-sm); background-color: var(--sad-bg); }
+.sld-modal-lg { max-width: 640px; text-align: left; }
 
-.sad-form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; text-align: left; }
-.sad-form-group label { font-size: 12.5px; font-weight: 700; color: var(--sad-heading); }
+.sad-modal-icon,
+.sld-modal-icon {
+    display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%;
+    background-color: var(--sld-danger-bg); color: var(--sld-danger); margin-bottom: 18px;
+}
+.sad-modal-icon.c-accent,
+.sld-modal-icon.c-accent { background-color: var(--sld-accent-soft); color: var(--sld-accent-strong); }
+.sad-modal-icon.c-success,
+.sld-modal-icon.c-success { background-color: var(--sld-success-bg); color: var(--sld-success); }
+
+.sad-modal-title,
+.sld-modal-title { font-size: 18px; font-weight: 700; margin: 0 0 8px; color: #9D6638; }
+
+.sad-modal-text { font-size: 13.5px; color: var(--sld-caption); line-height: 1.55; margin: 0 0 22px; }
+.sld-modal-text { font-size: 13.5px; color: #B0BA99; line-height: 1.55; margin: 0 0 22px; }
+
+.sad-modal-actions,
+.sld-modal-actions { display: flex; gap: 10px; }
+.sad-modal-actions .sld-btn,
+.sld-modal-actions .sad-btn { flex: 1; }
+
+.sad-modal-close,
+.sld-modal-close {
+    position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; color: var(--sld-caption); transition: background-color var(--sld-transition);
+}
+.sad-modal-close:hover,
+.sld-modal-close:hover { background-color: var(--sld-bg); color: var(--sld-heading); }
+
+.sad-modal-preview-img,
+.sld-modal-preview-img { width: 100%; max-height: 60vh; object-fit: contain; border-radius: var(--sld-radius-sm); background-color: var(--sld-bg); }
+
+.modal-overlay-inputs input,
+.modal-overlay-inputs textarea,
 .sad-form-group input,
 .sad-form-group select,
 .sad-form-group textarea {
-    width: 100%; background-color: var(--sad-bg); border: 1.5px solid #9D6638 !important; border-radius: 2px;
-    padding: 10px 12px; font-size: 13.5px; color: var(--sad-heading); font-family: inherit; outline: none;
-    transition: border-color var(--sad-transition), box-shadow var(--sad-transition);
+    width: 100%; background-color: var(--sld-bg); border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
+    padding: 10px 12px; font-size: 13.5px; color: var(--sld-heading); font-family: inherit; outline: none;
+    transition: border-color var(--sld-transition), box-shadow var(--sld-transition);
 }
+.sad-form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; text-align: left; }
+.sad-form-group label { font-size: 12.5px; font-weight: 700; color: var(--sld-heading); }
 .sad-form-group textarea { resize: vertical; min-height: 90px; }
 .sad-form-group input:focus,
 .sad-form-group select:focus,
-.sad-form-group textarea:focus { border-color: var(--sad-accent); box-shadow: 0 0 0 3px var(--sad-accent-ring); }
-.sad-form-hint { font-size: 11.5px; color: var(--sad-caption); }
+.sad-form-group textarea:focus { border-color: var(--sld-accent); box-shadow: 0 0 0 3px var(--sld-accent-ring); }
+.sad-form-hint { font-size: 11.5px; color: var(--sld-caption); }
 
 .sad-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; }
-.sad-toggle-text strong { display: block; font-size: 13px; color: var(--sad-heading); }
-.sad-toggle-text small { font-size: 11.5px; color: var(--sad-caption); }
+.sad-toggle-text strong { display: block; font-size: 13px; color: var(--sld-heading); }
+.sad-toggle-text small { font-size: 11.5px; color: var(--sld-caption); }
 .sad-switch { flex: 0 0 auto; position: relative; width: 42px; height: 24px; }
 .sad-switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
-.sad-switch-track { position: absolute; inset: 0; background-color: var(--sad-border); border-radius: var(--sad-radius-pill); transition: background-color var(--sad-transition); }
-.sad-switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background-color: #F7F1DE; box-shadow: var(--sad-shadow-sm); transition: transform var(--sad-transition); }
-.sad-switch input:checked ~ .sad-switch-track { background-color: var(--sad-accent); }
+.sad-switch-track { position: absolute; inset: 0; background-color: var(--sld-border); border-radius: var(--sld-radius-pill); transition: background-color var(--sld-transition); }
+.sad-switch-thumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background-color: #F7F1DE; box-shadow: var(--sld-shadow-sm); transition: transform var(--sld-transition); }
+.sad-switch input:checked ~ .sad-switch-track { background-color: var(--sld-accent); }
 .sad-switch input:checked ~ .sad-switch-track .sad-switch-thumb { transform: translateX(18px); }
-
-
 .sad-modal-checklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; text-align: left; }
 
-.sad-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    user-select: none;
-}
+/* ================= 24. TOAST NOTIFICATIONS ================= */
+@keyframes sldToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sldToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-.sad-checkbox input {
-    display: none;
-}
-
-.sad-checkbox-box {
-    flex-shrink: 0;
-    border: 1px solid #9D6638;
-    border-radius: 4px;
-    background: transparent;
-    position: relative;
-    transition: all .2s ease;
-}
-
-.sad-checkbox input:checked + .sad-checkbox-box {
-    background: #9D6638;
-    border-color: #9D6638;
-}
-.sad-btn-primary {
-    background-color: #C08A4E !important; color: #F7F1DE !important;
-    border: 1.5px solid #C08A4E !important; border-radius: 2px !important;
-}
-.sad-btn-primary:hover:not(:disabled) {
-    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
-}
-
-.sad-btn-secondary {
-    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
-    border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
-}
-.sad-btn-secondary:hover:not(:disabled) {
-    background-color: #9D6638 !important; color: #F7F1DE !important;
-}
-.sld-modal-overlay {
-    position: fixed; inset: 0; background-color: rgba(33,27,34,.5); backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
-    z-index: 900; padding: 20px; opacity: 0; transition: opacity .2s ease;
-}
-.sld-modal-overlay:not(.is-hidden) { opacity: 1; }
-.sld-modal { background-color: #F7F1DE; border-radius: var(--sld-radius-lg); padding: 30px; width: 100%; max-width: 420px; box-shadow: var(--sld-shadow-lg); text-align: center; animation: sldScaleIn .25s var(--sld-ease); }
-.sld-modal-lg { max-width: 640px; text-align: left; }
-@keyframes sldScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
-.sld-modal-icon { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--sld-danger-bg); color: var(--sld-danger); margin-bottom: 18px; }
-.sld-modal-icon.c-accent { background-color: var(--sld-accent-soft); color: var(--sld-accent-strong); }
-.sld-modal-title { font-size: 18px; font-weight: 700; margin: 0 0 8px; color: #9D6638; }
-.sld-modal-text { font-size: 13.5px; color: #B0BA99; line-height: 1.55; margin: 0 0 22px; }
-.sld-modal-actions { display: flex; gap: 10px; }
-.sld-modal-actions .sld-btn { flex: 1; }
-.modal-overlay-inputs input, .modal-overlay-inputs textarea{ border: 1.5px solid #9D6638 !important; border-radius: 2px !important;}
-.sld-modal-actions .sld-btn-primary {
-    background-color: #9D6638 !important; color: #F7F1DE !important;
-    border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
-}
-.sld-modal-actions .sld-btn-secondary {
-    background-color: transparent !important; color: #9D6638 !important;
-    border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
-}
-.sld-modal-actions .sld-btn-secondary:hover {
-    background-color: #9D6638 !important; color: #F7F1DE !important;
-}
-
-.sld-modal-close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sld-caption); transition: background-color var(--sld-transition); }
-.sld-modal-close:hover { background-color: var(--sld-bg); color: var(--sld-heading); }
-.sld-modal-preview-img { width: 100%; max-height: 60vh; object-fit: contain; border-radius: var(--sld-radius-sm); background-color: var(--sld-bg); }
-/* Custom Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #9D6638;
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ad-accent-strong);
-}
-/* ================= 25. TOAST ================= */
 .sld-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1080; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
 .sld-toast {
     display: flex; align-items: center; gap: 10px; background-color: #F7F1DE; border: 1px solid #9D6638;
@@ -1019,12 +930,8 @@
 .sld-toast.sld-toast-danger { border-left-color: var(--sld-danger); }
 .sld-toast.sld-toast-danger svg { color: var(--sld-danger); }
 .sld-toast.is-leaving { animation: sldToastOut .22s ease forwards; }
-@keyframes sldToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes sldToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-.sld-ripple { position: absolute; border-radius: 50%; background: rgba(192,138,78,.35); transform: scale(0); pointer-events: none; }
-
-/* ================= 26. RESPONSIVE ================= */
+/* ================= 25. RESPONSIVE MEDIA QUERIES ================= */
 @media (max-width: 1299.98px) {
     .sld-metrics-grid { grid-template-columns: repeat(3, 1fr); }
     .sld-store-info-grid { grid-template-columns: repeat(3, 1fr); }

@@ -25,6 +25,7 @@
         initReportForm();
         initContactForm();
         initRequestDetailsModal();
+        initRequestDeepLink();
         initScrollReveal();
     });
 
@@ -630,7 +631,9 @@
         const statusMeta = {
             open: { label: 'Open', badgeClass: 'hs-status-open', icon: 'bi-circle-fill' },
             'in-progress': { label: 'In Progress', badgeClass: 'hs-status-in-progress', icon: 'bi-arrow-repeat' },
-            resolved: { label: 'Resolved', badgeClass: 'hs-status-resolved', icon: 'bi-check-circle-fill' }
+            resolved: { label: 'Resolved', badgeClass: 'hs-status-resolved', icon: 'bi-check-circle-fill' },
+            'waiting_for_user': { label: 'Waiting for You', badgeClass: 'hs-status-in-progress', icon: 'bi-hourglass-split' },
+            closed: { label: 'Closed', badgeClass: 'hs-status-resolved', icon: 'bi-check-circle-fill' }
         };
 
         const subjectEl = document.getElementById('hsRequestDetailSubject');
@@ -644,7 +647,7 @@
         rows.forEach(function (row) {
             row.addEventListener('click', function () {
                 const data = row.dataset;
-                const meta = statusMeta[data.requestStatus] || statusMeta[data.requestStatus.replace('_', '-')] || statusMeta.open;
+                const meta = statusMeta[data.requestStatus] || statusMeta[data.requestStatus.replace(/_/g, '-')] || statusMeta.open;
 
                 if (subjectEl) subjectEl.textContent = data.requestSubject || '—';
                 if (idEl) idEl.textContent = data.requestId || '—';
@@ -657,8 +660,44 @@
                     statusEl.className = 'hs-status-badge ' + meta.badgeClass;
                     statusEl.innerHTML = '<i class="bi ' + meta.icon + '"></i> ' + meta.label;
                 }
+
+                loadThread(data.requestPk);
             });
         });
+    }
+
+    function loadThread(pk) {
+        const wrap = document.getElementById('hsRequestDetailThread');
+        const list = document.getElementById('hsRequestDetailThreadList');
+        if (!wrap || !list || !pk) return;
+        wrap.hidden = true;
+        list.textContent = '';
+        fetch('/support/api/requests/' + pk + '/', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                const msgs = (data.request && data.request.messages) || [];
+                if (!msgs.length) return;
+                msgs.forEach(function (m) {
+                    const item = document.createElement('div');
+                    item.className = 'hs-thread-msg' + (m.sender_type === 'admin' ? ' is-admin' : '');
+                    const head = document.createElement('strong');
+                    head.textContent = m.sender_label + ' \u00b7 ' + m.created_label;
+                    const body = document.createElement('p');
+                    body.textContent = m.message;
+                    item.appendChild(head);
+                    item.appendChild(body);
+                    list.appendChild(item);
+                });
+                wrap.hidden = false;
+            })
+            .catch(function (err) { console.error('Support thread error:', err); });
+    }
+
+    function initRequestDeepLink() {
+        const pk = new URLSearchParams(window.location.search).get('request');
+        if (!pk) return;
+        const row = document.querySelector('.hs-request-row[data-request-pk="' + pk + '"]');
+        if (row) row.click();
     }
 
     async function loadSupportRequests() {

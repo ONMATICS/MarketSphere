@@ -1,15 +1,39 @@
 /* =========================================================
-   MARKETSPHERE SEARCH RESULTS PAGE STYLES
-   Builds on global variables (static/css/styles.css) and
-   reuses product-card / badge / rating classes from home.css
+   MARKETSPHERE — SEARCH RESULTS STYLESHEET
+   Purpose: Controls the layout and components of the search 
+   results page, including the search hero, filter sidebars, 
+   product grid motion states, sorting rows, and pagination.
+   Scope: Storefront Search
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs
+   4. Search Hero Section
+   5. Sorting Row
+   6. Filter Sidebar (Desktop)
+   7. Mobile Filter Trigger & Offcanvas
+   8. Product Grid & Badges
+   9. Motion & Updating States
+   10. No Results (Empty State)
+   11. Pagination
+   12. Utilities
+   13. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --search-results-accent: #9D6638;
     --search-results-accent-ring: rgba(157, 102, 56, 0.25);
 }
 
-/* ================= BREADCRUMB ================= */
+/* ================= 2. BASE LAYOUT ================= */
+.search-results-section {
+    padding: 0px 0 10px;
+    background-color: var(--background-color);
+}
+
+/* ================= 3. BREADCRUMBS ================= */
 .pd-breadcrumb-wrap {
     padding: 18px 0 10px;
     margin: 0;
@@ -34,7 +58,7 @@
     color: #B0BA99;
 }
 
-/* ================= SEARCH HERO ================= */
+/* ================= 4. SEARCH HERO SECTION ================= */
 .search-hero-section {
     padding: 24px 0 36px;
     background-color: var(--background-color);
@@ -89,53 +113,40 @@
     font-weight: 700;
 }
 
-/* ================= LAYOUT ================= */
-.search-results-section {
-    padding: 0px 0 10px;
-    background-color: var(--background-color);
+/* ================= 5. SORTING ROW ================= */
+.sorting-row {
+    background-color: #F7F1DE;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px 20px;
 }
 
-/* ================= MOTION ================= */
-.search-product-grid {
-    position: relative;
-    transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease;
+.results-count {
+    color: #4f7d54;
+    font-size: 14.5px;
 }
 
-.search-product-grid.is-updating {
-    opacity: 0.72;
-    transform: scale(0.995);
-    filter: saturate(0.96);
+.results-count strong {
+    color: var(--headings);
 }
 
-.search-result-item {
-    position: relative;
-    transform-origin: top left;
-    will-change: transform, opacity;
-    transition: transform 0.36s cubic-bezier(0.2, 0.85, 0.2, 1), opacity 0.28s ease;
+.sort-label {
+    font-size: 14px;
+    color: #B0BA99;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.search-result-item.is-entering {
-    opacity: 0;
+.sort-select {
+    background-color: #F7F1DE !important;
+    border: var(--input-border) solid #9D6638 !important;
+    color: #4E220F !important;
+    border-radius: var(--border-radius) !important;
+    font-size: 14px;
+    min-width: 190px;
 }
 
-.search-result-item.is-leaving {
-    opacity: 0;
-    transform: scale(0.965);
-}
-
-@keyframes resultPanelIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ================= FILTER SIDEBAR ================= */
+/* ================= 6. FILTER SIDEBAR (DESKTOP) ================= */
 .filters-sidebar {
     position: sticky;
     top: calc(var(--sticky-header-height, 96px) + 16px);
@@ -145,30 +156,23 @@
     padding-right: 6px;
 }
 
-/* Scrollbar width */
 .filters-sidebar::-webkit-scrollbar {
     width: 10px;
 }
 
-/* Scrollbar track (background) */
 .filters-sidebar::-webkit-scrollbar-track {
     background: #F7F1DE;
-    /* Your light background */
     border-radius: 10px;
 }
 
-/* Scrollbar thumb (the draggable part) */
 .filters-sidebar::-webkit-scrollbar-thumb {
     background: #9D6638;
-    /* Your primary color */
     border-radius: 10px;
     border: 2px solid #F7F1DE;
 }
 
-/* Hover effect */
 .filters-sidebar::-webkit-scrollbar-thumb:hover {
     background: #4E220F;
-    /* Dark brown */
 }
 
 .filter-card {
@@ -274,7 +278,7 @@
     color: #F7F1DE !important;
 }
 
-/* ================= MOBILE FILTER TRIGGER ================= */
+/* ================= 7. MOBILE FILTER TRIGGER & OFFCANVAS ================= */
 .filter-toggle-btn {
     background-color: var(--search-results-accent) !important;
     color: #F7F1DE !important;
@@ -302,47 +306,10 @@
     margin-right: 6px;
 }
 
-/* ================= SORTING ROW ================= */
-.sorting-row {
-    background-color: #F7F1DE;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 14px 20px;
-}
-
-.results-count {
-    color: #4f7d54;
-    font-size: 14.5px;
-}
-
-.results-count strong {
-    color: var(--headings);
-}
-
-.sort-label {
-    font-size: 14px;
-    color: #B0BA99;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.sort-select {
-    background-color: #F7F1DE !important;
-    border: var(--input-border) solid #9D6638 !important;
-    color: #4E220F !important;
-    border-radius: var(--border-radius) !important;
-    font-size: 14px;
-    min-width: 190px;
-}
-
-/* ================= PRODUCT GRID EXTRAS ================= */
+/* ================= 8. PRODUCT GRID & BADGES ================= */
 .search-product-grid .product-card {
     position: relative;
-    transition:
-        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.45s ease,
-        box-shadow 0.3s ease;
-
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, box-shadow 0.3s ease;
 }
 
 .product-category-badge {
@@ -360,7 +327,6 @@
     z-index: 2;
 }
 
-/* Push discount/new badge down when category badge is present */
 .product-category-badge+.badge-discount,
 .product-category-badge+.badge-new {
     top: 12px;
@@ -390,12 +356,40 @@
     color: #b54b3b;
 }
 
-.add-to-cart-btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
+/* ================= 9. MOTION & UPDATING STATES ================= */
+.search-product-grid {
+    position: relative;
+    transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease;
 }
 
-/* ================= NO RESULTS ================= */
+.search-product-grid.is-updating {
+    opacity: 0.72;
+    transform: scale(0.995);
+    filter: saturate(0.96);
+}
+
+.search-result-item {
+    position: relative;
+    transform-origin: top left;
+    will-change: transform, opacity;
+    transition: transform 0.36s cubic-bezier(0.2, 0.85, 0.2, 1), opacity 0.28s ease;
+}
+
+.search-result-item.is-entering {
+    opacity: 0;
+}
+
+.search-result-item.is-leaving {
+    opacity: 0;
+    transform: scale(0.965);
+}
+
+@keyframes resultPanelIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= 10. NO RESULTS (EMPTY STATE) ================= */
 .no-results-section {
     text-align: center;
     padding: 70px 20px;
@@ -432,7 +426,7 @@
     margin-bottom: 24px;
 }
 
-/* ================= PAGINATION ================= */
+/* ================= 11. PAGINATION ================= */
 .search-pagination-wrap {
     margin-top: 40px;
 }
@@ -464,11 +458,13 @@
     border-color: var(--search-results-accent);
 }
 
-.pagination .page-link:visited {
-    /* color: #B0BA99; */
+/* ================= 12. UTILITIES ================= */
+.add-to-cart-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 13. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .search-page-title {
         font-size: 28px;

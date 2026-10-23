@@ -1,8 +1,25 @@
 /* =========================================================
-   MARKETSPHERE HOMEPAGE STYLES
-   Uses global variables defined in static/css/styles.css
+   MARKETSPHERE — HOMEPAGE STYLESHEET
+   Purpose: Controls the layout and components of the storefront
+   homepage, including the hero banner, category grid, product
+   showcase, promotional banner, and newsletter signup.
+   Scope: Storefront Homepage
+
+   Sections:
+   1. Base Layout & Utilities
+   2. Section Headings
+   3. Buttons & Links
+   4. Hero Section
+   5. Categories & Brands
+   6. Product Cards & Badges
+   7. Promo Banner
+   8. Why Choose Us
+   9. Newsletter
+   10. Back to Top
+   11. Responsive Styles
    ========================================================= */
 
+/* ================= 1. BASE LAYOUT & UTILITIES ================= */
 .hero-section,
 .categories-section,
 .products-section,
@@ -12,7 +29,117 @@
     background-color: var(--background-color);
 }
 
-/* ================= HERO SECTION ================= */
+span i,
+a i,
+button i {
+    background-color: transparent;
+}
+
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ================= 2. SECTION HEADINGS ================= */
+.section-heading {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+.section-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    text-align: left;
+    max-width: 100%;
+    margin: 0 0 32px;
+}
+
+.section-label {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9D6638;
+    margin-bottom: 8px;
+}
+
+.section-label-light {
+    color: #F7F1DE;
+}
+
+.section-heading h2,
+.section-heading-row h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--headings);
+    margin-bottom: 8px;
+}
+
+.section-heading p,
+.section-heading-row p {
+    color: #4f7d54;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* ================= 3. BUTTONS & LINKS ================= */
+.btn-hero-primary {
+    background-color: #9D6638 !important;
+    color: #F7F1DE !important;
+    width: auto !important;
+    padding: 12px 28px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    border: var(--button-border) solid #9D6638 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 2px;
+    transition: 0.25s ease;
+}
+
+.btn-hero-primary:hover {
+    background-color: #F7F1DE !important;
+    color: #9D6638 !important;
+}
+
+.btn-hero-secondary {
+    background-color: transparent !important;
+    color: #4E220F !important;
+    width: auto !important;
+    padding: 12px 28px !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    border: var(--button-border) solid #4E220F !important;
+    transition: 0.25s ease;
+    border-radius: 2px;
+}
+
+.btn-hero-secondary:hover {
+    background-color: #4E220F !important;
+    color: #F7F1DE !important;
+}
+
+.view-all-link {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #9D6638 !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* ================= 4. HERO SECTION ================= */
 .hero-section {
     padding: 70px 0 50px;
     overflow: hidden;
@@ -56,43 +183,6 @@
     flex-wrap: wrap;
     gap: 14px;
     margin-bottom: 40px;
-}
-
-.btn-hero-primary {
-    background-color: #9D6638 !important;
-    color: #F7F1DE !important;
-    width: auto !important;
-    padding: 12px 28px !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-    border: var(--button-border) solid #9D6638 !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border-radius: 2px;
-    transition: 0.25s ease;
-}
-
-.btn-hero-primary:hover {
-    background-color: #F7F1DE !important;
-    color: #9D6638 !important;
-}
-
-.btn-hero-secondary {
-    background-color: transparent !important;
-    color: #4E220F !important;
-    width: auto !important;
-    padding: 12px 28px !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-    border: var(--button-border) solid #4E220F !important;
-    transition: 0.25s ease;
-    border-radius: 2px;
-}
-
-.btn-hero-secondary:hover {
-    background-color: #4E220F !important;
-    color: #F7F1DE !important;
 }
 
 .hero-stats {
@@ -195,73 +285,12 @@
 }
 
 @keyframes floatUpDown {
-
     0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-12px);
-    }
+    100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
 }
 
-/* ================= SECTION HEADINGS ================= */
-.section-heading {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto 40px;
-}
-
-.section-heading-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    text-align: left;
-    max-width: 100%;
-    margin: 0 0 32px;
-}
-
-.section-label {
-    display: inline-block;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #9D6638;
-    margin-bottom: 8px;
-}
-
-.section-label-light {
-    color: #F7F1DE;
-}
-
-.section-heading h2,
-.section-heading-row h2 {
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--headings);
-    margin-bottom: 8px;
-}
-
-.section-heading p,
-.section-heading-row p {
-    color: #4f7d54;
-    font-size: 15px;
-    margin: 0;
-}
-
-.view-all-link {
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    color: #9D6638 !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-
-/* ================= CATEGORIES ================= */
+/* ================= 5. CATEGORIES & BRANDS ================= */
 .categories-section {
     padding: 30px 0 60px;
 }
@@ -269,78 +298,59 @@
 .category-card {
     position: relative;
     overflow: hidden;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
-
     background-color: #ded7c0 !important;
     border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 26px 12px;
     text-align: center;
-
     object-fit: cover;
-    transition: transform .3s ease,
-        box-shadow .3s ease,
-        border-color .3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* Background Layer */
 .category-card::before {
     content: "";
     position: absolute;
     inset: 0;
-
     background-image: var(--bg-image);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-
-    transition: transform .4s ease,
-        filter .4s ease;
-
+    transition: transform 0.4s ease, filter 0.4s ease;
     z-index: 0;
 }
 
-/* Dark overlay for readability */
 .category-card::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, .15);
+    background: rgba(0, 0, 0, 0.15);
     opacity: 0;
-    transition: opacity .35s ease;
+    transition: opacity 0.35s ease;
     z-index: 1;
 }
 
-/* Keep content above background */
 .category-card-icon,
 .category-card h6 {
     position: relative;
     z-index: 2;
 }
 
-/* ---------------------- */
-/* Icon */
-/* ---------------------- */
-
 .category-card-icon {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: rgba(247, 241, 222, .9);
-
+    background: rgba(247, 241, 222, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
-
     opacity: 0;
-    transform: scale(.7);
-
-    transition: all .35s ease;
+    transform: scale(0.7);
+    transition: all 0.35s ease;
 }
 
 .category-card-icon i {
@@ -348,27 +358,15 @@
     color: #9D6638;
 }
 
-/* ---------------------- */
-/* Title */
-/* ---------------------- */
-
 .category-card h6 {
     margin: 0;
     font-size: 14.5px;
     font-weight: 600;
     color: #fff;
-
     opacity: 0;
     transform: translateY(20px);
-
-    transition:
-        opacity .35s ease .1s,
-        transform .35s ease .1s;
+    transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
 }
-
-/* ---------------------- */
-/* Hover */
-/* ---------------------- */
 
 .category-card:hover {
     transform: translateY(-6px);
@@ -396,61 +394,56 @@
     transform: translateY(0);
 }
 
-/* Brand image */
-.brand-card{
-    position:relative;
-    overflow:hidden;
+.brand-card {
+    position: relative;
+    overflow: hidden;
     background-color: #e8e2cc;
 }
 
-.brand-logo-img{
-    position:relative;
-    z-index:2;
-    transition:all .35s ease;
+.brand-logo-img {
+    position: relative;
+    z-index: 2;
+    transition: all 0.35s ease;
 }
 
-.brand-logo-img img{
-    width:auto;
-    max-width:130px;
-    height:50px;
-    object-fit:contain;
-    transition:all .35s ease;
+.brand-logo-img img {
+    width: auto;
+    max-width: 130px;
+    height: 50px;
+    object-fit: contain;
+    transition: all 0.35s ease;
 }
 
-.brand-card h6{
-    position:absolute;
-    top:50%;
-    left:50%;
-
-    transform:translate(-50%, 20px);
-
-    margin:0;
-    width:100%;
-
-    text-align:center;
+.brand-card h6 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 20px);
+    margin: 0;
+    width: 100%;
+    text-align: center;
     color: #9D6638;
-    font-size:20px;
+    font-size: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-weight:600;
-
-    opacity:0;
-    z-index:3;
-
-    transition:all .35s ease;
+    font-weight: 600;
+    opacity: 0;
+    z-index: 3;
+    transition: all 0.35s ease;
 }
 
-.brand-card:hover .brand-logo-img{
-    opacity:0.7;
-    transform:scale(.85);
-    filter:blur(2px);
+.brand-card:hover .brand-logo-img {
+    opacity: 0.7;
+    transform: scale(0.85);
+    filter: blur(2px);
 }
 
-.brand-card:hover h6{
-    opacity:1;
-    transform:translate(-50%, -50%);
+.brand-card:hover h6 {
+    opacity: 1;
+    transform: translate(-50%, -50%);
 }
-/* ================= PRODUCT CARDS ================= */
+
+/* ================= 6. PRODUCT CARDS & BADGES ================= */
 .products-section {
     padding: 40px 0 60px;
 }
@@ -485,7 +478,6 @@
     justify-content: center;
     background: linear-gradient(145deg, rgba(157, 102, 56, 0.10), rgba(176, 186, 153, 0.18));
     width: 100%;
-
 }
 
 .product-image-placeholder img {
@@ -508,6 +500,7 @@
     opacity: 0.75;
     background-color: transparent;
 }
+
 .product-badges {
     position: absolute;
     top: 12px;
@@ -520,7 +513,6 @@
 
 .badge-new,
 .badge-discount {
-    background-color: #b54b3b;
     color: #F7F1DE;
     font-size: 12px;
     font-weight: 700;
@@ -529,12 +521,14 @@
     white-space: nowrap;
 }
 
-.wishlist-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
+.badge-new {
+    background-color: #4f7d54;
 }
+
+.badge-discount {
+    background-color: #b54b3b;
+}
+
 .product-category-badge {
     position: absolute;
     bottom: 12px;
@@ -549,7 +543,6 @@
     border-radius: 20px;
     z-index: 2;
 }
-
 
 .stock-badge {
     display: inline-block;
@@ -573,15 +566,6 @@
 .stock-badge.out-of-stock {
     background-color: rgba(181, 75, 59, 0.14);
     color: #b54b3b;
-}
-
-.add-to-cart-btn:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-}
-
-.badge-new {
-    background-color: #4f7d54;
 }
 
 .wishlist-btn {
@@ -693,16 +677,20 @@
     color: #9D6638 !important;
 }
 
-/* ================= PROMO BANNER ================= */
+.add-to-cart-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* ================= 7. PROMO BANNER ================= */
 .promo-banner {
     padding: 24px 0 64px;
 }
 
 .promo-banner-inner {
     isolation: isolate;
-    background:
-        radial-gradient(circle at 88% 18%, rgba(247, 241, 222, 0.22) 0 8%, transparent 30%),
-        linear-gradient(115deg, #4E220F 0%, #6f3b1f 48%, #9D6638 100%);
+    background: radial-gradient(circle at 88% 18%, rgba(247, 241, 222, 0.22) 0 8%, transparent 30%),
+                linear-gradient(115deg, #4E220F 0%, #6f3b1f 48%, #9D6638 100%);
     border-radius: 24px;
     padding: clamp(34px, 5vw, 62px) clamp(24px, 6vw, 72px);
     display: flex;
@@ -763,7 +751,7 @@
     font-weight: 700;
     letter-spacing: -0.5px;
     margin-bottom: 16px;
-    background-color:transparent;
+    background-color: transparent;
 }
 
 .promo-banner-text h2 span {
@@ -772,7 +760,7 @@
     font-size: 0.62em;
     line-height: 1.35;
     margin-top: 8px;
-    background-color:transparent;
+    background-color: transparent;
 }
 
 .promo-banner-text p {
@@ -823,7 +811,7 @@
     transform: rotate(0deg) scale(1.02);
 }
 
-/* ================= WHY CHOOSE US ================= */
+/* ================= 8. WHY CHOOSE US ================= */
 .why-us-section {
     padding: 40px 0 60px;
 }
@@ -872,7 +860,7 @@
     margin: 0;
 }
 
-/* ================= NEWSLETTER ================= */
+/* ================= 9. NEWSLETTER ================= */
 .newsletter-section {
     padding: 20px 0 70px;
 }
@@ -902,12 +890,6 @@
     background-color: transparent;
     font-size: 26px;
     color: #9D6638;
-}
-
-span i,
-a i,
-button i {
-    background-color: transparent;
 }
 
 .newsletter-inner h2 {
@@ -955,7 +937,7 @@ button i {
     color: #b54b3b;
 }
 
-/* ================= BACK TO TOP ================= */
+/* ================= 10. BACK TO TOP ================= */
 .back-to-top-btn {
     position: fixed;
     bottom: 26px;
@@ -989,19 +971,7 @@ button i {
     border-radius: 50% !important;
 }
 
-/* ================= SCROLL REVEAL ================= */
-.reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* ================= RESPONSIVE ================= */
+/* ================= 11. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .hero-title {
         font-size: 34px;

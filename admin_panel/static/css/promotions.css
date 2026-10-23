@@ -1,11 +1,29 @@
 /* =========================================================
-   MARKETSPHERE ADMIN — ALL PROMOTIONS PAGE STYLES
-   Follows the same structural pattern as seller_orders.css
-   (so-*) and overview.css (adu-*): header, metric cards,
-   toolbar, table, badges, pagination. All classes here are
-   prefixed `apr-` (Admin PRomotions) per project convention.
-   ========================================================= */
+   MARKETSPHERE — ALL PROMOTIONS & CAMPAIGNS (promotions.css)
+   Purpose: Page-scoped styles for admin promotion management,
+            campaign creation forms, details views, and product grids.
+   Scope: Admin Panel (Promotions & Marketing)
+   
+   Sections:
+     1. Root Variables & Design Tokens
+     2. Reset / Page Wrapper & Utilities
+     3. Buttons & Action Elements
+     4. Header & Eyebrow Elements
+     5. Metrics Grid Cards
+     6. Toolbar & Filter Search Inputs
+     7. Data Table & Identity Cells
+     8. Status Badges & Pills
+     9. Row Actions Dropdown Menus
+    10. Empty States
+    11. Pagination Controls
+    12. Create Promotion Form Layouts & Inputs
+    13. Promotion Details View & Media Cards
+    14. Manage Promotion Products & Summary Bars
+    15. Shared Interactive Modals & Dialogs
+    16. Responsive Media Queries
+========================================================= */
 
+/* ================= 1. ROOT VARIABLES & DESIGN TOKENS ================= */
 :root {
     --apr-accent: #9D6638;
     --apr-accent-dark: #4E220F;
@@ -18,7 +36,70 @@
     --apr-card-bg: #F7F1DE;
 }
 
-/* ================= HEADER ================= */
+/* ================= 2. RESET / PAGE WRAPPER & UTILITIES ================= */
+.apr-hidden, .is-hidden { display: none !important; }
+
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+input, textarea :focus {
+    outline: none !important;
+}
+
+/* ================= 3. BUTTONS & ACTION ELEMENTS ================= */
+.apr-btn {
+    width: auto !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.apr-btn-sm {
+    padding: 8px 14px !important;
+    font-size: 12.5px !important;
+}
+
+.apr-btn-primary {
+    background-color: var(--apr-accent) !important;
+    color: #F7F1DE !important;
+    border: 1.5px solid var(--apr-accent) !important;
+}
+
+.apr-btn-primary:hover {
+    background-color: #F7F1DE !important;
+    color: var(--apr-accent) !important;
+}
+
+.apr-btn-secondary {
+    background-color: transparent !important;
+    color: var(--apr-accent-dark) !important;
+    border: 1.5px solid var(--apr-border) !important;
+}
+
+.apr-btn-secondary:hover {
+    background-color: var(--apr-border) !important;
+}
+
+.apr-btn-danger {
+    background-color: var(--apr-danger) !important;
+    color: #F7F1DE !important;
+    border: 1.5px solid var(--apr-danger) !important;
+}
+
+.apr-btn-danger:hover {
+    background-color: #8f3a2c !important;
+    border-color: #8f3a2c !important;
+}
+
+/* ================= 4. HEADER & EYEBROW ELEMENTS ================= */
 .apr-header {
     display: flex;
     align-items: flex-start;
@@ -62,46 +143,17 @@
     max-width: 560px;
 }
 
-/* ================= BUTTONS ================= */
-.apr-btn {
-    width: auto !important;
+.apr-back-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 18px !important;
-    font-size: 13.5px !important;
+    gap: 6px;
+    font-size: 12.5px;
     font-weight: 600 !important;
-    border-radius: 4px !important;
-    transition: 0.2s ease;
-}
-
-.apr-btn-sm {
-    padding: 8px 14px !important;
-    font-size: 12.5px !important;
-}
-
-.apr-btn-primary {
-    background-color: var(--apr-accent) !important;
-    color: #F7F1DE !important;
-    border: 1.5px solid var(--apr-accent) !important;
-}
-
-.apr-btn-primary:hover {
-    background-color: #F7F1DE !important;
     color: var(--apr-accent) !important;
+    margin-bottom: 10px;
 }
 
-.apr-btn-secondary {
-    background-color: transparent !important;
-    color: var(--apr-accent-dark) !important;
-    border: 1.5px solid var(--apr-border) !important;
-}
-
-.apr-btn-secondary:hover {
-    background-color: var(--apr-border) !important;
-}
-
-/* ================= METRICS ================= */
+/* ================= 5. METRICS GRID CARDS ================= */
 .apr-metrics-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -153,7 +205,7 @@
     color: var(--apr-muted);
 }
 
-/* ================= TOOLBAR ================= */
+/* ================= 6. TOOLBAR & FILTER SEARCH INPUTS ================= */
 .apr-toolbar-card {
     background-color: var(--apr-card-bg);
     border: 1px solid var(--apr-border);
@@ -206,7 +258,16 @@
     min-width: 160px;
 }
 
-/* ================= TABLE ================= */
+select {
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 6px 8px !important;
+    font-size: 13.5px !important;
+    color: var(--apr-accent-dark) !important;
+}
+
+/* ================= 7. DATA TABLE & IDENTITY CELLS ================= */
 .apr-table-card {
     background-color: var(--apr-card-bg);
     border: 1px solid var(--apr-border);
@@ -337,7 +398,7 @@
 .apr-homepage-pill.is-on { color: var(--apr-success); }
 .apr-homepage-pill.is-off { color: var(--apr-muted); }
 
-/* ================= BADGES ================= */
+/* ================= 8. STATUS BADGES & PILLS ================= */
 .apr-badge {
     display: inline-flex;
     align-items: center;
@@ -354,7 +415,7 @@
 .apr-badge-danger { background-color: rgba(181, 75, 59, 0.13); color: var(--apr-danger); }
 .apr-badge-muted { background-color: rgba(176, 186, 153, 0.28); color: #6b7458; }
 
-/* ================= ROW ACTIONS DROPDOWN ================= */
+/* ================= 9. ROW ACTIONS DROPDOWN MENUS ================= */
 .apr-col-actions { text-align: right; }
 
 .apr-icon-btn {
@@ -422,7 +483,7 @@
     margin: 6px 4px;
 }
 
-/* ================= EMPTY STATE ================= */
+/* ================= 10. EMPTY STATES ================= */
 .apr-empty-state {
     display: flex;
     flex-direction: column;
@@ -458,7 +519,17 @@
     margin: 0 0 8px;
 }
 
-/* ================= PAGINATION ================= */
+.apr-empty-inline {
+    font-size: 12.5px;
+    color: var(--apr-muted);
+    margin: 4px 0 0;
+}
+
+.apr-empty-state-compact {
+    padding: 34px 16px;
+}
+
+/* ================= 11. PAGINATION CONTROLS ================= */
 .apr-pagination-bar {
     display: flex;
     align-items: center;
@@ -506,97 +577,7 @@
     pointer-events: none;
 }
 
-/* ================= TOAST ================= */
-.apr-toast-container {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 1080;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 991.98px) {
-    .apr-metrics-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 767.98px) {
-    .apr-table thead {
-        display: none;
-    }
-
-    .apr-table, .apr-table tbody, .apr-table tr, .apr-table td {
-        display: block;
-        width: 100%;
-    }
-
-    .apr-row {
-        border: 1px solid var(--apr-border);
-        border-radius: 12px;
-        margin-bottom: 12px;
-        padding: 8px;
-    }
-
-    .apr-table tbody td {
-        border-bottom: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 10px;
-    }
-
-    .apr-table tbody td::before {
-        content: attr(data-label);
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--apr-muted);
-        flex: 0 0 auto;
-    }
-
-    .apr-identity-cell {
-        min-width: 0;
-        width: 100%;
-    }
-
-    .apr-col-actions {
-        justify-content: flex-end;
-    }
-
-    .apr-col-actions::before {
-        display: none;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .apr-metrics-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-
-
-
-
-
-
-/* =========================================================
-   CREATE PROMOTION — form-specific additions
-   Same prefix/tokens as the All Promotions list above.
-   ========================================================= */
-
-.apr-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12.5px;
-    font-weight: 600 !important;
-    color: var(--apr-accent) !important;
-    margin-bottom: 10px;
-}
-
+/* ================= 12. CREATE PROMOTION FORM LAYOUTS & INPUTS ================= */
 .apr-form-layout {
     display: grid;
     grid-template-columns: 1.6fr 1fr;
@@ -719,6 +700,24 @@
     color: var(--apr-muted);
 }
 
+.apr-input-prefix-wrap {
+    position: relative;
+}
+
+.apr-input-prefix-wrap .apr-input {
+    padding-left: 34px !important;
+}
+
+.apr-input-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--apr-muted);
+}
+
 .apr-status-static {
     display: flex;
     flex-direction: column;
@@ -726,7 +725,7 @@
     align-items: flex-start;
 }
 
-/* ---- Category picker ---- */
+/* Category picker */
 .apr-category-search {
     display: flex;
     align-items: center;
@@ -781,13 +780,7 @@
     display: none;
 }
 
-.apr-empty-inline {
-    font-size: 12.5px;
-    color: var(--apr-muted);
-    margin: 4px 0 0;
-}
-
-/* ---- Media upload ---- */
+/* Media upload */
 .apr-upload-box {
     position: relative;
     border: 1.5px dashed var(--apr-accent);
@@ -852,7 +845,7 @@
     gap: 6px;
 }
 
-/* ---- Homepage toggle ---- */
+/* Homepage toggle */
 .apr-toggle-row {
     display: flex;
     align-items: center;
@@ -923,7 +916,6 @@
     pointer-events: none;
 }
 
-/* ---- Footer ---- */
 .apr-form-footer {
     display: flex;
     justify-content: flex-end;
@@ -932,41 +924,8 @@
     padding-top: 18px;
     border-top: 1px solid var(--apr-border);
 }
-input, textarea :focus {
-    outline: none !important;
-}
-/* ---- Responsive ---- */
-@media (max-width: 991.98px) {
-    .apr-form-layout {
-        grid-template-columns: 1fr;
-    }
 
-    .apr-category-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 575.98px) {
-    .apr-category-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .apr-form-footer {
-        flex-direction: column-reverse;
-    }
-
-    .apr-form-footer .apr-btn {
-        width: 100% !important;
-        justify-content: center;
-    }
-}
-
-
-/* =========================================================
-   PROMOTION DETAILS — page-specific additions
-   Same apr- prefix/tokens as All Promotions and Create Promotion.
-   ========================================================= */
-
+/* ================= 13. PROMOTION DETAILS VIEW & MEDIA CARDS ================= */
 .apr-detail-header {
     display: flex;
     align-items: flex-start;
@@ -1062,7 +1021,6 @@ input, textarea :focus {
     flex-wrap: wrap;
 }
 
-/* ---- Detail layout ---- */
 .apr-detail-layout {
     display: grid;
     grid-template-columns: 1fr 1.6fr;
@@ -1082,7 +1040,6 @@ input, textarea :focus {
     top: calc(var(--sticky-header-height, 0px) + 16px);
 }
 
-/* ---- Generic card shell (shared look w/ apr-form-card) ---- */
 .apr-card {
     background-color: var(--apr-card-bg);
     border: 1px solid var(--apr-border);
@@ -1120,7 +1077,6 @@ input, textarea :focus {
     margin: 2px 0 0;
 }
 
-/* ---- Overview list ---- */
 .apr-overview-list {
     display: flex;
     flex-direction: column;
@@ -1176,7 +1132,6 @@ input, textarea :focus {
     background-color: var(--apr-border);
 }
 
-/* ---- Info grid (Campaign Information) ---- */
 .apr-info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1207,7 +1162,6 @@ input, textarea :focus {
     line-height: 1.5;
 }
 
-/* ---- Media ---- */
 .apr-media-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -1247,7 +1201,6 @@ input, textarea :focus {
     background-color: transparent;
 }
 
-/* ---- Category chips ---- */
 .apr-category-chip-row {
     display: flex;
     flex-wrap: wrap;
@@ -1265,72 +1218,7 @@ input, textarea :focus {
     font-weight: 600;
 }
 
-/* ---- Promotion products preview ---- */
-.apr-promo-products-count {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--apr-accent-dark);
-    margin-bottom: 12px;
-}
-
-.apr-promo-products-more {
-    font-size: 12px;
-    color: var(--apr-muted);
-    margin: 10px 2px 0;
-}
-
-.apr-table-compact td,
-.apr-table-compact th {
-    padding: 10px 12px !important;
-}
-
-.apr-empty-state-compact {
-    padding: 34px 16px;
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 991.98px) {
-    .apr-detail-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .apr-detail-side {
-        position: static;
-    }
-
-    .apr-info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .apr-info-item-wide {
-        grid-column: span 1;
-    }
-
-    .apr-media-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .apr-detail-identity {
-        flex-direction: column;
-    }
-
-    .apr-detail-header-actions {
-        width: 100%;
-    }
-
-    .apr-detail-header-actions .apr-btn {
-        flex: 1;
-        justify-content: center;
-    }
-}
-
-
-/* =========================================================
-   MANAGE PROMOTION PRODUCTS — page-specific additions
-   ========================================================= */
-
+/* ================= 14. MANAGE PROMOTION PRODUCTS & SUMMARY BARS ================= */
 .apr-manage-header {
     display: flex;
     flex-direction: column;
@@ -1409,15 +1297,25 @@ input, textarea :focus {
     display: none;
 }
 
-select {
-    background-color: transparent !important;
-    border: none !important;
-    border-radius: 4px !important;
-    padding: 6px 8px !important;
-    font-size: 13.5px !important;
-    color: var(--apr-accent-dark) !important;
+.apr-promo-products-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--apr-accent-dark);
+    margin-bottom: 12px;
 }
-/* ---- Reusable modal (shared shape with od-modal-overlay) ---- */
+
+.apr-promo-products-more {
+    font-size: 12px;
+    color: var(--apr-muted);
+    margin: 10px 2px 0;
+}
+
+.apr-table-compact td,
+.apr-table-compact th {
+    padding: 10px 12px !important;
+}
+
+/* ================= 15. SHARED INTERACTIVE MODALS & DIALOGS ================= */
 .apr-modal-overlay {
     position: fixed;
     inset: 0;
@@ -1527,20 +1425,6 @@ select {
     color: var(--headings);
 }
 
-.apr-input-prefix-wrap .apr-input {
-    padding-left: 34px !important;
-}
-
-.apr-input-prefix {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--apr-muted);
-}
-
 .apr-modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -1548,30 +1432,116 @@ select {
     margin-top: 18px;
 }
 
-.apr-btn-danger {
-    background-color: var(--apr-danger) !important;
-    color: #F7F1DE !important;
-    border: 1.5px solid var(--apr-danger) !important;
+.apr-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1080;
 }
 
-.apr-btn-danger:hover {
-    background-color: #8f3a2c !important;
-    border-color: #8f3a2c !important;
+/* ================= 16. RESPONSIVE MEDIA QUERIES ================= */
+@media (max-width: 991.98px) {
+    .apr-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .apr-form-layout {
+        grid-template-columns: 1fr;
+    }
+    .apr-category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .apr-detail-layout {
+        grid-template-columns: 1fr;
+    }
+    .apr-detail-side {
+        position: static;
+    }
+    .apr-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .apr-info-item-wide {
+        grid-column: span 1;
+    }
+    .apr-media-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-/* ---- Responsive ---- */
 @media (max-width: 767.98px) {
+    .apr-table thead {
+        display: none;
+    }
+    .apr-table, .apr-table tbody, .apr-table tr, .apr-table td {
+        display: block;
+        width: 100%;
+    }
+    .apr-row {
+        border: 1px solid var(--apr-border);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+    .apr-table tbody td {
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 10px;
+    }
+    .apr-table tbody td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--apr-muted);
+        flex: 0 0 auto;
+    }
+    .apr-identity-cell {
+        min-width: 0;
+        width: 100%;
+    }
+    .apr-col-actions {
+        justify-content: flex-end;
+    }
+    .apr-col-actions::before {
+        display: none;
+    }
+    .apr-detail-identity {
+        flex-direction: column;
+    }
+    .apr-detail-header-actions {
+        width: 100%;
+    }
+    .apr-detail-header-actions .apr-btn {
+        flex: 1;
+        justify-content: center;
+    }
     .apr-manage-header-row {
         flex-direction: column;
     }
-
     .apr-manage-summary {
         width: 100%;
         justify-content: flex-start;
         gap: 24px;
     }
-
     .apr-manage-summary-item {
         align-items: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .apr-metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .apr-category-grid {
+        grid-template-columns: 1fr;
+    }
+    .apr-form-footer {
+        flex-direction: column-reverse;
+    }
+    .apr-form-footer .apr-btn {
+        width: 100% !important;
+        justify-content: center;
     }
 }

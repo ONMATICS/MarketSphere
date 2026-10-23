@@ -1,10 +1,9 @@
 /* =========================================================
    MARKETSPHERE — SELLER DASHBOARD SHELL
    Reusable layout: sidebar + topbar + content + footer.
-   Shares the storefront's earth-tone palette (see
-   static/css/styles.css) but is a self-contained stylesheet —
-   the seller area is a distinct "product" inside MarketSphere,
-   so nothing here depends on storefront classes.
+   Shares the storefront's earth-tone palette but is a 
+   self-contained stylesheet — the seller area is a distinct 
+   "product" inside MarketSphere.
 
    Sections:
      1. Variables
@@ -12,7 +11,7 @@
      3. Shell Layout
      4. Sidebar
      5. Sidebar Nav
-     6. Topbar
+     6. Topbar & Profile Menu
      7. Flash Messages
      8. Content / Cards
      9. Buttons
@@ -23,7 +22,7 @@
 
 /* ================= 1. VARIABLES ================= */
 :root {
-    /* Brand palette (matches storefront) */
+    /* Brand palette */
     --sd-bg: #F7F1DE;
     --sd-muted: #B0BA99;
     --sd-accent: #9D6638;
@@ -71,7 +70,7 @@
 
 /* ================= 2. RESET ================= */
 .sd-shell,
-.sd-shell * ,
+.sd-shell *,
 .sd-shell *::before,
 .sd-shell *::after {
     box-sizing: border-box;
@@ -328,7 +327,7 @@ body {
     background-color: #F7F1DE;
 }
 
-/* Disabled / "Coming Soon" items */
+/* Disabled items */
 .sd-nav-link.is-disabled {
     cursor: not-allowed;
     color: rgba(247, 241, 222, 0.35);
@@ -348,7 +347,7 @@ body {
     white-space: nowrap;
 }
 
-/* Tooltip shown only while collapsed on desktop */
+/* Tooltips */
 .sd-nav-tooltip {
     display: none;
     position: absolute;
@@ -393,7 +392,6 @@ body {
     left: -12px;
 }
 
-/* ---- Sidebar footer ---- */
 .sd-sidebar-foot {
     flex-shrink: 0;
     padding: 14px 12px 18px;
@@ -422,7 +420,7 @@ body {
     justify-content: center;
 }
 
-/* ================= 6. TOPBAR ================= */
+/* ================= 6. TOPBAR & PROFILE MENU ================= */
 .sd-topbar {
     position: sticky;
     top: 0;
@@ -693,15 +691,6 @@ body {
 .sd-notification-empty h3 { margin-bottom: 4px; color: var(--sd-heading-color); font-size: 14px; }
 .sd-notification-empty p { color: var(--sd-caption-color); font-size: 12px; }
 
-@media (max-width: 767.98px) {
-    .sd-notification-panel {
-        position: fixed;
-        top: 76px;
-        right: 16px;
-        width: calc(100vw - 32px);
-    }
-}
-
 .sd-topbar-divider {
     width: 1px;
     height: 26px;
@@ -709,6 +698,7 @@ body {
 }
 
 .sd-seller-chip {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -756,6 +746,91 @@ body {
 
 .sd-seller-caret {
     color: var(--sd-caption-color);
+}
+
+/* Profile Dropdown Menu */
+.ad-profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 220px;
+    background-color: var(--sd-surface-raised);
+    border: 1px solid var(--sd-border);
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(36, 26, 23, 0.18);
+    padding: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transform-origin: top right;
+    pointer-events: none;
+    transition: opacity 0.16s var(--sd-ease), transform 0.16s var(--sd-ease), visibility 0.16s;
+    z-index: 1000;
+}
+
+.ad-profile.is-open .ad-profile-menu,
+.ad-profile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.ad-profile-menu-head {
+    padding: 8px 10px 10px;
+    border-bottom: 1px solid var(--sd-border);
+    margin-bottom: 6px;
+}
+
+.ad-profile-menu-head strong {
+    display: block;
+    font-size: 13.5px;
+    color: var(--sd-heading-color);
+}
+
+.ad-profile-menu-head span {
+    font-size: 12px;
+    color: var(--sd-caption-color);
+}
+
+.ad-profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--sd-heading-color);
+    text-align: left;
+    transition: background-color 0.16s var(--sd-ease);
+}
+
+.ad-profile-menu-item svg {
+    color: var(--sd-caption-color);
+}
+
+.ad-profile-menu-item:hover {
+    background-color: var(--sd-muted);
+}
+
+.ad-profile-menu-item.is-danger {
+    color: var(--sd-danger);
+}
+
+.ad-profile-menu-item.is-danger svg {
+    color: var(--sd-danger);
+}
+
+.ad-profile-menu-item.is-danger:hover {
+    background-color: rgba(181, 75, 59, 0.1);
+}
+
+.ad-profile-menu-divider {
+    height: 1px;
+    background-color: var(--sd-border);
+    margin: 6px 2px;
 }
 
 /* ================= 7. FLASH MESSAGES ================= */
@@ -894,6 +969,7 @@ body {
         font-size: 16px;
     }
 }
+
 /* ================= 8. CONTENT / CARDS ================= */
 .sd-content {
     flex: 1;
@@ -903,7 +979,6 @@ body {
     margin: 0 auto;
 }
 
-/* Generic card primitive available to every page that extends this shell */
 .sd-card {
     background-color: var(--sd-surface-raised);
     border: 1px solid var(--sd-border);
@@ -982,110 +1057,6 @@ body {
     background-color: var(--sd-dark);
     border-color: var(--sd-dark);
 }
-.ad-profile-menu {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: all .25s ease;
-    pointer-events: none;
-    z-index: 1000;
-}
-
-.ad-profile-menu.is-open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-.sd-seller-chip {
-    position: relative;
-}
-
-
-.ad-profile-menu {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    width: 220px;
-    background-color: #F7F1DE;
-    border: 1px solid #E4DCC8;
-    border-radius: 8px;
-    box-shadow: 0 20px 50px rgba(36, 26, 23, 0.18);
-    padding: 8px;
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-    pointer-events: none;
-    transform-origin: top right;
-    transition: opacity 0.16s cubic-bezier(0.22, 1, 0.36, 1), transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-    z-index: 400;
-}
-
-.ad-profile.is-open .ad-profile-menu {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-
-.ad-profile-menu-head {
-    padding: 8px 10px 10px;
-    border-bottom: 1px solid #E4DCC8;
-    margin-bottom: 6px;
-}
-
-.ad-profile-menu-head strong {
-    display: block;
-    font-size: 13.5px;
-    color: #241A17;
-}
-
-.ad-profile-menu-head span {
-    font-size: 12px;
-    color: #948B79;
-}
-
-.ad-profile-menu-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 9px 10px;
-    border-radius: 8px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #241A17;
-    text-align: left;
-    transition: background-color 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ad-profile-menu-item svg {
-    color: #948B79;
-}
-
-.ad-profile-menu-item:hover {
-    background-color: #B0BA99;
-}
-
-.ad-profile-menu-item.is-danger {
-    color: #b54b3b;
-}
-
-.ad-profile-menu-item.is-danger svg {
-    color: #b54b3b;
-}
-
-.ad-profile-menu-item.is-danger:hover {
-    background-color: rgba(181, 75, 59, 0.1);
-}
-
-.ad-profile-menu-divider {
-    height: 1px;
-    background-color: #E4DCC8;
-    margin: 6px 2px;
-}
 
 .sd-btn-secondary {
     background-color: transparent;
@@ -1148,8 +1119,6 @@ body {
 }
 
 /* ================= 12. RESPONSIVE ================= */
-
-/* ---- Sidebar overlay (mobile drawer backdrop) ---- */
 .sd-sidebar-overlay {
     display: none;
     position: fixed;
@@ -1161,7 +1130,6 @@ body {
 }
 
 @media (max-width: 991.98px) {
-    /* Sidebar becomes an off-canvas drawer */
     .sd-sidebar {
         transform: translateX(-100%);
         width: var(--sd-sidebar-width);
@@ -1224,6 +1192,13 @@ body {
     .sd-topbar {
         padding: 0 16px;
         gap: 10px;
+    }
+
+    .sd-notification-panel {
+        position: fixed;
+        top: 76px;
+        right: 16px;
+        width: calc(100vw - 32px);
     }
 
     .sd-content {

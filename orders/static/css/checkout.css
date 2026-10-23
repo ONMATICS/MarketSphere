@@ -1,11 +1,27 @@
 /* =========================================================
-   MARKETSPHERE CHECKOUT PAGE STYLES
-   Builds on global variables (static/css/styles.css) and
-   reuses .product-image-placeholder / .btn-hero-primary
-   classes from home.css to stay consistent with the rest
-   of the app.
+   MARKETSPHERE — CHECKOUT STYLESHEET
+   Purpose: Controls the layout and components of the checkout
+   workflow, including address selection, payment methods,
+   and the sticky order summary.
+   Scope: Storefront Checkout
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs & Header
+   4. Progress Steps
+   5. Cards & Shared Components
+   6. Forms & Inputs
+   7. Buttons & Actions
+   8. Address Selection
+   9. Payment Methods
+   10. Order Summary
+   11. Modals & Notifications
+   12. Scrollbar
+   13. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --co-accent: #9D6638;
     --co-accent-dark: #4E220F;
@@ -14,7 +30,23 @@
     --co-danger: #b54b3b;
 }
 
-/* ================= BREADCRUMB ================= */
+/* ================= 2. BASE LAYOUT ================= */
+.co-section {
+    padding: 6px 0 60px;
+    background-color: var(--background-color);
+}
+
+.co-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.co-right-col {
+    position: relative;
+}
+
+/* ================= 3. BREADCRUMBS & HEADER ================= */
 .co-breadcrumb-wrap {
     padding: 18px 0 6px;
     background-color: var(--background-color);
@@ -38,7 +70,6 @@
     color: #B0BA99;
 }
 
-/* ================= HEADER ================= */
 .co-header-section {
     padding: 10px 0 22px;
     background-color: var(--background-color);
@@ -57,7 +88,7 @@
     margin-bottom: 26px;
 }
 
-/* ---- Progress steps ---- */
+/* ================= 4. PROGRESS STEPS ================= */
 .co-steps {
     display: flex;
     align-items: center;
@@ -126,23 +157,7 @@
     background-color: var(--co-success);
 }
 
-/* ================= LAYOUT ================= */
-.co-section {
-    padding: 6px 0 60px;
-    background-color: var(--background-color);
-}
-
-.co-left-col {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.co-right-col {
-    position: relative;
-}
-
-/* ================= SHARED CARD ================= */
+/* ================= 5. CARDS & SHARED COMPONENTS ================= */
 .co-card {
     background-color: #F7F1DE;
     border: 1px solid var(--border-color);
@@ -175,7 +190,103 @@
     font-size: 19px;
 }
 
-/* ================= ADD ADDRESS BUTTON ================= */
+.co-empty-state {
+    text-align: center;
+    padding: 40px 16px;
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+}
+
+.co-empty-state i {
+    font-size: 34px;
+    color: #B0BA99;
+    margin-bottom: 10px;
+    background-color: transparent;
+}
+
+.co-empty-state h6 {
+    color: var(--headings);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.co-empty-state p {
+    font-size: 13.5px;
+    color: #B0BA99;
+    margin: 0;
+}
+
+/* ================= 6. FORMS & INPUTS ================= */
+.co-contact-grid .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #B0BA99;
+}
+
+.co-notes-textarea,
+.co-notes-textarea:focus {
+    resize: none;
+    background-color: #F7F1DE;
+    border: 2px solid #9D6638;
+    border-radius: 1px;
+    min-height: 100px;
+    font-size: 15px;
+    color: #4f7d54;
+}
+
+.co-coupon-form .form-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #B0BA99;
+    margin-bottom: 6px;
+}
+
+.co-coupon-input-wrap {
+    display: flex;
+    gap: 8px;
+}
+
+.co-coupon-input-wrap input {
+    flex: 1;
+    font-size: 13.5px;
+}
+
+.co-coupon-feedback {
+    display: block;
+    margin-top: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    min-height: 16px;
+}
+
+.co-coupon-feedback.success {
+    color: var(--co-success);
+}
+
+.co-coupon-feedback.error {
+    color: var(--co-danger);
+}
+
+.modal-body select,
+.modal-body textarea,
+.modal-body textarea:focus {
+    background-color: #F7F1DE;
+    border: 1.5px solid #9D6638;
+    resize: none;
+    border-radius: 1px;
+}
+
+/* ================= 7. BUTTONS & ACTIONS ================= */
+.btn-secondary {
+    background-color: transparent !important;
+    color: #9D6638 !important;
+}
+
+.btn-secondary:hover {
+    background-color: #9D6638 !important;
+    color: #F7F1DE !important;
+}
+
 .co-add-address-btn {
     background-color: var(--co-accent) !important;
     color: #F7F1DE !important;
@@ -196,16 +307,58 @@
     color: var(--co-accent-dark) !important;
     border-width: 1.5px !important;
 }
-.btn-secondary {
-    background-color: transparent !important;
-    color: #9D6638 !important;
-}
-.btn-secondary:hover{
-    background-color: #9D6638 !important;
-    color: #F7F1DE !important;
+
+.co-coupon-btn {
+    width: auto !important;
+    padding: 0 18px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
 }
 
-/* ================= ADDRESS LIST ================= */
+.co-coupon-btn.is-loading {
+    pointer-events: none;
+    opacity: 0.75;
+}
+
+.co-place-order-btn {
+    width: 100% !important;
+    padding: 13px !important;
+    font-weight: 700 !important;
+    font-size: 15.5px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.co-place-order-btn.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.co-place-order-btn .spin {
+    animation: coSpin 0.8s linear infinite;
+}
+
+.co-modal-cancel-btn {
+    width: auto !important;
+    background-color: transparent !important;
+    color: var(--co-accent-dark) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+.co-modal-cancel-btn:hover {
+    background-color: var(--border-color) !important;
+    color: var(--co-accent-dark) !important;
+    border: 1.5px solid var(--border-color) !important;
+}
+
+@keyframes coSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ================= 8. ADDRESS SELECTION ================= */
 .co-address-list {
     display: flex;
     flex-direction: column;
@@ -218,7 +371,7 @@
     gap: 14px;
     background-color: transparent !important;
     border: 1.5px solid var(--border-color);
-    border-radius:2px;
+    border-radius: 2px;
     padding: 16px 18px;
     cursor: pointer;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
@@ -311,6 +464,7 @@
     background-color: transparent;
     font-size: 10px;
 }
+
 .co-address-ptCode,
 .co-address-phone {
     font-size: 13px;
@@ -332,41 +486,7 @@
     line-height: 1.5;
 }
 
-/* ================= EMPTY STATE (shared) ================= */
-.co-empty-state {
-    text-align: center;
-    padding: 40px 16px;
-    border: 1px dashed var(--border-color);
-    border-radius: 12px;
-}
-
-.co-empty-state i {
-    font-size: 34px;
-    color: #B0BA99;
-    margin-bottom: 10px;
-    background-color: transparent;
-}
-
-.co-empty-state h6 {
-    color: var(--headings);
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.co-empty-state p {
-    font-size: 13.5px;
-    color: #B0BA99;
-    margin: 0;
-}
-
-/* ================= CONTACT INFORMATION ================= */
-.co-contact-grid .form-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #B0BA99;
-}
-
-/* ================= PAYMENT METHOD ================= */
+/* ================= 9. PAYMENT METHODS ================= */
 .co-payment-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -476,19 +596,7 @@
     white-space: nowrap;
 }
 
-/* ================= ORDER NOTES ================= */
-.co-notes-textarea:focus,
-.co-notes-textarea {
-    resize: none;
-    background-color: #F7F1DE;
-    border: 2px solid #9D6638;
-    border-radius: 1px;
-    min-height: 100px;
-    font-size: 15px;
-    color: #4f7d54;
-}
-
-/* ================= ORDER SUMMARY (STICKY) ================= */
+/* ================= 10. ORDER SUMMARY ================= */
 .co-summary-card {
     position: sticky;
     top: calc(var(--sticky-header-height, 96px) + 16px);
@@ -516,7 +624,6 @@
     background-color: transparent;
 }
 
-/* ---- Items ---- */
 .co-summary-items {
     display: flex;
     flex-direction: column;
@@ -524,19 +631,6 @@
     max-height: 260px;
     overflow-y: auto;
     padding-right: 4px;
-}
-
-.co-summary-items::-webkit-scrollbar {
-    width: 6px;
-}
-
-.co-summary-items::-webkit-scrollbar-thumb {
-    background: var(--co-accent);
-    border-radius: 10px;
-}
-
-.co-summary-items::-webkit-scrollbar-track {
-    background: transparent;
 }
 
 .co-summary-item {
@@ -553,7 +647,7 @@
     aspect-ratio: unset;
 }
 
-.co-summary-item-img img{
+.co-summary-item-img img {
     border-radius: 10px;
     transform: .5s;
 }
@@ -590,53 +684,6 @@
     color: var(--co-accent-dark);
 }
 
-/* ---- Coupon ---- */
-.co-coupon-form .form-label {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #B0BA99;
-    margin-bottom: 6px;
-}
-
-.co-coupon-input-wrap {
-    display: flex;
-    gap: 8px;
-}
-
-.co-coupon-input-wrap input {
-    flex: 1;
-    font-size: 13.5px;
-}
-
-.co-coupon-btn {
-    width: auto !important;
-    padding: 0 18px !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-}
-
-.co-coupon-btn.is-loading {
-    pointer-events: none;
-    opacity: 0.75;
-}
-
-.co-coupon-feedback {
-    display: block;
-    margin-top: 8px;
-    font-size: 12.5px;
-    font-weight: 600;
-    min-height: 16px;
-}
-
-.co-coupon-feedback.success {
-    color: var(--co-success);
-}
-
-.co-coupon-feedback.error {
-    color: var(--co-danger);
-}
-
-/* ---- Totals ---- */
 .co-summary-divider {
     border: none;
     border-top: 1px solid var(--border-color);
@@ -680,33 +727,6 @@
     font-size: 23px;
 }
 
-/* ---- Place order ---- */
-.co-place-order-btn {
-    width: 100% !important;
-    padding: 13px !important;
-    font-weight: 700 !important;
-    font-size: 15.5px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.co-place-order-btn.is-loading {
-    pointer-events: none;
-    opacity: 0.85;
-}
-
-.co-place-order-btn .spin {
-    animation: coSpin 0.8s linear infinite;
-}
-
-@keyframes coSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* ---- Trust row ---- */
 .co-trust-row {
     display: flex;
     justify-content: space-between;
@@ -729,7 +749,7 @@
     color: var(--co-accent);
 }
 
-/* ================= ADD ADDRESS MODAL ================= */
+/* ================= 11. MODALS & NOTIFICATIONS ================= */
 .co-address-modal .modal-content {
     background-color: #F7F1DE;
     border: 1.5px solid var(--co-accent);
@@ -753,16 +773,6 @@
     background-color: transparent;
 }
 
-.modal-body select,
-.modal-body textarea:focus,
-.modal-body textarea{
-    background-color: #F7F1DE;
-    border: 1.5px solid #9D6638;
-    resize: none;
-    border-radius: 1px;
-}
-
-
 .co-address-modal .modal-footer {
     border-top: 1px solid var(--border-color);
 }
@@ -783,20 +793,6 @@
     margin-top: 1px;
 }
 
-.co-modal-cancel-btn {
-    width: auto !important;
-    background-color: transparent !important;
-    color: var(--co-accent-dark) !important;
-    border: 1.5px solid var(--border-color) !important;
-}
-
-.co-modal-cancel-btn:hover {
-    background-color: var(--border-color) !important;
-    color: var(--co-accent-dark) !important;
-    border: 1.5px solid var(--border-color) !important;
-}
-
-/* ================= TOAST ================= */
 .co-toast-container {
     position: fixed;
     bottom: 24px;
@@ -859,7 +855,21 @@
     to { opacity: 0; transform: translateY(10px); }
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 12. SCROLLBAR ================= */
+.co-summary-items::-webkit-scrollbar {
+    width: 6px;
+}
+
+.co-summary-items::-webkit-scrollbar-thumb {
+    background: var(--co-accent);
+    border-radius: 10px;
+}
+
+.co-summary-items::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ================= 13. RESPONSIVE STYLES ================= */
 @media (max-width: 991.98px) {
     .co-summary-card {
         position: static;

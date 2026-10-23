@@ -1350,6 +1350,12 @@
         flex-direction: column;
     }
 }
+.hs-thread-msg { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; background: #F7F1DE; }
+.hs-thread-msg.is-admin { background: rgba(157,102,56,.08); border-color: rgba(157,102,56,.3); }
+.hs-thread-msg strong { font-size: 12px; color: var(--headings); }
+.hs-thread-msg p { margin: 4px 0 0; font-size: 13.5px; white-space: pre-wrap; }
+.hs-status-waitingforuser { background-color: rgba(183,128,43,.16); color: var(--hs-warning); }
+.hs-status-closed { background-color: rgba(79,125,84,.14); color: var(--hs-success); }
 
 @media (max-width: 575.98px) {
     .hs-quick-grid {

@@ -19,7 +19,7 @@ from accounts.services import get_seller_application_documents
 from notifications.models import ActivityLog
 from orders.models import Order, OrderItem
 from products.models import Product
-from support.models.product_reviews import Review
+from support.models.review_models import Review
 
 
 def get_seller_detail(user_id: int) -> dict[str, Any]:

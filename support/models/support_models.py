@@ -154,6 +154,3 @@ class SupportMessage(models.Model):
 
     def __str__(self):
         return f"Request #{self.request_id} - {self.sender_type}"
-
-
-

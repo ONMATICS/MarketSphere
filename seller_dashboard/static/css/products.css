@@ -2,11 +2,8 @@
    MARKETSPHERE — SELLER DASHBOARD: PRODUCTS (products.css)
    Page-scoped styles for seller_dashboard/templates/products/list.html.
    Matches the MarketSphere earth-tone design system used across the
-   storefront and seller dashboard shell (see static/css/styles.css and
-   seller_dashboard/static/css/dashboard.css). No Bootstrap, no Tailwind,
-   no external libraries — plain CSS only. Every class is prefixed `pm-`
-   (Product Management) to avoid collisions with the shell and other
-   seller-dashboard pages.
+   storefront and seller dashboard shell. No external libraries.
+   Every class is prefixed `pm-` (Product Management) to avoid collisions.
 
    Sections:
      1. Variables
@@ -31,39 +28,29 @@
     --pm-bg: #F7F1DE;
     --pm-surface: #F7F1DE;
     --pm-surface-raised: #F7F1DE;
-
     --pm-accent: #9D6638;
     --pm-accent-hover: #4E220F;
     --pm-accent-soft: rgba(157, 102, 56, 0.12);
     --pm-accent-ring: rgba(157, 102, 56, 0.22);
-
     --pm-success: #4f7d54;
     --pm-success-bg: rgba(79, 125, 84, 0.13);
-
     --pm-danger: #b54b3b;
     --pm-danger-bg: rgba(181, 75, 59, 0.13);
-
     --pm-warning: #b7802b;
     --pm-warning-bg: rgba(183, 128, 43, 0.16);
-
     --pm-muted: #B0BA99;
     --pm-muted-bg: rgba(176, 186, 153, 0.22);
-
     --pm-heading: #4E220F;
     --pm-body: #5B5142;
     --pm-border: #E4DCC8;
-
     --pm-font: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-
     --pm-shadow-sm: 0 1px 2px rgba(78, 34, 15, 0.06);
     --pm-shadow-md: 0 8px 22px rgba(78, 34, 15, 0.09);
     --pm-shadow-lg: 0 18px 44px rgba(78, 34, 15, 0.16);
-
     --pm-radius-sm: 4px;
     --pm-radius-md: 10px;
     --pm-radius-lg: 20px;
     --pm-radius-pill: 999px;
-
     --pm-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --pm-transition: 0.2s var(--pm-ease);
 }
@@ -112,6 +99,7 @@
 
 .pm-reveal {
     animation: pmFadeInUp 0.45s var(--pm-ease) both;
+    transition: all 0.3s ease;
 }
 
 @keyframes pmFadeInUp {
@@ -187,30 +175,6 @@
 .pm-btn:active {
     transform: scale(0.97);
 }
-/* 
-.pm-btn-primary {
-    background-color: var(--pm-accent);
-    color: #F7F1DE;
-    border-color: var(--pm-accent);
-}
-
-.pm-btn-primary:hover {
-    background-color: var(--pm-accent-hover);
-    border-color: var(--pm-accent-hover);
-    box-shadow: var(--pm-shadow-sm);
-    columns: #F7F1DE !important;
-}
-
-.pm-btn-secondary {
-    background-color: var(--pm-surface-raised);
-    color: var(--pm-heading);
-    border-color: var(--pm-border);
-}
-
-.pm-btn-secondary:hover {
-    border-color: var(--pm-accent);
-    color: var(--pm-accent);
-} */
 
 .pm-btn-ghost {
     background-color: transparent;
@@ -232,11 +196,6 @@
     background-color: #93372a;
     border-color: #93372a;
 }
-
-/* .pm-btn-sm {
-    padding: 7px 13px;
-    font-size: 12.5px;
-} */
 
 .pm-btn-lg {
     padding: 11px 22px;
@@ -602,31 +561,25 @@
 }
 
 /* ================= 10. PRODUCTS TABLE ================= */
-/* 1. Ensure the wrapper allows horizontal scrolling */
 .pm-table-wrap {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile iOS */
-  
-  /* Modern CSS scrollbar properties for Firefox */
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--pm-accent) var(--pm-surface);
 }
 
-/* 2. Custom Webkit Scrollbar (Chrome, Safari, Edge) */
 .pm-table-wrap::-webkit-scrollbar {
-  height: 6px; /* Height for horizontal scrollbar */
-  width: 6px;  /* Width if vertical scrollbar is triggered */
+  height: 6px;
+  width: 6px;
 }
 
-/* The background track of the scrollbar */
 .pm-table-wrap::-webkit-scrollbar-track {
   background: var(--pm-surface);
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(78, 34, 15, 0.08);
 }
 
-/* The actual draggable scroll indicator (thumb) */
 .pm-table-wrap::-webkit-scrollbar-thumb {
   background: var(--pm-accent);
   border-radius: 8px;
@@ -634,27 +587,16 @@
   transition: background 0.2s ease-in-out;
 }
 
-/* Darken the thumb on hover for better user feedback */
 .pm-table-wrap::-webkit-scrollbar-thumb:hover {
   background: var(--pm-accent-hover);
 }
 
-/* Optional: Smooth transition for table loading/revealing */
-.pm-reveal {
-  opacity: 1;
-  transition: all 0.3s ease;
-}
 .pm-table-card {
     background-color: var(--pm-surface-raised);
     border: 1px solid var(--pm-border);
     border-radius: var(--pm-radius-md);
     box-shadow: var(--pm-shadow-sm);
     overflow: hidden;
-}
-
-.pm-table-wrap {
-    width: 100%;
-    overflow-x: auto;
 }
 
 .pm-table {
@@ -964,13 +906,9 @@
 }
 
 .pm-modal {
-    /* 1. Changed solid color to 75% opacity so the blur is visible through it */
     background-color: rgba(247, 241, 222, 0.75); 
-    
-    /* 2. Added the blur effect */
     backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px); /* Safari support */
-
+    -webkit-backdrop-filter: blur(4px); 
     border-radius: var(--pm-radius-lg);
     padding: 30px;
     width: 100%;
@@ -980,9 +918,19 @@
     text-align: center;
     animation: pmScaleIn 0.28s var(--pm-ease);
 }
-.pm-modal-icon{
+
+.pm-modal-icon {
     background-color: #efe5c4 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    color: var(--pm-danger);
+    margin-bottom: 18px;
 }
+
 @keyframes pmScaleIn {
     from {
         opacity: 0;
@@ -992,18 +940,6 @@
         opacity: 1;
         transform: scale(1);
     }
-}
-
-.pm-modal-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background-color: var(--pm-danger-bg);
-    color: var(--pm-danger);
-    margin-bottom: 18px;
 }
 
 .pm-modal-title {

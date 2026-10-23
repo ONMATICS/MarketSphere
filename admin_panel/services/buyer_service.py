@@ -16,7 +16,7 @@ from accounts.models import Address, User
 from notifications.models import ActivityLog
 from orders.models import Order, OrderItem
 from products import services as product_services
-from support.models.product_reviews import Review
+from support.models.review_models import Review
 
 
 def get_buyer_details(user_id: int) -> dict[str, Any]:

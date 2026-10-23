@@ -1,38 +1,35 @@
 /* ==========================================================================
-   MARKETSPHERE ADMIN — SELLER APPLICATION DETAIL (detail.css)
-   Page-scoped styles for admin_dashboard/users/seller_applications/detail.html.
-   Builds on the admin shell's tokens (--ad-* variables defined in
-   admin_base_dashboard.css) and prefixes every class `sad-` (Seller
-   Application Detail) to avoid collisions with the shell and other admin
-   pages, matching the project's page-scoped prefix convention
-   (bd-, sld-, adu-, adh- ...).
+   MARKETSPHERE ADMIN — SELLER APPLICATION DETAIL (seller_application.css)
+   Purpose: Page-scoped styles for reviewing seller applications,
+            verification checklists, documents, and admin notes.
+   Scope: Admin Panel (Seller Applications Detail)
 
    Sections:
-     1. Variables
+     1. Variables & Root Design Tokens
      2. Reset / Page Wrapper
-     3. Buttons
-     4. Header
+     3. Buttons & Loading States
+     4. Header & Profile Row
      5. Overview Statistics Grid
      6. Applicant Information Card
      7. Store Information Card
-     8. Tabs
+     8. Tabs & Navigation
      9. Shared Card / Table Primitives
     10. Documents Tab
-    11. Verification Tab
+    11. Verification Tab & Score Rings
     12. Communication Tab
-    13. Activity Tab
+    13. Activity Timeline Tab
     14. Admin Notes Tab
-    15. Administrative Actions Panel
-    16. Sidebar
+    15. Administrative Actions & Danger Zone
+    16. Sidebar Layout & Badges
     17. Footer
-    18. Badges
-    19. Dropdown
-    20. Modals
-    21. Toast
-    22. Responsive
+    18. Status Badges
+    19. Dropdown Menus
+    20. Modals & Forms
+    21. Toasts Notifications
+    22. Responsive Media Queries
    ========================================================================== */
 
-/* ================= 1. VARIABLES ================= */
+/* ================= 1. VARIABLES & ROOT DESIGN TOKENS ================= */
 .sad-page {
     --sad-bg: var(--ad-bg, #F7F1DE);
     --sad-surface: var(--ad-surface-raised, #F7F1DE);
@@ -151,7 +148,9 @@
 .c-blue { color: var(--sad-blue) !important; }
 .c-muted { color: var(--sad-caption) !important; }
 
-/* ================= 3. BUTTONS ================= */
+/* ================= 3. BUTTONS & LOADING STATES ================= */
+@keyframes sadSpin { to { transform: rotate(360deg); } }
+
 .sad-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     font-weight: 600; font-size: 13.5px; border-radius: var(--sad-radius-sm);
@@ -167,15 +166,15 @@
     border: 1.5px solid var(--sad-accent) !important; border-radius: 2px !important;
 }
 .sad-btn-primary:hover:not(:disabled) {
-    background-color: transparent !important; border-color: var(--sad-accent-strong); color: #9D6638 !important;
+    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
 }
 
 .sad-btn-secondary {
-    background-color: transparent !important; border-color: var(--sad-accent-strong); color: #9D6638 !important;
-    border: 1.5px solid var(--sad-accent) !important; border-radius: 2px !important;
+    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
+    border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
 }
 .sad-btn-secondary:hover:not(:disabled) {
-    background-color: var(--sad-accent) !important; color: #F7F1DE !important;
+    background-color: #9D6638 !important; color: #F7F1DE !important;
 }
 
 .sad-btn-outline {
@@ -207,7 +206,6 @@
     border-radius: 50%; border: 2px solid rgba(0,0,0,.15); border-top-color: currentColor;
     vertical-align: -2px; animation: sadSpin .7s linear infinite;
 }
-@keyframes sadSpin { to { transform: rotate(360deg); } }
 
 .sad-link-btn {
     display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
@@ -220,18 +218,10 @@
     transform: scale(0); pointer-events: none;
 }
 
-/* ================= 4. HEADER ================= */
+/* ================= 4. HEADER & PROFILE ROW ================= */
 .sad-header {
     position: relative;
     z-index: 100;
-}
-
-.sad-metrics-grid {
-    position: relative;
-    z-index: 1;
-}
-
-.sad-header {
     background-color: var(--sad-surface-raised); border: 1px solid var(--sad-border);
     border-radius: var(--sad-radius-md); padding: 22px 26px 26px; box-shadow: var(--sad-shadow-sm);
     display: flex; flex-direction: column; gap: 18px;
@@ -295,7 +285,13 @@
 .sad-header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
 
 /* ================= 5. OVERVIEW STATISTICS GRID ================= */
-.sad-metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.sad-metrics-grid { 
+    position: relative;
+    z-index: 1;
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 16px; 
+}
 
 .sad-metric-card {
     position: relative; overflow: hidden; display: flex; align-items: flex-start; gap: 13px;
@@ -375,7 +371,7 @@
     color: var(--sad-accent-strong);
 }
 
-/* ================= 8. TABS ================= */
+/* ================= 8. TABS & NAVIGATION ================= */
 .sad-tabs {
     position: sticky; top: calc(var(--ad-topbar-height, 68px) + 12px); z-index: 50;
     display: flex; align-items: center; gap: 4px; background-color: var(--sad-surface-raised);
@@ -393,10 +389,11 @@
 .sad-tab:hover { background-color: var(--sad-bg); color: var(--sad-heading); }
 .sad-tab.is-active { background-color: var(--sad-accent); color: #241A17; }
 
+@keyframes sadPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
 .sad-tab-panels { display: flex; flex-direction: column; }
 .sad-tab-panel { display: none; flex-direction: column; gap: 18px; animation: sadPanelIn .3s var(--sad-ease); }
 .sad-tab-panel.is-active { display: flex; }
-@keyframes sadPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ================= 9. SHARED CARD / TABLE PRIMITIVES ================= */
 .sad-card {
@@ -421,22 +418,6 @@
     width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
     border-top: 5px solid var(--sad-caption); pointer-events: none;
 }
-
-.sad-checkbox { position: relative; display: inline-flex; cursor: pointer; }
-.sad-checkbox input { position: absolute; opacity: 0; height: 0; width: 0; }
-.sad-checkbox-box {
-    position: relative; height: 18px; width: 18px; background-color: var(--sad-surface-raised);
-    border: 1.8px solid var(--sad-border); border-radius: 5px; display: block;
-    transition: background-color var(--sad-transition), border-color var(--sad-transition);
-}
-.sad-checkbox:hover input ~ .sad-checkbox-box { border-color: var(--sad-accent); }
-.sad-checkbox input:checked ~ .sad-checkbox-box { background-color: var(--sad-accent); border-color: var(--sad-accent); }
-.sad-checkbox-box::after {
-    content: ""; position: absolute; display: none; left: 5px; top: 2px; width: 5px; height: 9px;
-    border: solid #F7F1DE; border-width: 0 2px 2px 0; transform: rotate(45deg);
-}
-.sad-checkbox input:checked ~ .sad-checkbox-box::after { display: block; }
-.sad-checkbox-text { font-size: 13px; color: var(--sad-body); font-weight: 500; }
 
 /* ================= 10. DOCUMENTS TAB ================= */
 .sad-docs-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
@@ -472,7 +453,7 @@
 .sad-doc-actions-row2 { display: flex; gap: 6px; flex-wrap: wrap; }
 .sad-doc-actions-row2 .sad-btn { flex: 1; min-width: 0; }
 
-/* ================= 11. VERIFICATION TAB ================= */
+/* ================= 11. VERIFICATION TAB & SCORE RINGS ================= */
 .sad-verification-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; }
 
 .sad-checklist { display: flex; flex-direction: column; gap: 2px; }
@@ -556,7 +537,7 @@
 .sad-comm-time { font-size: 11.5px; color: var(--sad-caption); }
 .sad-comm-text { font-size: 12.5px; color: var(--sad-body); margin-top: 4px; line-height: 1.5; }
 
-/* ================= 13. ACTIVITY TAB ================= */
+/* ================= 13. ACTIVITY TIMELINE TAB ================= */
 .sad-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .sad-pill {
     padding: 6px 13px; font-size: 12px; font-weight: 600; border-radius: var(--sad-radius-pill);
@@ -589,6 +570,8 @@
 .sad-timeline-time { font-size: 11.5px; color: var(--sad-caption); font-weight: 500; }
 
 /* ================= 14. ADMIN NOTES TAB ================= */
+@keyframes sadNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
 .sad-note-composer { background-color: var(--sad-bg); border: 1.5px dashed var(--sad-border); border-radius: var(--sad-radius-sm); padding: 14px; margin-bottom: 16px; }
 .sad-note-composer textarea {
     width: 100%; resize: vertical; min-height: 80px; padding: 10px 12px; font-size: 13.5px; font-family: inherit;
@@ -600,7 +583,6 @@
 
 .sad-notes-list { display: flex; flex-direction: column; gap: 14px; }
 .sad-note-card { background-color: var(--sad-bg); border: 1px solid var(--sad-border); border-radius: var(--sad-radius-sm); padding: 16px; animation: sadNoteIn .3s var(--sad-ease); }
-@keyframes sadNoteIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 .sad-note-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .sad-note-avatar { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background-color: var(--sad-accent-strong); color: #F4EEE3; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .sad-note-meta { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
@@ -609,7 +591,7 @@
 .sad-note-content { font-size: 13.5px; color: var(--sad-body); line-height: 1.6; margin-bottom: 10px; }
 .sad-note-actions { display: flex; gap: 6px; }
 
-/* ================= 15. ADMINISTRATIVE ACTIONS PANEL ================= */
+/* ================= 15. ADMINISTRATIVE ACTIONS & DANGER ZONE ================= */
 .sad-actions-groups { display: flex; flex-direction: column; gap: 22px; }
 .sad-actions-group-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--sad-caption); margin-bottom: 12px; }
 .sad-actions-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -636,7 +618,7 @@
 .sad-danger-text strong { display: block; font-size: 13.5px; color: var(--sad-heading); }
 .sad-danger-text small { font-size: 12px; color: var(--sad-caption); }
 
-/* ================= 16. SIDEBAR ================= */
+/* ================= 16. SIDEBAR LAYOUT & BADGES ================= */
 .sad-layout { display: grid; grid-template-columns: 1fr 320px; gap: 22px; align-items: start; }
 .sad-main-col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
 .sad-sidebar { display: flex; flex-direction: column; gap: 18px; position: sticky; top: calc(var(--ad-topbar-height, 68px) + 20px); }
@@ -672,7 +654,7 @@
 .sad-footer-links a:hover { text-decoration: underline; }
 .sad-footer-links span { color: var(--sad-border); }
 
-/* ================= 18. BADGES ================= */
+/* ================= 18. STATUS BADGES ================= */
 .sad-badge {
     display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; font-size: 11px; font-weight: 700;
     border-radius: var(--sad-radius-pill); line-height: 1; white-space: nowrap;
@@ -686,7 +668,7 @@
 .sad-badge.c-muted { background-color: var(--sad-muted-bg); color: #6b7458; }
 .sad-badge.c-blue { background-color: var(--sad-blue-bg); color: var(--sad-blue); }
 
-/* ================= 19. DROPDOWN ================= */
+/* ================= 19. DROPDOWN MENUS ================= */
 .sad-dropdown { position: relative; }
 .sad-dropdown-menu {
     position: absolute; top: calc(100% + 8px); right: 0; width: 220px; background-color: var(--sad-surface-raised);
@@ -706,7 +688,9 @@
 .sad-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; color: var(--sad-caption); transition: background-color var(--sad-transition), color var(--sad-transition); }
 .sad-icon-btn:hover { background-color: var(--sad-accent-soft); color: var(--sad-accent-strong); }
 
-/* ================= 20. MODALS ================= */
+/* ================= 20. MODALS & FORMS ================= */
+@keyframes sadScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+
 .sad-modal-overlay {
     position: fixed; inset: 0; background-color: rgba(33,27,34,.5); backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
@@ -718,8 +702,8 @@
     box-shadow: var(--sad-shadow-lg); text-align: center; animation: sadScaleIn .25s var(--sad-ease);
 }
 .sad-modal-lg { max-width: 560px; text-align: left; }
-@keyframes sadScaleIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
-.sad-modal-icon { display: inline-flex; align-items: center; background-color: #B0BA99 !important; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--sad-danger-bg); color: var(--sad-danger); margin-bottom: 18px; }
+
+.sad-modal-icon { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--sad-danger-bg); color: var(--sad-danger); margin-bottom: 18px; }
 .sad-modal-icon.c-accent { background-color: var(--sad-accent-soft); color: var(--sad-accent-strong); }
 .sad-modal-icon.c-success { background-color: var(--sad-success-bg); color: var(--sad-success); }
 .sad-modal-title { font-size: 18px; font-weight: 700; margin: 0 0 8px; color: #9D6638; }
@@ -755,7 +739,6 @@
 .sad-switch input:checked ~ .sad-switch-track { background-color: var(--sad-accent); }
 .sad-switch input:checked ~ .sad-switch-track .sad-switch-thumb { transform: translateX(18px); }
 
-
 .sad-modal-checklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; text-align: left; }
 
 .sad-checkbox {
@@ -765,40 +748,19 @@
     cursor: pointer;
     user-select: none;
 }
-
-.sad-checkbox input {
-    display: none;
-}
-
+.sad-checkbox input { display: none; }
 .sad-checkbox-box {
-    flex-shrink: 0;
-    border: 1px solid #9D6638;
-    border-radius: 4px;
-    background: transparent;
-    position: relative;
-    transition: all .2s ease;
+    flex-shrink: 0; border: 1px solid #9D6638; border-radius: 4px;
+    background: transparent; position: relative; transition: all .2s ease;
 }
-
 .sad-checkbox input:checked + .sad-checkbox-box {
-    background: #9D6638;
-    border-color: #9D6638;
-}
-.sad-btn-primary {
-    background-color: #C08A4E !important; color: #F7F1DE !important;
-    border: 1.5px solid #C08A4E !important; border-radius: 2px !important;
-}
-.sad-btn-primary:hover:not(:disabled) {
-    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
+    background: #9D6638; border-color: #9D6638;
 }
 
-.sad-btn-secondary {
-    background-color: transparent !important; border-color: #9D6638 !important; color: #9D6638 !important;
-    border: 1.5px solid #9D6638 !important; border-radius: 2px !important;
-}
-.sad-btn-secondary:hover:not(:disabled) {
-    background-color: #9D6638 !important; color: #F7F1DE !important;
-}
-/* ================= 21. TOAST ================= */
+/* ================= 21. TOAST NOTIFICATIONS ================= */
+@keyframes sadToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sadToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+
 .sad-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1080; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
 .sad-toast {
     display: flex; align-items: center; gap: 10px; background-color: var(--sad-surface); border: 1px solid #9D6638;
@@ -811,10 +773,8 @@
 .sad-toast.sad-toast-danger { border-left-color: var(--sad-danger); }
 .sad-toast.sad-toast-danger svg { color: var(--sad-danger); }
 .sad-toast.is-leaving { animation: sadToastOut .22s ease forwards; }
-@keyframes sadToastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes sadToastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
 
-/* ================= 22. RESPONSIVE ================= */
+/* ================= 22. RESPONSIVE MEDIA QUERIES ================= */
 @media (max-width: 1299.98px) {
     .sad-metrics-grid { grid-template-columns: repeat(3, 1fr); }
     .sad-info-grid { grid-template-columns: repeat(3, 1fr); }

@@ -314,7 +314,6 @@
 }
 
 /* ================= 5. PROGRESS TIMELINE ================= */
-
 .sod-timeline-card {
     background-color: var(--sod-surface-raised);
     border: 1px solid var(--sod-border);
@@ -341,7 +340,6 @@
     flex: 1;
 }
 
-/* Connector to the NEXT step */
 .sod-timeline-step::after {
     content: "";
     position: absolute;
@@ -353,12 +351,10 @@
     z-index: 0;
 }
 
-/* No connector after last step */
 .sod-timeline-step:last-child::after {
     display: none;
 }
 
-/* Completed connector */
 .sod-timeline-step.is-complete::after {
     background: var(--sod-success);
 }
@@ -396,12 +392,8 @@
 }
 
 @keyframes sodPulseIcon {
-    0%,100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.15);
-    }
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
 }
 
 .sod-timeline-step.is-cancelled .sod-timeline-icon {
@@ -495,7 +487,6 @@
     border-radius: var(--sod-radius-pill);
 }
 
-/* ================= LAYOUT ================= */
 .sod-layout {
     display: grid;
     grid-template-columns: 1.65fr 1fr;
@@ -971,6 +962,17 @@
     font-style: italic;
 }
 
+.editable-note input,
+.editable-note input:focus {
+    background-color: transparent;
+    width: 100%;
+    border: 0;
+    outline: none;
+    font-size: 13px;
+    color: #B0BA99;
+    border-radius: 4px;
+}
+
 /* ================= 13. ACTIVITY TIMELINE ================= */
 .sod-activity-toggle {
     background-color: transparent;
@@ -1353,6 +1355,18 @@
     justify-content: center;
     z-index: 900;
     padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.25s var(--sod-ease);
+}
+
+.sod-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sod-modal-overlay.active .sod-modal {
+    transform: translateY(0);
 }
 
 .sod-modal {
@@ -1367,6 +1381,57 @@
     box-shadow: var(--sod-shadow-lg);
     text-align: center;
     animation: sodScaleIn 0.28s var(--sod-ease);
+}
+
+.sod-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.sod-modal-header h3 {
+    font-size: 22px;
+    color: #4E220F;
+}
+
+.sod-modal-close {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: #B0BA99;
+}
+
+.sod-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.sod-form-group label {
+    text-align: start;
+    font-weight: 600;
+    color: #4E220F;
+}
+
+.sod-form-group input,
+.sod-form-group textarea {
+    resize: none;
+    border: 1px solid #9D6638;
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+    background-color: transparent;
+    color: #B0BA99;
+}
+
+.sod-form-group input:focus,
+.sod-form-group textarea:focus {
+    border-color: #B0BA99;
 }
 
 @keyframes sodScaleIn {
@@ -1413,7 +1478,16 @@
 .sod-modal-actions .sod-btn {
     flex: 1;
 }
-.sod-modal input, .sod-modal textarea {
+
+.sod-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.sod-modal input,
+.sod-modal textarea {
     border-width: 1.5px !important;
     border-radius: 2px !important;
 }
@@ -1432,6 +1506,7 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
 @media (max-width: 767.98px) {
     .sod-header {
         flex-direction: column;
@@ -1444,8 +1519,6 @@
     .sod-header-actions .sod-btn {
         flex: 1;
     }
-
-    /* ================= Mobile Timeline ================= */
 
     .sod-timeline {
         flex-direction: column;
@@ -1489,8 +1562,6 @@
         margin-top: 0;
     }
 
-    /* ================= Other ================= */
-
     .sod-card {
         padding: 18px;
     }
@@ -1523,97 +1594,9 @@
         max-width: none;
     }
 }
+
 @media (max-width: 480px) {
     .sod-actions-grid {
         grid-template-columns: 1fr 1fr;
     }
-}
-
-
-
-.sod-modal-overlay{
-    position:fixed;
-    inset:0;
-    opacity:0;
-    visibility:hidden;
-    transition:.25s;
-}
-
-.sod-modal-overlay.active{
-    opacity:1;
-    visibility:visible;
-}
-
-.sod-modal-overlay.active .sod-modal{
-    transform:translateY(0);
-}
-
-.sod-modal-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:22px;
-}
-
-.sod-modal-header h3{
-    font-size:22px;
-    color:#4E220F;
-}
-
-.sod-modal-close{
-    border:none;
-    background:none;
-    cursor:pointer;
-    font-size:30px;
-    color: #B0BA99;
-}
-
-.sod-form-group{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    margin-bottom:18px;
-}
-
-.sod-form-group label{
-    text-align: start;
-    font-weight:600;
-    color:#4E220F;
-}
-
-.sod-form-group input,
-.sod-form-group textarea{
-    resize: none;
-    border:1px solid #9D6638;
-    border-radius:4px;
-    padding:12px 14px;
-    font-size:15px;
-    outline:none;
-    transition:.2s;
-    background-color: transparent;
-    color: #B0BA99;
-}
-
-.sod-form-group input:focus,
-.sod-form-group textarea:focus{
-    border-color: #B0BA99;
-    /* box-shadow:0 0 0 4px rgba(157,102,56,.12); */
-}
-
-.sod-modal-footer{
-    display:flex;
-    justify-content:flex-end;
-    gap:12px;
-    margin-top:28px;
-}
-
-.editable-note input ,
-.editable-note input:focus {
-    background-color: transparent;
-    width: 100%;
-    border: 0;
-    outline: none;
-    font-size: 13px;
-    color: #B0BA99;
-    border-radius: 4px;
 }

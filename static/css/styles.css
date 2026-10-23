@@ -1,23 +1,23 @@
 /* =========================================================
-MARKETSPHERE — Main Storefront Stylesheet (styles.css)
-Purpose:
-  Controls global design variables, elemental resets, storefront
-  header and multi-level navigation, buyer account dropdowns,
-  form inputs and file upload components, notification dropdowns,
-  flash alerts/banners, footer layout, and responsive mobile overrides.
-Scope:
-  Storefront, shared navigation, buyer profile controls, and general 
-  user-facing views across MarketSphere.
-Sections:
-  1. Variables
-  2. Reset / Base Styles
-  3. Header / Navigation
-  4. Forms / Inputs
-  5. Notifications / Messages
-  6. Flash Alerts / Banners
-  7. Footer
-  8. Responsive Styles
-========================================================= */
+   MARKETSPHERE — Main Storefront Stylesheet (styles.css)
+   Purpose:
+     Controls global design variables, elemental resets, storefront
+     header and multi-level navigation, buyer account dropdowns,
+     form inputs and file upload components, notification dropdowns,
+     flash alerts/banners, footer layout, and responsive mobile overrides.
+   Scope:
+     Storefront, shared navigation, buyer profile controls, and general 
+     user-facing views across MarketSphere.
+   Sections:
+     1. Variables
+     2. Reset / Base Styles
+     3. Header / Navigation
+     4. Forms / Inputs
+     5. Notifications / Messages
+     6. Flash Alerts / Banners
+     7. Footer
+     8. Responsive Styles
+   ========================================================= */
 
 
 /* ================= 1. VARIABLES ================= */
@@ -26,7 +26,7 @@ Sections:
     --background-color: #F7F1DE;
     --headings: #4E220F;
     --anchor-tag: var(--headings);
-    --n-text: black;
+    --n-text: #000000;
     --s-text: #B0BA99;
     --border-color: #D9D2C4;
 
@@ -89,14 +89,12 @@ button {
     border: var(--button-border) solid #9D6638 !important;
     border-radius: var(--border-radius) !important;
     width: 90px !important;
-    transition: 0.25s ease !important;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease !important;
 }
 
 button:hover {
     background-color: #F7F1DE !important;
     color: #B0BA99 !important;
-    border: var(--button-border) solid #9D6638 !important;
-    border-radius: var(--border-radius) !important;
 }
 
 .container-fluid {
@@ -116,7 +114,7 @@ button:hover {
     display: contents;
     background-color: #F7F1DE;
     text-align: center;
-    color: black;
+    color: #000000;
 }
 
 .site-header nav {
@@ -161,8 +159,7 @@ button:hover {
 }
 
 .site-header .dropdown-item i {
-    vertical-align: center;
-    align-items: center;
+    vertical-align: middle;
     text-align: center;
     color: #4f7d54;
     font-weight: 900;
@@ -190,10 +187,10 @@ button:hover {
     min-width: 220px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-6px) scale(.98);
+    transform: translateY(-6px) scale(0.98);
     transform-origin: top right;
     pointer-events: none;
-    transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
 }
 
 .site-header .buyer-profile-menu.show {
@@ -233,7 +230,7 @@ button:hover {
     font-size: 11.5px;
     color: #9A9082;
     font-weight: 500;
-    text-align: start;
+    text-align: left;
 }
 
 .site-header .buyer-caret {
@@ -297,10 +294,7 @@ button:hover {
     background: #F7F1DE;
 }
 
-.site-header .category-item:hover {
-    background: #B0BA99;
-}
-
+.site-header .category-item:hover,
 .site-header .category-item.is-active {
     background: #B0BA99;
 }
@@ -311,13 +305,12 @@ button:hover {
     color: #F7F1DE;
     border: var(--button-border) solid #9D6638 !important;
     border-radius: var(--border-radius);
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .guest-buttons a:hover {
     background-color: #F7F1DE;
     color: #B0BA99;
-    border: var(--button-border) solid #9D6638;
-    border-radius: var(--border-radius);
 }
 
 
@@ -390,7 +383,7 @@ input[type="checkbox"]:checked {
     text-align: center;
     font-size: 0.8rem;
     font-weight: 500;
-    transition: all 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, color 0.15s ease-in-out;
     width: 100%;
     height: 85px;
 }
@@ -464,7 +457,7 @@ input[type="checkbox"]:checked {
     transform: translateY(-8px) scale(0.98);
     transform-origin: top right;
     pointer-events: none;
-    transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
     text-align: left;
     z-index: 1100;
 }
@@ -520,7 +513,6 @@ input[type="checkbox"]:checked {
     color: #4E220F !important;
     text-decoration: underline;
     text-underline-offset: 3px;
-    border: none !important;
 }
 
 .ms-notification-list {
@@ -536,8 +528,8 @@ input[type="checkbox"]:checked {
     gap: 12px;
     padding: 8px 18px;
     background: #FFFDF8 !important;
-    border-bottom: 1px solid rgba(217, 210, 196, .75);
-    transition: background-color .18s ease;
+    border-bottom: 1px solid rgba(217, 210, 196, 0.75);
+    transition: background-color 0.18s ease;
 }
 
 .ms-notification-item:hover,
@@ -559,17 +551,17 @@ input[type="checkbox"]:checked {
 
 .ms-notification-icon.is-order {
     color: #4f7d54;
-    background: rgba(79, 125, 84, .13) !important;
+    background: rgba(79, 125, 84, 0.13) !important;
 }
 
 .ms-notification-icon.is-deal {
     color: #b7802b;
-    background: rgba(183, 128, 43, .14) !important;
+    background: rgba(183, 128, 43, 0.14) !important;
 }
 
 .ms-notification-icon.is-wishlist {
     color: #9D6638;
-    background: rgba(157, 102, 56, .12) !important;
+    background: rgba(157, 102, 56, 0.12) !important;
 }
 
 .ms-notification-copy {
@@ -609,7 +601,7 @@ input[type="checkbox"]:checked {
     margin: 4px 0 0 auto;
     border-radius: 50%;
     background: #b54b3b;
-    box-shadow: 0 0 0 3px rgba(181, 75, 59, .1);
+    box-shadow: 0 0 0 3px rgba(181, 75, 59, 0.1);
 }
 
 .ms-notification-empty {
@@ -621,7 +613,7 @@ input[type="checkbox"]:checked {
 .ms-notification-empty-icon {
     margin-bottom: 10px;
     color: #4f7d54;
-    background: rgba(79, 125, 84, .13) !important;
+    background: rgba(79, 125, 84, 0.13) !important;
 }
 
 .ms-notification-empty h3 {
@@ -714,7 +706,6 @@ input[type="checkbox"]:checked {
 
 .app-message__close:hover {
     background-color: rgba(157, 102, 56, 0.12) !important;
-    border: 0 !important;
 }
 
 .app-message-success {
@@ -786,7 +777,6 @@ footer .nav-item a {
 
 /* ================= 8. RESPONSIVE STYLES ================= */
 @media (max-width: 767.98px) {
-    /* Notification Dropdown Mobile Adjustment */
     .ms-notification-panel {
         position: fixed;
         top: 16px;
@@ -794,7 +784,6 @@ footer .nav-item a {
         width: calc(100vw - 32px);
     }
 
-    /* Flash Alerts Mobile Adjustment */
     .header-message-row {
         padding: 8px 0;
     }

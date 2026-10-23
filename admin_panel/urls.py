@@ -7,6 +7,7 @@ from .views import (
     promotion_views,
     seller_views,
     taxonomy_views,
+    support_views,
 )
 
 urlpatterns = [
@@ -87,4 +88,10 @@ urlpatterns = [
     path("sales/orders", order_views.sales_orders, name="sales-orders"),
     path("sales/order/<str:order_number>", order_views.sales_order, name="sales-order"),
     path("sales/payments", order_views.payment_management, name="payment-management"),
+
+        # Help & Support
+    path("support/", support_views.support_requests, name="admin-support"),
+    path("support/<int:request_id>/", support_views.support_request_detail, name="admin-support-detail"),
+    path("support/<int:request_id>/reply/", support_views.support_request_reply, name="admin-support-reply"),
+    path("support/<int:request_id>/status/", support_views.support_request_status, name="admin-support-status"),
 ]

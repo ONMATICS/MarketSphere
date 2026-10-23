@@ -1,0 +1,110 @@
+{% extends 'admin_base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Help &amp; Support{% endblock %}
+{% block active_page %}support{% endblock %}
+
+{% block breadcrumb %}
+  <nav class="adh-breadcrumb" aria-label="Breadcrumb">
+    <span>Admin</span><span class="adh-breadcrumb-sep">/</span>
+    <span class="adh-breadcrumb-current">Help &amp; Support</span>
+  </nav>
+{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_support.css' %}" />{% endblock %}
+
+{% block content %}
+<div class="asp-page">
+  <header class="asp-card asp-header">
+    <div>
+      <h1 class="asp-title">Help &amp; Support</h1>
+      <p class="asp-subtitle">Review and respond to problem reports and support requests from buyers.</p>
+    </div>
+  </header>
+
+  <section class="asp-stats" aria-label="Support summary">
+    <div class="asp-stat"><span>Total Requests</span><strong>{{ summary.total }}</strong></div>
+    <a class="asp-stat" href="?status=open"><span>Open</span><strong class="asp-c-danger">{{ summary.open }}</strong></a>
+    <a class="asp-stat" href="?status=in_progress"><span>In Progress</span><strong class="asp-c-warning">{{ summary.in_progress }}</strong></a>
+    <a class="asp-stat" href="?status=waiting_for_user"><span>Waiting for Buyer</span><strong>{{ summary.waiting }}</strong></a>
+    <div class="asp-stat"><span>Resolved / Closed</span><strong class="asp-c-success">{{ summary.resolved }}</strong></div>
+  </section>
+
+  <form method="get" class="asp-card asp-filters" id="aspFilterForm">
+    <input type="search" name="q" value="{{ filters.q }}" class="asp-input asp-search" placeholder="Search by ID, subject, buyer, email or order…" aria-label="Search requests" />
+    <select name="status" class="asp-input" aria-label="Status">
+      <option value="">All statuses</option>
+      {% for value, label in status_choices %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="category" class="asp-input" aria-label="Category">
+      <option value="">All categories</option>
+      {% for value, label in category_choices %}<option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="request_type" class="asp-input" aria-label="Request type">
+      <option value="">All types</option>
+      {% for value, label in type_choices %}<option value="{{ value }}" {% if filters.request_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select name="contact_method" class="asp-input" aria-label="Contact method">
+      <option value="">Any contact method</option>
+      {% for value, label in contact_choices %}<option value="{{ value }}" {% if filters.contact_method == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <input type="date" name="date_from" value="{{ filters.date_from }}" class="asp-input" aria-label="From date" />
+    <input type="date" name="date_to" value="{{ filters.date_to }}" class="asp-input" aria-label="To date" />
+    <button type="submit" class="asp-btn asp-btn-primary">Filter</button>
+    {% if has_filters %}<a href="{% url 'admin-support' %}" class="asp-btn asp-btn-secondary">Reset</a>{% endif %}
+  </form>
+
+  <section class="asp-card asp-table-card" aria-label="Support requests">
+    {% if support_requests %}
+    <div class="asp-table-wrap">
+      <table class="asp-table">
+        <thead>
+          <tr>
+            <th>Request</th><th>Subject</th><th>Buyer</th><th>Category</th><th>Type</th>
+            <th>Status</th><th>Created</th><th>Updated</th><th><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sr in support_requests %}
+          <tr>
+            <td data-label="Request"><a class="asp-link" href="{% url 'admin-support-detail' request_id=sr.pk %}">SR-{{ sr.pk|stringformat:'05d' }}</a></td>
+            <td data-label="Subject" class="asp-subject">{{ sr.subject }}</td>
+            <td data-label="Buyer">
+              <strong>{{ sr.user.get_full_name|default:sr.user.username }}</strong>
+              <small class="asp-muted d-block">{{ sr.user.email }}</small>
+            </td>
+            <td data-label="Category">{{ sr.get_category_display }}</td>
+            <td data-label="Type">{{ sr.get_request_type_display }}</td>
+            <td data-label="Status"><span class="asp-badge asp-badge-{{ sr.status }}">{{ sr.get_status_display }}</span></td>
+            <td data-label="Created" class="asp-muted">{{ sr.created_at|date:"M j, Y" }}</td>
+            <td data-label="Updated" class="asp-muted">{{ sr.updated_at|timesince }} ago</td>
+            <td data-label=""><a class="asp-btn asp-btn-secondary asp-btn-sm" href="{% url 'admin-support-detail' request_id=sr.pk %}">Open</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if paginator.num_pages > 1 %}
+    <div class="asp-pagination">
+      <span class="asp-muted">Showing <strong>{{ page_obj.start_index }}&ndash;{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong></span>
+      <nav>
+        {% if page_obj.has_previous %}<a class="asp-page-btn" href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={{ page_obj.previous_page_number }}">&lsaquo;</a>{% endif %}
+        {% for num in paginator.page_range %}<a class="asp-page-btn {% if num == page_obj.number %}is-active{% endif %}" href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={{ num }}">{{ num }}</a>{% endfor %}
+        {% if page_obj.has_next %}<a class="asp-page-btn" href="?{{ pagination_query.urlencode }}{% if pagination_query %}&{% endif %}page={{ page_obj.next_page_number }}">&rsaquo;</a>{% endif %}
+      </nav>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="asp-empty">
+      {% if has_filters %}
+        <h3>No matching requests</h3><p>Nothing matches your search or filters.</p>
+        <a href="{% url 'admin-support' %}" class="asp-btn asp-btn-primary">Reset filters</a>
+      {% else %}
+        <h3>No support requests yet</h3><p>Requests submitted by buyers will appear here.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

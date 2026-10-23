@@ -1,6 +1,3 @@
-## Orders Models
-
-
 from django.conf import settings
 from django.db import models
 
@@ -196,4 +193,3 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
-

@@ -1,7 +1,24 @@
 /* =========================================================
-   MARKETSPHERE — MY ORDERS PAGE STYLES
+   MARKETSPHERE — MY ORDERS STYLESHEET
+   Purpose: Controls the layout and components of the customer's
+   order history page, including the structured order cards,
+   status badges, product thumbnails, and empty states.
+   Scope: Storefront Customer Account
+
+   Sections:
+   1. Variables
+   2. Base Layout
+   3. Breadcrumbs & Header
+   4. Order Cards (Structure)
+   5. Status Badges
+   6. Product Thumbnails
+   7. Order Summary Grid
+   8. Card Footer & Action Links
+   9. Empty State
+   10. Responsive Styles
    ========================================================= */
 
+/* ================= 1. VARIABLES ================= */
 :root {
     --mo-accent: #9D6638;
     --mo-accent-dark: #4E220F;
@@ -12,66 +29,75 @@
     --mo-muted: #B0BA99;
 }
 
-/* ================= BREADCRUMB & HEADER ================= */
-.mo-breadcrumb-wrap {
-    padding: 18px 0 6px;
-    background-color: var(--background-color);
-}
-.mo-breadcrumb-wrap .breadcrumb {
-    background-color: transparent;
-    font-size: 13.5px;
-}
-.mo-breadcrumb-wrap .breadcrumb-item a { color: var(--mo-accent); }
-.mo-breadcrumb-wrap .breadcrumb-item.active {
-    color: var(--mo-muted);
-    font-weight: 500;
-}
-.mo-header-section {
-    padding: 10px 0 24px;
-    background-color: var(--background-color);
-}
-.mo-page-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--headings);
-    margin: 6px 0 6px;
-}
-.mo-page-subtitle {
-    font-size: 15px;
-    color: var(--mo-success);
-    margin: 0;
-}
-
-/* ================= SECTION LAYOUT ================= */
+/* ================= 2. BASE LAYOUT ================= */
 .mo-section {
     padding: 6px 0 60px;
     background-color: var(--background-color);
 }
+
 .mo-orders-list {
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-/* ================= NEW STRUCTURED ORDER CARD ================= */
+/* ================= 3. BREADCRUMBS & HEADER ================= */
+.mo-breadcrumb-wrap {
+    padding: 18px 0 6px;
+    background-color: var(--background-color);
+}
+
+.mo-breadcrumb-wrap .breadcrumb {
+    background-color: transparent;
+    font-size: 13.5px;
+}
+
+.mo-breadcrumb-wrap .breadcrumb-item a {
+    color: var(--mo-accent);
+}
+
+.mo-breadcrumb-wrap .breadcrumb-item.active {
+    color: var(--mo-muted);
+    font-weight: 500;
+}
+
+.mo-header-section {
+    padding: 10px 0 24px;
+    background-color: var(--background-color);
+}
+
+.mo-page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--headings);
+    margin: 6px 0 6px;
+}
+
+.mo-page-subtitle {
+    font-size: 15px;
+    color: var(--mo-success);
+    margin: 0;
+}
+
+/* ================= 4. ORDER CARDS (STRUCTURE) ================= */
 .mo-order-card {
-    background-color: #F7F1DE; /* Existing card base */
+    background-color: #F7F1DE;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    overflow: hidden; /* Keeps header/footer rounded nicely */
+    overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     display: flex;
     flex-direction: column;
 }
+
 .mo-order-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(157, 102, 56, 0.08);
     border-color: var(--mo-accent);
 }
 
-/* ---- Card Header ---- */
 .mo-order-card-header {
-    background-color: rgba(255, 255, 255, 0.4); /* Subtle distinction from body */
+    background-color: rgba(255, 255, 255, 0.4);
     padding: 16px 24px;
     border-bottom: 1px solid rgba(157, 102, 56, 0.15);
     display: flex;
@@ -80,25 +106,35 @@
     flex-wrap: wrap;
     gap: 12px;
 }
+
 .mo-order-header-info {
     display: flex;
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
 }
+
 .mo-order-number {
     font-size: 16px;
     font-weight: 700;
     color: var(--mo-accent-dark);
 }
+
 .mo-order-date {
     font-size: 13.5px;
     color: var(--mo-muted);
     font-weight: 500;
 }
-.mo-order-date i { color: var(--mo-accent); }
 
-/* ---- Status badges ---- */
+.mo-order-date i {
+    color: var(--mo-accent);
+}
+
+.mo-order-card-body {
+    padding: 24px;
+}
+
+/* ================= 5. STATUS BADGES ================= */
 .mo-status-badge {
     display: inline-flex;
     align-items: center;
@@ -109,25 +145,45 @@
     border-radius: 20px;
     text-transform: capitalize;
 }
-.mo-status-pending { background-color: rgba(183, 128, 43, 0.16); color: var(--mo-warning); }
-.mo-status-confirmed { background-color: rgba(157, 102, 56, 0.14); color: var(--mo-accent); }
-.mo-status-processing { background-color: rgba(176, 186, 153, 0.28); color: #6b7458; }
-.mo-status-shipped { background-color: rgba(78, 34, 15, 0.12); color: var(--mo-accent-dark); }
-.mo-status-delivered { background-color: rgba(79, 125, 84, 0.14); color: var(--mo-success); }
-.mo-status-cancelled { background-color: rgba(181, 75, 59, 0.13); color: var(--mo-danger); }
 
-/* ---- Card Body ---- */
-.mo-order-card-body {
-    padding: 24px;
+.mo-status-pending {
+    background-color: rgba(183, 128, 43, 0.16);
+    color: var(--mo-warning);
 }
 
-/* ---- Product Thumbnails ---- */
+.mo-status-confirmed {
+    background-color: rgba(157, 102, 56, 0.14);
+    color: var(--mo-accent);
+}
+
+.mo-status-processing {
+    background-color: rgba(176, 186, 153, 0.28);
+    color: #6b7458;
+}
+
+.mo-status-shipped {
+    background-color: rgba(78, 34, 15, 0.12);
+    color: var(--mo-accent-dark);
+}
+
+.mo-status-delivered {
+    background-color: rgba(79, 125, 84, 0.14);
+    color: var(--mo-success);
+}
+
+.mo-status-cancelled {
+    background-color: rgba(181, 75, 59, 0.13);
+    color: var(--mo-danger);
+}
+
+/* ================= 6. PRODUCT THUMBNAILS ================= */
 .mo-thumb-strip {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
 }
+
 .mo-order-thumb {
     width: 60px;
     height: 60px;
@@ -139,11 +195,13 @@
     align-items: center;
     justify-content: center;
 }
+
 .mo-order-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures perfect cropping without stretching */
+    object-fit: cover;
 }
+
 .mo-thumb-more {
     font-size: 13px;
     font-weight: 700;
@@ -153,18 +211,20 @@
     border-radius: 20px;
 }
 
-/* ---- Summary Grid ---- */
+/* ================= 7. ORDER SUMMARY GRID ================= */
 .mo-summary-grid {
     display: flex;
     justify-content: space-between;
     gap: 15px;
     flex-wrap: wrap;
 }
+
 .mo-summary-block {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
+
 .mo-summary-label {
     font-size: 11.5px;
     font-weight: 700;
@@ -172,18 +232,33 @@
     letter-spacing: 0.5px;
     color: var(--mo-muted);
 }
+
 .mo-summary-value {
     font-size: 15px;
     font-weight: 600;
     color: var(--headings);
 }
+
 .mo-summary-total {
     color: var(--mo-accent-dark);
     font-size: 18px;
     font-weight: 800;
 }
 
-/* ---- Buttons ---- */
+/* ================= 8. CARD FOOTER & ACTION LINKS ================= */
+.mo-order-card-footer {
+    padding: 14px 24px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border-top: 1px dashed rgba(157, 102, 56, 0.2);
+}
+
+.mo-order-actions-secondary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-end;
+}
+
 .mo-view-details-btn {
     padding: 12px 20px !important;
     font-weight: 600 !important;
@@ -195,18 +270,6 @@
     white-space: nowrap;
 }
 
-/* ---- Card Footer ---- */
-.mo-order-card-footer {
-    padding: 14px 24px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-top: 1px dashed rgba(157, 102, 56, 0.2);
-}
-.mo-order-actions-secondary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-end;
-}
 .mo-action-link {
     background: none !important;
     border: none !important;
@@ -220,11 +283,20 @@
     text-decoration: none;
     transition: 0.2s ease;
 }
-.mo-action-link:hover { color: var(--mo-accent-dark) !important; }
-.mo-action-link.text-danger { color: var(--mo-danger) !important; }
-.mo-action-link.text-danger:hover { color: darkred !important; }
 
-/* ================= EMPTY STATE ================= */
+.mo-action-link:hover {
+    color: var(--mo-accent-dark) !important;
+}
+
+.mo-action-link.text-danger {
+    color: var(--mo-danger) !important;
+}
+
+.mo-action-link.text-danger:hover {
+    color: darkred !important;
+}
+
+/* ================= 9. EMPTY STATE ================= */
 .mo-empty-state {
     text-align: center;
     padding: 80px 20px;
@@ -232,6 +304,7 @@
     border: 1px dashed var(--mo-accent);
     border-radius: 16px;
 }
+
 .mo-empty-icon {
     width: 100px;
     height: 100px;
@@ -242,32 +315,37 @@
     align-items: center;
     justify-content: center;
 }
+
 .mo-empty-icon i {
     font-size: 44px;
     color: var(--mo-accent);
 }
+
 .mo-empty-state h3 {
     color: var(--mo-accent-dark);
     font-weight: 700;
     margin-bottom: 12px;
 }
+
 .mo-empty-state p {
     color: var(--mo-success);
     max-width: 400px;
     margin: 0 auto 24px;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= 10. RESPONSIVE STYLES ================= */
 @media (max-width: 767.98px) {
     .mo-order-header-info {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
     }
+
     .mo-summary-grid {
         justify-content: flex-start;
         gap: 24px;
     }
+
     .mo-order-actions-secondary {
         justify-content: center;
     }
