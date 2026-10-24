@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from allauth.account.forms import ResetPasswordForm
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
@@ -17,17 +16,18 @@ from accounts import services as account_services
 from accounts.buyer_pdf import generate_buyer_profile_pdf
 from admin_panel import services
 from orders.models import Order
+from services.decorators.decorators import permission_required
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
-@staff_member_required
+@permission_required("accounts.change_user")
 def user_management(request: HttpRequest) -> HttpResponse:
     """Render the user management overview."""
     return render(request, "user_management/overview.html")
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 def user_buyers(request: HttpRequest) -> HttpResponse:
     """Render the paginated list of all registered buyers."""
     total_buyers = account_services.get_all_buyers().annotate(
@@ -50,14 +50,14 @@ def user_buyers(request: HttpRequest) -> HttpResponse:
     })
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 def user_buyer(request: HttpRequest, userId: int) -> HttpResponse:
     """Render the detail view for a specific buyer."""
     context = services.get_buyer_details(userId)
     return render(request, "user_management/buyer/buyer_detail.html", context)
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 @require_POST
 def update_buyer_profile_view(request: HttpRequest, buyer_id: int) -> JsonResponse:
     """Admin endpoint to update buyer profile information."""
@@ -97,7 +97,7 @@ def update_buyer_profile_view(request: HttpRequest, buyer_id: int) -> JsonRespon
     })
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 @require_POST
 def change_state(request: HttpRequest) -> JsonResponse:
     """Change the state of a user's account."""
@@ -107,7 +107,7 @@ def change_state(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "success"})
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 @require_POST
 def admin_reset_password(request: HttpRequest, user_id: int) -> JsonResponse:
     """Trigger a password reset email for a user."""
@@ -121,7 +121,7 @@ def admin_reset_password(request: HttpRequest, user_id: int) -> JsonResponse:
     return JsonResponse({"success": False, "error": form.errors.get_json_data()}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 @require_POST
 def send_user_email(request: HttpRequest, user_id: int) -> JsonResponse:
     """Send a custom administrative email to a specific user."""
@@ -155,7 +155,7 @@ def send_user_email(request: HttpRequest, user_id: int) -> JsonResponse:
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 def export_buyer_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     """Export a comprehensive buyer profile as a PDF."""
     prefetch_fields = [
@@ -176,7 +176,7 @@ def export_buyer_profile(request: HttpRequest, user_id: int) -> HttpResponse:
     return response
 
 
-@staff_member_required
+@permission_required("accounts.change_user")
 def export_order_history(request: HttpRequest, user_id: int) -> HttpResponse:
     """Export order history for a specific buyer."""
     return services.export_order_history(user_id)

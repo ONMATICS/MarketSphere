@@ -1,7 +1,6 @@
 import json
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.http import FileResponse, HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
@@ -12,11 +11,12 @@ from orders.invoice import generate_invoice
 from orders.models import Order
 from orders.packing_slip import generate_packing_slip
 from orders.shipping_label import generate_shipping_label
+from services.decorators.decorators import verified_seller
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@verified_seller
 @require_POST
 def update_shipping(request: HttpRequest, order_number: str) -> JsonResponse:
     """Update shipping status and tracking for a seller's order."""
@@ -38,7 +38,7 @@ def update_shipping(request: HttpRequest, order_number: str) -> JsonResponse:
     })
 
 
-@login_required
+@verified_seller
 @require_POST
 def update_seller_note_view(request: HttpRequest, order_number: str) -> JsonResponse:
     """Update the internal memo/note for an order attached to the seller."""
@@ -67,7 +67,7 @@ def update_seller_note_view(request: HttpRequest, order_number: str) -> JsonResp
         return JsonResponse({"success": False, "message": "An unexpected error occurred."}, status=500)
 
 
-@login_required
+@verified_seller
 def download_invoice(request: HttpRequest, order_number: str) -> FileResponse:
     """Generate and download a PDF invoice for a specific seller order."""
     seller = get_object_or_404(Seller, user=request.user)
@@ -86,7 +86,7 @@ def download_invoice(request: HttpRequest, order_number: str) -> FileResponse:
     )
 
 
-@login_required
+@verified_seller
 def download_shipping_label(request: HttpRequest, order_number: str) -> FileResponse:
     """Generate and download a PDF shipping label for a specific seller order."""
     seller = get_object_or_404(Seller, user=request.user)
@@ -105,7 +105,7 @@ def download_shipping_label(request: HttpRequest, order_number: str) -> FileResp
     )
 
 
-@login_required
+@verified_seller
 def download_packing_slip(request: HttpRequest, order_number: str) -> FileResponse:
     """Generate and download a PDF packing slip for a specific seller order."""
     seller = get_object_or_404(Seller, user=request.user)

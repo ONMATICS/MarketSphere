@@ -1,19 +1,18 @@
 import json
 import logging
 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 
 from accounts import services
 from accounts.models import Seller
+from services.decorators.decorators import permission_required
 
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def update_store_information(request: HttpRequest, seller_id: int) -> JsonResponse:
     """Staff endpoint to administratively update a specific seller's store data."""
@@ -29,7 +28,7 @@ def update_store_information(request: HttpRequest, seller_id: int) -> JsonRespon
         return JsonResponse({"success": False, "message": "An unexpected error occurred."}, status=500)
 
 
-@login_required
+@permission_required("accounts.change_seller")
 def change_store_banner(request: HttpRequest) -> JsonResponse:
     """Change a specific seller's storefront banner."""
     if request.method != "POST":
@@ -48,7 +47,7 @@ def change_store_banner(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "An unexpected error occurred while updating the banner."}, status=500)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def change_seller_status(request: HttpRequest) -> JsonResponse:
     """Staff endpoint to administratively alter a seller's active/verified status."""
     if request.method != "POST":

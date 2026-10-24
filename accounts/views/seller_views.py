@@ -1,19 +1,17 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from accounts import services
-from accounts.decorators import only_seller, verified_user
 from admin_panel.marketplace import get_marketplace_settings
+from services.decorators.decorators import seller_required, verified_user
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
 @verified_user
 def seller_signup_view(request: HttpRequest) -> HttpResponse:
     """Process a user's application to become a registered seller."""
@@ -41,8 +39,7 @@ def seller_signup_view(request: HttpRequest) -> HttpResponse:
     return render(request, "seller_signup.html")
 
 
-@login_required
-@only_seller
+@seller_required
 def seller_account(request: HttpRequest) -> HttpResponse:
     """Render the seller's main dashboard and account management page."""
     seller = request.user.seller_profile
@@ -59,8 +56,7 @@ def seller_account(request: HttpRequest) -> HttpResponse:
     return render(request, "seller_account.html", context)
 
 
-@login_required
-@only_seller
+@seller_required
 def update_seller_info(request: HttpRequest) -> JsonResponse:
     """Update general seller store information."""
     if request.method != "POST":
@@ -74,8 +70,7 @@ def update_seller_info(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
 
-@login_required
-@only_seller
+@seller_required
 def update_seller_address(request: HttpRequest) -> JsonResponse:
     """Update a seller's registered business address."""
     if request.method != "POST":
@@ -89,7 +84,7 @@ def update_seller_address(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
 
-@login_required
+@seller_required
 def update_seller_profile(request: HttpRequest) -> JsonResponse:
     """Update a seller's profile details."""
     if request.method != "POST":
@@ -103,7 +98,7 @@ def update_seller_profile(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Unable to update profile at this time."}, status=500)
 
 
-@login_required
+@seller_required
 def update_seller_document(request: HttpRequest) -> JsonResponse:
     """Handle upload and updates to seller registration documents."""
     if request.method != "POST":
@@ -127,7 +122,7 @@ def update_seller_document(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Unable to upload document at this time."}, status=500)
 
 
-@login_required
+@seller_required
 def update_shipping_preferences_view(request: HttpRequest) -> JsonResponse:
     """Update fulfillment and shipping settings for the seller."""
     if request.method != "POST":
@@ -141,7 +136,7 @@ def update_shipping_preferences_view(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Unable to update shipping preferences."}, status=500)
 
 
-@login_required
+@seller_required
 def update_notification_preferences_view(request: HttpRequest) -> JsonResponse:
     """Update a seller's notification dispatch rules."""
     if request.method != "POST":
@@ -155,8 +150,7 @@ def update_notification_preferences_view(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Unable to update notification preferences."}, status=500)
 
 
-@login_required
-@only_seller
+@seller_required
 def deactivate_seller_account(request: HttpRequest) -> JsonResponse:
     """Deactivate a seller's active storefront."""
     if request.method != "POST":
@@ -170,8 +164,7 @@ def deactivate_seller_account(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"status": "error", "message": "Unable to deactivate account at this time."}, status=500)
 
 
-@login_required
-@only_seller
+@seller_required
 def reactivate_seller_account(request: HttpRequest) -> JsonResponse:
     """Reactivate a previously deactivated seller storefront."""
     if request.method != "POST":

@@ -1,12 +1,12 @@
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from products import services
+from services.decorators.decorators import buyer_required
 
 
-@login_required
+@buyer_required
 def wishlist(request: HttpRequest) -> HttpResponse:
     """Render the current user's wishlist page."""
     wishlist_items = services.get_user_wishlist(request.user)
@@ -17,7 +17,7 @@ def wishlist(request: HttpRequest) -> HttpResponse:
     return render(request, "wishlist.html", context)
 
 
-@login_required
+@buyer_required
 @require_POST
 def toggle_wishlist(request: HttpRequest, product_slug: str) -> JsonResponse:
     """AJAX endpoint to add or remove a product from the wishlist."""

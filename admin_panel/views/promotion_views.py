@@ -1,7 +1,6 @@
 import json
 
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,9 +9,10 @@ from django.views.decorators.http import require_POST
 from products.models import Category
 from promotions import services as promotion_services
 from promotions.models import Promotion
+from services.decorators.decorators import admin_required
 
 
-@staff_member_required
+@admin_required
 def admin_promotions(request: HttpRequest) -> HttpResponse:
     search_query = request.GET.get("q", "").strip()
     status_filter = request.GET.get("status", "").strip()
@@ -39,7 +39,7 @@ def admin_promotions(request: HttpRequest) -> HttpResponse:
         "status_choices": Promotion.Status.choices,
     })
 
-@staff_member_required
+@admin_required
 def admin_create_promotion(request: HttpRequest) -> HttpResponse:
     categories = Category.objects.filter(is_active=True).order_by("name")
 
@@ -70,13 +70,13 @@ def admin_create_promotion(request: HttpRequest) -> HttpResponse:
         "selected_category_ids": [],
     })
 
-@staff_member_required
+@admin_required
 def admin_promotion_detail(request: HttpRequest, promotion_slug: str) -> HttpResponse:
     context = promotion_services.get_admin_promotion_detail(promotion_slug)
     promotion_services.annotate_promotion_display_status([context["promotion"]])
     return render(request, "promotions/promotion_detail.html", context)
 
-@staff_member_required
+@admin_required
 def admin_edit_promotion(request: HttpRequest, promotion_slug: str) -> HttpResponse:
     categories = Category.objects.filter(is_active=True).order_by("name")
     context = promotion_services.get_admin_promotion_detail(promotion_slug)
@@ -110,7 +110,7 @@ def admin_edit_promotion(request: HttpRequest, promotion_slug: str) -> HttpRespo
         "selected_category_ids": [str(cat.id) for cat in context["promotion"].categories.all()],
     })
 
-@staff_member_required
+@admin_required
 def admin_manage_promotion_products(request: HttpRequest, promotion_slug: str) -> HttpResponse:
     promotion = get_object_or_404(Promotion, slug=promotion_slug)
     promotion_services.annotate_promotion_display_status([promotion])
@@ -155,7 +155,7 @@ def admin_manage_promotion_products(request: HttpRequest, promotion_slug: str) -
         "sort": sort,
     })
 
-@staff_member_required
+@admin_required
 @require_POST
 def update_promotion_product_price(request: HttpRequest, promotion_product_id: int) -> JsonResponse:
     try:
@@ -176,7 +176,7 @@ def update_promotion_product_price(request: HttpRequest, promotion_product_id: i
     except ValueError as exc:
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
-@staff_member_required
+@admin_required
 @require_POST
 def toggle_promotion_product_featured(request: HttpRequest, promotion_product_id: int) -> JsonResponse:
     promotion_product = promotion_services.toggle_promotion_product_featured_service(promotion_product_id)
@@ -186,7 +186,7 @@ def toggle_promotion_product_featured(request: HttpRequest, promotion_product_id
         "message": "Product marked as featured." if promotion_product.is_featured else "Product unmarked as featured.",
     })
 
-@staff_member_required
+@admin_required
 @require_POST
 def remove_promotion_product(request: HttpRequest, promotion_product_id: int) -> JsonResponse:
     promotion_services.remove_promotion_product_service(promotion_product_id)

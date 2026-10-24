@@ -3,25 +3,25 @@ import logging
 
 import cloudinary.exceptions
 
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from accounts import services
 from services.cloudinary_service import store_profile_image
+from services.decorators.decorators import buyer_required
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@buyer_required
 def profile_view(request: HttpRequest) -> HttpResponse:
     """Display the buyer 'My Profile' page."""
     context = services.get_buyer_profile_context(request.user)
     return render(request, "buyer_profile.html", context)
 
 
-@login_required
+@buyer_required
 @require_POST
 def update_my_profile_view(request: HttpRequest) -> JsonResponse:
     """Update buyer profile information and avatar via AJAX or multipart submission."""
@@ -86,7 +86,7 @@ def update_my_profile_view(request: HttpRequest) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 def save_user_address(request: HttpRequest) -> JsonResponse:
     """Create a new address for the buyer."""
     if request.method != "POST":
@@ -120,7 +120,7 @@ def save_user_address(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Something went wrong. Please try again."}, status=500)
 
 
-@login_required
+@buyer_required
 def update_user_address(request: HttpRequest) -> JsonResponse:
     """Update an existing buyer address."""
     if request.method != "POST":
@@ -154,7 +154,7 @@ def update_user_address(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Something went wrong. Please try again."}, status=500)
 
 
-@login_required
+@buyer_required
 def delete_user_address_view(request: HttpRequest) -> JsonResponse:
     """Delete an existing buyer address."""
     if request.method != "POST":
@@ -173,7 +173,7 @@ def delete_user_address_view(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Something went wrong. Please try again."}, status=500)
 
 
-@login_required
+@buyer_required
 @require_POST
 def update_user_preferences(request: HttpRequest) -> JsonResponse:
     """Update global notifications and preferences for a user."""

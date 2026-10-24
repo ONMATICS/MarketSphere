@@ -3,14 +3,12 @@ import logging
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, Optional, Tuple
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import redirect_to_login
 from django.core.paginator import Paginator
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from accounts.decorators import verified_seller
+from services.decorators.decorators import verified_seller
 from admin_panel.settings_data import get_admin_setting
 from products import services as product_services
 from products.models import Product
@@ -35,7 +33,6 @@ logger = logging.getLogger(__name__)
 # PRODUCT MANAGEMENT (Pages)
 # ---------------------------------------------------------
 
-@login_required
 @verified_seller
 def products(request: HttpRequest) -> HttpResponse:
     """Display a paginated list of the seller's products."""
@@ -58,7 +55,6 @@ def products(request: HttpRequest) -> HttpResponse:
     })
 
 
-@login_required
 @verified_seller
 def add_product(request: HttpRequest) -> HttpResponse:
     """Handle rendering the product creation form and processing new product submissions."""
@@ -83,7 +79,6 @@ def add_product(request: HttpRequest) -> HttpResponse:
     })
 
 
-@login_required
 @verified_seller
 def draft_product(request: HttpRequest) -> HttpResponse:
     """Save a product as a draft without publishing it."""
@@ -111,7 +106,6 @@ def draft_product(request: HttpRequest) -> HttpResponse:
     })
 
 
-@login_required
 @verified_seller
 def edit_products(request: HttpRequest, product_slug: str) -> HttpResponse:
     """Render the edit form for an existing product and process updates."""
@@ -151,15 +145,10 @@ def edit_products(request: HttpRequest, product_slug: str) -> HttpResponse:
     return render(request, "products/edit.html", context)
 
 
+@verified_seller
 def product_detail(request: HttpRequest, product_slug: str) -> HttpResponse:
     """View the details of a product from the seller's perspective."""
-    if not request.user.is_authenticated:
-        return redirect_to_login(request.get_full_path())
-
-    seller = getattr(request.user, "seller_profile", None)
-    if seller is None:
-        raise Http404
-
+    seller = request.user.seller_profile
     context = get_seller_product_detail_context(
         seller, product_slug, request.GET.get("range")
     )
@@ -170,7 +159,6 @@ def product_detail(request: HttpRequest, product_slug: str) -> HttpResponse:
 # PRODUCT ACTIONS (AJAX)
 # ---------------------------------------------------------
 
-@login_required
 @verified_seller
 @require_POST
 def hide_product(request: HttpRequest) -> JsonResponse:
@@ -187,7 +175,6 @@ def hide_product(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"status": "error", "message": "Something went wrong."}, status=500)
 
 
-@login_required
 @verified_seller
 @require_POST
 def unhide_product(request: HttpRequest) -> JsonResponse:
@@ -204,7 +191,6 @@ def unhide_product(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"status": "error", "message": "Something went wrong."}, status=500)
 
 
-@login_required
 @verified_seller
 @require_POST
 def delete_product(request: HttpRequest) -> JsonResponse:
@@ -228,7 +214,6 @@ def delete_product(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "error", "message": "Product not found."}, status=404)
 
 
-@login_required
 @verified_seller
 @require_POST
 def toggle_product_featured_view(request: HttpRequest) -> JsonResponse:
@@ -261,7 +246,6 @@ def toggle_product_featured_view(request: HttpRequest) -> JsonResponse:
     })
 
 
-@login_required
 @verified_seller
 @require_POST
 def toggle_product_archive_view(request: HttpRequest) -> JsonResponse:
@@ -330,7 +314,7 @@ def _service_response(result: Dict[str, Any], success_message: str) -> JsonRespo
     return JsonResponse({"success": False, "message": result.get("message", "Action failed.")}, status=400)
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_update_pricing(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Update a product's base price and discount price."""
@@ -361,7 +345,7 @@ def product_update_pricing(request: HttpRequest, product_slug: str) -> JsonRespo
     return _service_response(result, "Pricing updated successfully.")
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_remove_discount(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Remove any active discount from a product."""
@@ -373,7 +357,7 @@ def product_remove_discount(request: HttpRequest, product_slug: str) -> JsonResp
     return _service_response(result, "Discount removed.")
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_adjust_stock(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Adjust the available stock inventory for a product."""
@@ -408,7 +392,7 @@ def product_adjust_stock(request: HttpRequest, product_slug: str) -> JsonRespons
     return _service_response(result, "Stock adjusted.")
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_mark_out_of_stock(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Manually flag a product as out of stock."""
@@ -420,7 +404,7 @@ def product_mark_out_of_stock(request: HttpRequest, product_slug: str) -> JsonRe
     return _service_response(result, "Product marked as out of stock.")
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_restore_stock(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Restore a product's stock levels from an out-of-stock state."""
@@ -432,7 +416,7 @@ def product_restore_stock(request: HttpRequest, product_slug: str) -> JsonRespon
     return _service_response(result, "Stock restored.")
 
 
-@login_required
+@verified_seller
 @require_POST
 def product_visibility(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Manage public visibility state of a product (Hide/Unhide)."""

@@ -1,7 +1,6 @@
 import json
 import logging
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -12,11 +11,12 @@ from accounts.models import Seller
 from accounts.seller_pdf import export_seller_profile_snapshot
 from admin_panel import services
 from admin_panel.revenue_report import export_revenue_report
+from services.decorators.decorators import permission_required
 
 logger = logging.getLogger(__name__)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def user_sellers(request: HttpRequest) -> HttpResponse:
     """Render the paginated list of all sellers."""
     total_sellers = account_services.get_all_sellers()
@@ -34,21 +34,21 @@ def user_sellers(request: HttpRequest) -> HttpResponse:
     })
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def user_seller(request: HttpRequest, sellerId: int) -> HttpResponse:
     """Render the detail view for a specific seller."""
     context = services.get_seller_detail(sellerId)
     return render(request, "user_management/seller/detail.html", context)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def seller_application(request: HttpRequest, sellerId: int) -> HttpResponse:
     """View a specific seller's pending application."""
     context = services.get_pending_seller(sellerId)
     return render(request, "user_management/seller/application.html", context)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def reject_seller_application(request: HttpRequest, application_id: int) -> JsonResponse:
     """Reject a pending seller application."""
@@ -65,7 +65,7 @@ def reject_seller_application(request: HttpRequest, application_id: int) -> Json
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def request_application_changes(request: HttpRequest, application_id: int) -> JsonResponse:
     """Request corrections to a seller's application."""
@@ -81,7 +81,7 @@ def request_application_changes(request: HttpRequest, application_id: int) -> Js
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def approve_seller_application(request: HttpRequest, application_id: int) -> JsonResponse:
     """Approve a pending seller application."""
@@ -92,7 +92,7 @@ def approve_seller_application(request: HttpRequest, application_id: int) -> Jso
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def delete_seller_application(request: HttpRequest, seller_id: int) -> JsonResponse:
     """Delete a seller account entirely."""
@@ -103,7 +103,7 @@ def delete_seller_application(request: HttpRequest, seller_id: int) -> JsonRespo
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def flag_seller_document(request: HttpRequest, document_id: int) -> JsonResponse:
     """Flag a specific document uploaded by a seller for review."""
@@ -119,7 +119,7 @@ def flag_seller_document(request: HttpRequest, document_id: int) -> JsonResponse
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def verify_seller_document(request: HttpRequest, document_id: int) -> JsonResponse:
     """Verify a specific seller document."""
@@ -134,7 +134,7 @@ def verify_seller_document(request: HttpRequest, document_id: int) -> JsonRespon
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def request_missing_document(request: HttpRequest) -> JsonResponse:
     """Request a missing document from a seller."""
@@ -151,7 +151,7 @@ def request_missing_document(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 @require_POST
 def save_application_notes(request: HttpRequest) -> JsonResponse:
     """Save administrative notes to a seller application."""
@@ -166,21 +166,21 @@ def save_application_notes(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": str(exc)}, status=400)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def export_seller_orders(request: HttpRequest, seller_id: int) -> HttpResponse:
     """Export orders for a specific seller."""
     seller = get_object_or_404(Seller, id=seller_id)
     return services.export_seller_orders(seller)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def export_revenue_report_view(request: HttpRequest, seller_id: int) -> HttpResponse:
     """Admin-only endpoint to export a seller's complete revenue report as a PDF."""
     seller = get_object_or_404(Seller, pk=seller_id)
     return export_revenue_report(seller)
 
 
-@staff_member_required
+@permission_required("accounts.change_seller")
 def export_seller_profile(request: HttpRequest, seller_id: int) -> HttpResponse:
     """Admin-only endpoint to export a seller's complete profile snapshot as a PDF."""
     seller = get_object_or_404(

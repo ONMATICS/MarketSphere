@@ -1,18 +1,16 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 
-from accounts.decorators import verified_seller
+from services.decorators.decorators import verified_seller
 from notifications.models import ActivityLog
 from orders.export_orders_csv import generate_seller_orders_csv
 from orders.models import Order
 from orders.services import get_seller_orders, get_user_order_for_seller, update_order_status
 
 
-@login_required
 @verified_seller
 def orders(request: HttpRequest) -> HttpResponse:
     """Display a paginated list of orders placed with this seller."""
@@ -31,7 +29,6 @@ def orders(request: HttpRequest) -> HttpResponse:
     })
 
 
-@login_required
 @verified_seller
 def order_detail(request: HttpRequest, order_no: str) -> HttpResponse:
     """View details and activity logs for a specific seller order."""
@@ -46,7 +43,6 @@ def order_detail(request: HttpRequest, order_no: str) -> HttpResponse:
     })
 
 
-@login_required
 @verified_seller
 def update_user_order_status(request: HttpRequest, order_no: str, status: str) -> JsonResponse:
     """Update the fulfillment status of an order."""
@@ -58,7 +54,7 @@ def update_user_order_status(request: HttpRequest, order_no: str, status: str) -
     return JsonResponse({"success": True, "status": status})
 
 
-@login_required
+@verified_seller
 def export_seller_orders_csv_view(request: HttpRequest) -> HttpResponse:
     """Generate and download a CSV of the authenticated seller's orders."""
     # Ensure they have a seller profile (redundant check left as defensive design)

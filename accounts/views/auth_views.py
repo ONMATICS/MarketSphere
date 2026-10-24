@@ -7,12 +7,12 @@ from allauth.core.exceptions import ImmediateHttpResponse
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 
 from accounts import services, validator
 from admin_panel.marketplace import get_marketplace_settings
+from services.decorators.decorators import authenticated, verified_email_required
 
 logger = logging.getLogger(__name__)
 
@@ -79,14 +79,14 @@ def signup_view(request: HttpRequest) -> HttpResponse:
     return render(request, "signup.html")
 
 
-@login_required
+@authenticated
 def logout_user(request: HttpRequest) -> HttpResponse:
     """Log the current user out and redirect to the login page."""
     logout(request)
     return redirect("login")
 
 
-@login_required
+@authenticated
 def resend_verification_email_view(request: HttpRequest) -> HttpResponse:
     """Resend the email verification link to the current user."""
     if request.method != "POST":
@@ -105,7 +105,7 @@ def resend_verification_email_view(request: HttpRequest) -> HttpResponse:
     return redirect(settings.LOGIN_REDIRECT_URL)
 
 
-@login_required
+@verified_email_required
 def change_password(request: HttpRequest) -> JsonResponse:
     """Change the authenticated user's password via an AJAX request."""
     if request.method != "POST":

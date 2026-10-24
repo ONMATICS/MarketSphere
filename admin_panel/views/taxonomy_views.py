@@ -2,7 +2,6 @@ import csv
 import json
 import logging
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -11,16 +10,17 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from admin_panel import services
 from products.models import Brand, Category
+from services.decorators.decorators import catalog_admin_required
 
 logger = logging.getLogger(__name__)
 
-@staff_member_required
+@catalog_admin_required
 def catalog_categories(request: HttpRequest) -> HttpResponse:
     """Render the category management page."""
     context = services.get_categories_data()
     return render(request, "catalog/categories/categories.html", context=context)
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["GET"])
 def export_categories_api(request: HttpRequest) -> JsonResponse:
     export_format = request.GET.get("format", "CSV")
@@ -37,7 +37,7 @@ def export_categories_api(request: HttpRequest) -> JsonResponse:
 def _category_api_error(message: str, status: int = 400) -> JsonResponse:
     return JsonResponse({"ok": False, "error": message}, status=status)
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["GET", "POST"])
 def category_api(request: HttpRequest) -> JsonResponse:
     if request.method == "GET":
@@ -89,7 +89,7 @@ def category_api(request: HttpRequest) -> JsonResponse:
 
     return JsonResponse({"ok": True, "id": category.id})
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["POST", "PATCH", "PUT", "DELETE"])
 def category_api_detail(request: HttpRequest, category_id: int) -> JsonResponse:
     category = Category.objects.filter(pk=category_id).first()
@@ -174,7 +174,7 @@ def category_api_detail(request: HttpRequest, category_id: int) -> JsonResponse:
 
     return JsonResponse({"ok": True, "id": category.id})
 
-@staff_member_required
+@catalog_admin_required
 def catalog_brands(request: HttpRequest) -> HttpResponse:
     """Render the brand management page."""
     context = services.get_brands_data()
@@ -183,7 +183,7 @@ def catalog_brands(request: HttpRequest) -> HttpResponse:
 def _brand_api_error(message: str, status: int = 400) -> JsonResponse:
     return JsonResponse({"ok": False, "error": message}, status=status)
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["GET", "POST"])
 def brand_api(request: HttpRequest) -> JsonResponse:
     if request.method == "GET":
@@ -194,7 +194,7 @@ def brand_api(request: HttpRequest) -> JsonResponse:
     except (ValidationError, IntegrityError, ValueError) as exc:
         return _brand_api_error(str(exc) or "Invalid brand data.")
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["GET", "POST", "PATCH", "PUT", "DELETE"])
 def brand_api_detail(request: HttpRequest, brand_id: int) -> JsonResponse:
     brand = Brand.objects.filter(pk=brand_id).first()
@@ -239,7 +239,7 @@ def brand_api_detail(request: HttpRequest, brand_id: int) -> JsonResponse:
     except (ValidationError, IntegrityError, ValueError) as exc:
         return _brand_api_error(str(exc) or "Invalid brand data.")
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def brand_import_api(request: HttpRequest) -> JsonResponse:
     upload = request.FILES.get("file")
@@ -253,7 +253,7 @@ def brand_import_api(request: HttpRequest) -> JsonResponse:
     except (ValidationError, IntegrityError, ValueError, json.JSONDecodeError) as exc:
         return _brand_api_error(str(exc) or "Unable to import brands.")
 
-@staff_member_required
+@catalog_admin_required
 @require_http_methods(["GET"])
 def brand_export_api(request: HttpRequest) -> HttpResponse:
     brands = Brand.objects.all()

@@ -2,9 +2,11 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
 from support import services as support_services
+from services.decorators.decorators import buyer_required
 
 
 @require_POST
+@buyer_required
 def mark_review_helpful_api(request: HttpRequest, review_id: int) -> JsonResponse:
     """Record a helpful 'like' onto a specific product review."""
     if not request.user.is_authenticated:

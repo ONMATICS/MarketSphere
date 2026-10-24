@@ -1,17 +1,17 @@
 import json
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from products import services
+from services.decorators.decorators import buyer_required
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@buyer_required
 def cart(request: HttpRequest) -> HttpResponse:
     """Render the shopping cart page."""
     cart_obj = services.get_user_cart(request.user)
@@ -35,7 +35,7 @@ def cart(request: HttpRequest) -> HttpResponse:
     return render(request, "cart.html", context)
 
 
-@login_required
+@buyer_required
 def add_to_cart(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Add a product to the cart (handles GET and POST data parameters)."""
     try:
@@ -61,7 +61,7 @@ def add_to_cart(request: HttpRequest, product_slug: str) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 @require_POST
 def add_frequently_bought_products_view(request: HttpRequest) -> JsonResponse:
     """Add a set of frequently bought products to the cart."""
@@ -76,7 +76,7 @@ def add_frequently_bought_products_view(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "Failed to add products."}, status=400)
 
 
-@login_required
+@buyer_required
 @require_POST
 def remove_from_cart(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Remove a specific product from the cart completely."""
@@ -89,7 +89,7 @@ def remove_from_cart(request: HttpRequest, product_slug: str) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 @require_POST
 def increment_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Increase the quantity of a specific cart item by one."""
@@ -104,7 +104,7 @@ def increment_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 @require_POST
 def decrement_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Decrease the quantity of a specific cart item by one."""
@@ -130,7 +130,7 @@ def decrement_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 @require_POST
 def update_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     """Update a cart item's quantity to a specific numeric value."""
@@ -162,7 +162,7 @@ def update_quantity(request: HttpRequest, product_slug: str) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 @require_POST
 def clear_cart(request: HttpRequest) -> JsonResponse:
     """Empty the current user's cart."""
@@ -175,14 +175,13 @@ def clear_cart(request: HttpRequest) -> JsonResponse:
     })
 
 
-@login_required
+@buyer_required
 def cart_data(request: HttpRequest) -> JsonResponse:
     """Retrieve raw cart overview totals as JSON."""
     cart_obj = services.get_user_cart(request.user)
     totals = services.get_cart_totals(request.user)
 
     return JsonResponse({
-        "cart": cart_obj,
         "cart_count": services.cart_count(request.user),
         "subtotal": str(totals["subtotal"]),
         "discount": str(totals["discount"]),

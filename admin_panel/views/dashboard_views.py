@@ -3,7 +3,6 @@ import logging
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.sessions.models import Session
 from django.db import transaction
 from django.db.models.fields.files import FieldFile
@@ -22,6 +21,7 @@ from admin_panel.models import (
     StoreSettings,
 )
 from notifications.models import ActivityLog
+from services.decorators.decorators import admin_required
 
 logger = logging.getLogger(__name__)
 
@@ -100,13 +100,13 @@ def _post_value(value: Any, field_name: str, boolean_fields: set) -> Any:
 # VIEWS
 # ---------------------------------------------------------
 
-@staff_member_required
+@admin_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Render the primary administrative dashboard."""
     return render(request, "admin_dashboard.html")
 
 
-@staff_member_required
+@admin_required
 @require_http_methods(["GET", "POST"])
 def admin_settings(request: HttpRequest) -> HttpResponse:
     """Manage platform-wide settings across various categories."""
@@ -220,7 +220,7 @@ def admin_settings(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"ok": False, "error": "An unexpected error occurred while saving settings."}, status=500)
 
 
-@staff_member_required
+@admin_required
 @require_POST
 def logout_all_devices(request: HttpRequest) -> JsonResponse:
     """Forcibly clear all active sessions for a given user."""

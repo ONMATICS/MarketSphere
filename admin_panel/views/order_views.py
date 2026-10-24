@@ -1,13 +1,13 @@
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
 from orders import services as order_service
 from orders.models import Order
+from services.decorators.decorators import permission_required
 
 
-@staff_member_required
+@permission_required("orders.view_order")
 def sales_orders(request: HttpRequest) -> HttpResponse:
     orders = order_service.get_admin_orders()
     paginator = Paginator(orders, 10)
@@ -25,11 +25,11 @@ def sales_orders(request: HttpRequest) -> HttpResponse:
         "pagination_query": query_params,
     })
 
-@staff_member_required
+@permission_required("orders.view_order")
 def sales_order(request: HttpRequest, order_number: str) -> HttpResponse:
     order = Order.objects.filter(order_number=order_number).first()
     return render(request, "sales/orders/order_detail.html", {'order': order})
 
-@staff_member_required
+@permission_required("orders.view_order")
 def payment_management(request: HttpRequest) -> HttpResponse:
     return render(request, "sales/payments/payment_management.html")

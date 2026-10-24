@@ -1,6 +1,5 @@
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -11,11 +10,12 @@ from notifications.models import ActivityLog
 from orders import services as order_service
 from orders.models import Order
 from support import services as support_services
+from services.decorators.decorators import buyer_required
 
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@buyer_required
 def orders(request: HttpRequest) -> HttpResponse:
     """Display a paginated list of the current user's orders."""
     user_orders = order_service.get_user_orders(request.user)
@@ -34,7 +34,7 @@ def orders(request: HttpRequest) -> HttpResponse:
     return render(request, "orders.html", context)
 
 
-@login_required
+@buyer_required
 def order(request: HttpRequest, order_number: str) -> HttpResponse:
     """Display details and activity logs for a specific user order."""
     user_order = order_service.get_user_order(request.user, order_number)
@@ -49,7 +49,7 @@ def order(request: HttpRequest, order_number: str) -> HttpResponse:
     return render(request, "order_detail.html", context)
 
 
-@login_required
+@buyer_required
 def order_cancelation(request: HttpRequest, order_number: str) -> JsonResponse:
     """Attempt to cancel an order and return the result."""
     is_canceled = order_service.cancel_user_order(request.user, order_number)
@@ -65,7 +65,7 @@ def order_cancelation(request: HttpRequest, order_number: str) -> JsonResponse:
     }, status=400)
 
 
-@login_required
+@buyer_required
 def reorder(request: HttpRequest, order_number: str) -> JsonResponse:
     """Recreate a previous order and add its items to the cart."""
     reordered_cart = order_service.reorder_user_order(request.user, order_number)
@@ -81,7 +81,7 @@ def reorder(request: HttpRequest, order_number: str) -> JsonResponse:
     }, status=400)
 
 
-@login_required
+@buyer_required
 @require_POST
 def submit_review_api(request: HttpRequest) -> JsonResponse:
     """Process a user's product review submission via AJAX."""

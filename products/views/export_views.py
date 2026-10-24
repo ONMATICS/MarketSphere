@@ -1,5 +1,3 @@
-from django.contrib.admin.views.decorators import staff_member_required
-from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 
@@ -7,14 +5,12 @@ from accounts.models import Seller
 from products import services
 from products.models import Product
 from products.product_pdf import export_product_report
+from services.decorators.decorators import catalog_admin_required
 
 
-@staff_member_required
+@catalog_admin_required
 def export_product_pdf(request: HttpRequest, slug: str) -> HttpResponse:
     """Generate a PDF report for a single product."""
-    if not request.user.is_staff:
-        raise PermissionDenied
-
     product_obj = get_object_or_404(
         Product.objects.select_related(
             "category",
@@ -30,7 +26,7 @@ def export_product_pdf(request: HttpRequest, slug: str) -> HttpResponse:
     return export_product_report(product=product_obj, admin_user=request.user)
 
 
-@staff_member_required
+@catalog_admin_required
 def export_product_orders_view(request: HttpRequest, slug: str) -> HttpResponse:
     """Export all orders containing a specific product."""
     product_obj = get_object_or_404(
@@ -40,7 +36,7 @@ def export_product_orders_view(request: HttpRequest, slug: str) -> HttpResponse:
     return services.export_product_orders(product_obj)
 
 
-@staff_member_required
+@catalog_admin_required
 def export_products_csv(request: HttpRequest, seller_id: int) -> HttpResponse:
     """Export a CSV of all products for a specified seller."""
     seller = get_object_or_404(Seller, id=seller_id)

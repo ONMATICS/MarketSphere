@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group
 
 from .models import (
     User, 
@@ -14,7 +15,22 @@ from .models import (
 
 # Register your models here.
 
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BaseUserAdmin):
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        ("Personal information", {"fields": ("first_name", "last_name", "email", "contact", "profile_image_url")}),
+        ("Account", {"fields": ("account_status", "is_active")}),
+        ("Permissions", {"fields": ("is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("username", "email", "password1", "password2", "is_active", "is_staff"),
+        }),
+    )
+
     list_display = (
         "username",
         "email",
@@ -43,6 +59,68 @@ class UserAdmin(admin.ModelAdmin):
     ordering = (
         "username",
     )
+
+    _protected_fields = {"is_staff", "is_superuser", "groups", "user_permissions"}
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:
+            if request.user.is_superuser:
+                return self.add_fieldsets
+            return (
+                (None, {
+                    "classes": ("wide",),
+                    "fields": ("username", "email", "password1", "password2", "is_active"),
+                }),
+            )
+
+        if request.user.is_superuser:
+            return super().get_fieldsets(request, obj)
+
+        return (
+            (None, {"fields": ("username", "password")}),
+            ("Personal information", {"fields": ("first_name", "last_name", "email", "contact", "profile_image_url")}),
+            ("Account", {"fields": ("account_status", "is_active")}),
+            ("Important dates", {"fields": ("last_login", "date_joined")}),
+        )
+
+    def get_form(self, request, obj=None, **kwargs):
+        if not request.user.is_superuser:
+            excluded = set(kwargs.get("exclude") or ())
+            excluded.update(self._protected_fields)
+            kwargs["exclude"] = tuple(excluded)
+        return super().get_form(request, obj, **kwargs)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None and (obj.is_superuser or obj == request.user) and not request.user.is_superuser:
+            return obj == request.user
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None and obj.is_superuser and not request.user.is_superuser:
+            return False
+        return super().has_delete_permission(request, obj)
+
+
+class SuperuserOnlyGroupAdmin(admin.ModelAdmin):
+    """Expose group/role administration only to the authorized superuser."""
+
+    list_display = ("name",)
+    search_fields = ("name",)
+
+    def has_module_permission(self, request):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_add_permission(self, request):
+        return self.has_module_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.has_module_permission(request)
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -257,3 +335,9 @@ admin.site.register(SellerApplicationDocument, SellerApplicationDocumentAdmin)
 admin.site.register(SellerApplicationFlag, SellerApplicationFlagAdmin)
 admin.site.register(SellerSettings, SellerSettingsAdmin)
 admin.site.register(SellerProfile, SellerProfileAdmin)
+
+try:
+    admin.site.unregister(Group)
+except admin.sites.NotRegistered:
+    pass
+admin.site.register(Group, SuperuserOnlyGroupAdmin)

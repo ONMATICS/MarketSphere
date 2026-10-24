@@ -2,7 +2,6 @@ import json
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
@@ -11,6 +10,7 @@ from accounts import services as account_service
 from admin_panel.checkout import get_checkout_settings
 from orders import services as order_service
 from products import services as cart_service
+from services.decorators.decorators import buyer_required, verified_buyer_required
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ def checkout(request: HttpRequest, cart_item_id: int = None) -> HttpResponse:
     return render(request, "checkout.html", context)
 
 
-@login_required
+@verified_buyer_required
 @require_POST
 def place_new_order(request: HttpRequest) -> JsonResponse:
     """Process an AJAX checkout submission and convert cart items to official Orders."""
@@ -112,6 +112,7 @@ def place_new_order(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"success": False, "message": "An unexpected error occurred while placing your order."}, status=500)
 
 
+@buyer_required
 def order_confirmation(request: HttpRequest, order_number: str) -> HttpResponse:
     """Render the post-checkout success page, gathering all orders from a multi-seller checkout."""
     batch_key = f'checkout_batch_{order_number}'

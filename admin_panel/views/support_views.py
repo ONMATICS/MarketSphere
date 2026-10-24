@@ -1,28 +1,28 @@
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_GET, require_POST
 
 from admin_panel.services import support_service
+from services.decorators.decorators import permission_required
 
 
-@staff_member_required
+@permission_required("support.view_supportrequest")
 @require_GET
 def support_requests(request: HttpRequest) -> HttpResponse:
     return render(request, "support/support_list.html",
                   support_service.get_support_list_context(request.GET))
 
 
-@staff_member_required
+@permission_required("support.view_supportrequest")
 @require_GET
 def support_request_detail(request: HttpRequest, request_id: int) -> HttpResponse:
     return render(request, "support/support_detail.html",
                   support_service.get_support_detail_context(request_id))
 
 
-@staff_member_required
+@permission_required("support.change_supportrequest")
 @require_POST
 def support_request_reply(request: HttpRequest, request_id: int) -> HttpResponse:
     try:
@@ -35,7 +35,7 @@ def support_request_reply(request: HttpRequest, request_id: int) -> HttpResponse
     return redirect("admin-support-detail", request_id=request_id)
 
 
-@staff_member_required
+@permission_required("support.change_supportrequest")
 @require_POST
 def support_request_status(request: HttpRequest, request_id: int) -> HttpResponse:
     try:

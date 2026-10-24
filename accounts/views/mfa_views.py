@@ -5,15 +5,16 @@ from allauth.mfa.recovery_codes.views import ViewRecoveryCodesView
 from allauth.mfa.totp.views import ActivateTOTPView, DeactivateTOTPView
 from allauth.mfa.utils import is_mfa_enabled
 
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 
+from services.decorators.decorators import authenticated
+
 logger = logging.getLogger(__name__)
 
 
-@login_required
+@authenticated
 def profile_2fa_redirect(request: HttpRequest) -> HttpResponse:
     """Redirect to the appropriate MFA activation/deactivation page."""
     if is_mfa_enabled(request.user):

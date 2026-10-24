@@ -2,12 +2,11 @@ import json
 import logging
 from decimal import Decimal, InvalidOperation
 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
+from services.decorators.decorators import catalog_admin_required
 
 from admin_panel import services
 from products import services as product_services
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 # PRODUCT MODERATION (Admin)
 # ---------------------------------------------------------
 
-@staff_member_required
+@catalog_admin_required
 def catalog_products(request: HttpRequest) -> HttpResponse:
     context = services.get_products_catalog()
     paginator = Paginator(context["products"].order_by("-created_at"), 6)
@@ -35,12 +34,12 @@ def catalog_products(request: HttpRequest) -> HttpResponse:
     })
     return render(request, "catalog/products_management/products.html", context=context)
 
-@staff_member_required
+@catalog_admin_required
 def catalog_product(request: HttpRequest, product_slug: str) -> HttpResponse:
     context = services.get_product_detail(product_slug)
     return render(request, "catalog/products_management/admin_product_detail.html", context=context)
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def approve_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -71,7 +70,7 @@ def approve_product_view(request: HttpRequest, product_slug: str) -> JsonRespons
     except Product.DoesNotExist:
         return JsonResponse({"success": False, "message": "Product not found."}, status=404)
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def hide_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -89,7 +88,7 @@ def hide_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     except Product.DoesNotExist:
         return JsonResponse({"success": False, "message": "Product not found."}, status=404)
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def unhide_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -98,7 +97,7 @@ def unhide_product_view(request: HttpRequest, product_slug: str) -> JsonResponse
     except Product.DoesNotExist:
         return JsonResponse({"success": False, "message": "Product not found."}, status=404)
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def reject_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -126,7 +125,7 @@ def reject_product_view(request: HttpRequest, product_slug: str) -> JsonResponse
     except Product.DoesNotExist:
         return JsonResponse({"success": False, "message": "Product not found."}, status=404)
 
-@staff_member_required
+@catalog_admin_required
 @require_POST
 def admin_toggle_product_featured_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -150,7 +149,7 @@ def admin_toggle_product_featured_view(request: HttpRequest, product_slug: str) 
 # PRODUCT MANAGEMENT (Seller Operations via Admin Panel)
 # ---------------------------------------------------------
 
-@login_required
+@catalog_admin_required
 @require_POST
 def publish_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -169,7 +168,7 @@ def publish_product_view(request: HttpRequest, product_slug: str) -> JsonRespons
         return JsonResponse({"success": False, "message": result["message"]}, status=404)
     return JsonResponse(result)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def upload_product_image_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     image_file = request.FILES.get("image")
@@ -184,7 +183,7 @@ def upload_product_image_view(request: HttpRequest, product_slug: str) -> JsonRe
     result = product_services.upload_product_image(product_slug=product_slug, image_file=image_file, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def delete_product_image_view(request: HttpRequest, product_slug: str, image_id: int) -> JsonResponse:
     try:
@@ -195,7 +194,7 @@ def delete_product_image_view(request: HttpRequest, product_slug: str, image_id:
     result = product_services.delete_product_image(product_slug=product_slug, image_id=image_id, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def reorder_product_images_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -215,7 +214,7 @@ def reorder_product_images_view(request: HttpRequest, product_slug: str) -> Json
     result = product_services.reorder_product_images(product_slug=product_slug, image_ids=image_ids, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 400)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def set_primary_product_image_view(request: HttpRequest, product_slug: str, image_id: int) -> JsonResponse:
     try:
@@ -226,7 +225,7 @@ def set_primary_product_image_view(request: HttpRequest, product_slug: str, imag
     result = product_services.set_primary_product_image(product_slug=product_slug, image_id=image_id, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def update_product_pricing_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -270,13 +269,13 @@ def update_product_pricing_view(request: HttpRequest, product_slug: str) -> Json
     )
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def remove_product_discount_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     result = product_services.remove_product_discount(product_slug=product_slug)
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def adjust_product_stock_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -311,7 +310,7 @@ def adjust_product_stock_view(request: HttpRequest, product_slug: str) -> JsonRe
     )
     return JsonResponse(result, status=200 if result["success"] else 400)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def mark_product_out_of_stock_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -322,7 +321,7 @@ def mark_product_out_of_stock_view(request: HttpRequest, product_slug: str) -> J
     result = product_services.mark_product_out_of_stock(product_slug=product_slug, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 404)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def restore_product_stock_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
@@ -333,7 +332,7 @@ def restore_product_stock_view(request: HttpRequest, product_slug: str) -> JsonR
     result = product_services.restore_product_stock(product_slug=product_slug, seller=seller)
     return JsonResponse(result, status=200 if result["success"] else 400)
 
-@login_required
+@catalog_admin_required
 @require_POST
 def edit_product_view(request: HttpRequest, product_slug: str) -> JsonResponse:
     try:
